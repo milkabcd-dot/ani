@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>יום הולדת לשילת אנגל 💖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 50%, #f67280 100%);
+            overflow: hidden;
+            direction: rtl;
+        }
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            max-width: 300px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #c06c84;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #f67280;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            z-index: 5;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        #clickInstruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 0, 64, 0.4);
+            z-index: 100;
+            text-align: center;
+            border: 3px solid #ff0040;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        #clickInstruction h2 {
+            font-size: 32px;
+            color: #ff0040;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        #clickInstruction p {
+            font-size: 20px;
+            color: #666;
+            margin: 0;
+        }
+        .emoji-large {
+            font-size: 48px;
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="loading">טוען... 💖</div>
+    
+    <div id="clickInstruction">
+        <h2>💕 לחצו על הלב! 💕</h2>
+        <span class="emoji-large">👆</span>
+        <p>כל לחיצה תשחרר לבבות!</p>
+    </div>
+    
+    <div id="info">
+        <h1>💖 יום הולדת שמח לשילת! 💖</h1>
+        <p><strong>🖱️ סיבוב:</strong> גרור עם העכבר</p>
+        <p><strong>🔍 זום:</strong> גלגלת העכבר</p>
+        <p><strong>💕 לחץ:</strong> להוצאת לבבות!</p>
+        <p><strong>✨ נצנצים:</strong> אוטומטי</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="resetCamera()">איפוס מצלמה</button>
+        <button onclick="toggleAnimation()">הפעל/עצור אנימציה</button>
+        <button onclick="moreSparkles()">עוד נצנצים! ✨</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, heart, textMesh;
+        let sparkles = [];
+        let flyingHearts = [];
+        let isAnimating = true;
+
+        function spawnHearts() {
+            // Create 20-30 small hearts that fly outward
+            const heartCount = 20 + Math.floor(Math.random() * 10);
+            
+            for (let i = 0; i < heartCount; i++) {
+                // Create small heart shape
+                const miniHeartShape = new THREE.Shape();
+                const scale = 0.3;
+                
+                for (let j = 0; j <= Math.PI * 2; j += 0.1) {
+                    const x = scale * 16 * Math.pow(Math.sin(j), 3);
+                    const y = scale * (13 * Math.cos(j) - 5 * Math.cos(2 * j) - 2 * Math.cos(3 * j) - Math.cos(4 * j));
+                    
+                    if (j === 0) {
+                        miniHeartShape.moveTo(x / 16, y / 16);
+                    } else {
+                        miniHeartShape.lineTo(x / 16, y / 16);
+                    }
+                }
+                
+                const miniExtrudeSettings = {
+                    depth: 0.3,
+                    bevelEnabled: true,
+                    bevelThickness: 0.05,
+                    bevelSize: 0.05,
+                    bevelSegments: 5
+                };
+                
+                const miniHeartGeometry = new THREE.ExtrudeGeometry(miniHeartShape, miniExtrudeSettings);
+                
+                // Random colors - shades of red and pink
+                const colors = [0xff0040, 0xff69b4, 0xff1493, 0xff4500, 0xdc143c];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const miniHeartMaterial = new THREE.MeshPhongMaterial({
+                    color: randomColor,
+                    shininess: 150,
+                    emissive: 0x330011,
+                    transparent: true,
+                    opacity: 1
+                });
+                
+                const miniHeart = new THREE.Mesh(miniHeartGeometry, miniHeartMaterial);
+                
+                // Start from the main heart position
+                miniHeart.position.copy(heart.position);
+                
+                // Random direction for flying
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                
+                miniHeart.userData = {
+                    velocityX: Math.sin(phi) * Math.cos(theta) * 0.2,
+                    velocityY: Math.sin(phi) * Math.sin(theta) * 0.2,
+                    velocityZ: Math.cos(phi) * 0.2,
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.1,
+                        y: (Math.random() - 0.5) * 0.1,
+                        z: (Math.random() - 0.5) * 0.1
+                    },
+                    life: 100 + Math.random() * 50
+                };
+                
+                scene.add(miniHeart);
+                flyingHearts.push(miniHeart);
+            }
+        }
+
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xfff0f5);
+            scene.fog = new THREE.Fog(0xfff0f5, 15, 50);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                50,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, 15);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const pointLight1 = new THREE.PointLight(0xff69b4, 1.5);
+            pointLight1.position.set(5, 5, 5);
+            pointLight1.castShadow = true;
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xff1493, 1);
+            pointLight2.position.set(-5, -5, 5);
+            scene.add(pointLight2);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(0, 10, 10);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            // Create heart
+            createHeart();
+
+            // Create text
+            createText();
+
+            // Create sparkles
+            createSparkles(300);
+
+            // Mouse controls
+            setupControls();
+
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            
+            // Show click instruction after a short delay
+            setTimeout(() => {
+                const instruction = document.getElementById('clickInstruction');
+                instruction.style.display = 'block';
+                
+                // Hide instruction after 5 seconds or on first click
+                setTimeout(() => {
+                    instruction.style.opacity = '1';
+                    instruction.style.transition = 'opacity 1s';
+                }, 100);
+                
+                setTimeout(() => {
+                    instruction.style.opacity = '0';
+                    setTimeout(() => {
+                        instruction.style.display = 'none';
+                    }, 1000);
+                }, 5000);
+            }, 500);
+
+            // Animation loop
+            animate();
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function createHeart() {
+            // Create heart shape using mathematical formula
+            const heartShape = new THREE.Shape();
+            
+            const scale = 2;
+            for (let i = 0; i <= Math.PI * 2; i += 0.01) {
+                const x = scale * 16 * Math.pow(Math.sin(i), 3);
+                const y = scale * (13 * Math.cos(i) - 5 * Math.cos(2 * i) - 2 * Math.cos(3 * i) - Math.cos(4 * i));
+                
+                if (i === 0) {
+                    heartShape.moveTo(x / 16, y / 16);
+                } else {
+                    heartShape.lineTo(x / 16, y / 16);
+                }
+            }
+
+            // Extrude settings for 3D heart
+            const extrudeSettings = {
+                depth: 1.5,
+                bevelEnabled: true,
+                bevelThickness: 0.3,
+                bevelSize: 0.2,
+                bevelSegments: 10
+            };
+
+            const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+            
+            // Shiny red material with sparkle effect
+            const heartMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff0040,
+                shininess: 100,
+                specular: 0xff69b4,
+                emissive: 0x330011
+            });
+
+            heart = new THREE.Mesh(heartGeometry, heartMaterial);
+            heart.castShadow = true;
+            heart.receiveShadow = true;
+            
+            // Center the heart with pointed part facing down
+            heart.position.set(0, 0, -0.75);
+            heart.rotation.x = 0;
+            
+            scene.add(heart);
+
+            // Add glossy overlay spheres for extra shine
+            for (let i = 0; i < 20; i++) {
+                const glossGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const glossMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xff69b4,
+                    shininess: 200,
+                    transparent: true,
+                    opacity: 0.6,
+                    emissive: 0xff1493
+                });
+                const gloss = new THREE.Mesh(glossGeometry, glossMaterial);
+                
+                // Position glossy spheres on heart surface
+                const angle = (i / 20) * Math.PI * 2;
+                const x = 1.5 * Math.sin(angle) * Math.abs(Math.cos(angle));
+                const y = 1.2 * Math.cos(angle);
+                
+                gloss.position.set(x, y, 0.8);
+                heart.add(gloss);
+            }
+        }
+
+        function createText() {
+            // Create text using 3D text geometry with extruded shapes
+            const loader = new THREE.FontLoader();
+            
+            // Since we can't load external fonts easily, we'll create text using shapes
+            // Create decorative text holder
+            const textGroup = new THREE.Group();
+            
+            // Create text background/banner
+            const bannerGeometry = new THREE.PlaneGeometry(10, 1.5);
+            const bannerMaterial = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.9,
+                side: THREE.DoubleSide
+            });
+            const banner = new THREE.Mesh(bannerGeometry, bannerMaterial);
+            banner.position.set(0, -4, 0);
+            textGroup.add(banner);
+
+            // Create text as individual letter blocks (simplified)
+            const createTextBlock = (text, xOffset) => {
+                const textGeometry = new THREE.BoxGeometry(0.5, 0.6, 0.3);
+                const textMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xff1493,
+                    shininess: 100,
+                    emissive: 0x660033
+                });
+                
+                for (let i = 0; i < text.length; i++) {
+                    const letterBlock = new THREE.Mesh(textGeometry, textMaterial);
+                    letterBlock.position.set(xOffset + i * 0.6 - (text.length * 0.3), -4, 0.2);
+                    letterBlock.castShadow = true;
+                    textGroup.add(letterBlock);
+                }
+            };
+
+            // Add decorative hearts around text
+            for (let i = 0; i < 8; i++) {
+                const miniHeartGeo = new THREE.SphereGeometry(0.2, 16, 16);
+                miniHeartGeo.scale(1, 1.2, 0.5);
+                const miniHeartMat = new THREE.MeshPhongMaterial({
+                    color: 0xff69b4,
+                    emissive: 0xff1493,
+                    shininess: 150
+                });
+                const miniHeart = new THREE.Mesh(miniHeartGeo, miniHeartMat);
+                const angle = (i / 8) * Math.PI * 2;
+                miniHeart.position.set(
+                    Math.cos(angle) * 5,
+                    -4 + Math.sin(angle) * 0.8,
+                    0.3
+                );
+                textGroup.add(miniHeart);
+            }
+
+            // Create actual text using canvas texture
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw text on canvas
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = 'bold 80px Arial';
+            ctx.fillStyle = '#ff0040';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('יום הולדת שמח לשילת אנגל', canvas.width / 2, canvas.height / 2);
+            
+            // Add text outline
+            ctx.strokeStyle = '#ff69b4';
+            ctx.lineWidth = 3;
+            ctx.strokeText('יום הולדת שמח לשילת אנגל', canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const textPlaneMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            const textPlaneGeometry = new THREE.PlaneGeometry(8, 2);
+            const textPlane = new THREE.Mesh(textPlaneGeometry, textPlaneMaterial);
+            textPlane.position.set(0, -4, 0.5);
+            
+            scene.add(textPlane);
+            scene.add(textGroup);
+            
+            textMesh = textGroup;
+        }
+
+        function createSparkles(count) {
+            for (let i = 0; i < count; i++) {
+                const sparkleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+                const sparkleMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(Math.random(), 1, 0.7),
+                    transparent: true,
+                    opacity: Math.random() * 0.8 + 0.2
+                });
+                const sparkle = new THREE.Mesh(sparkleGeometry, sparkleMaterial);
+                
+                // Random position around the heart
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                const radius = 3 + Math.random() * 5;
+                
+                sparkle.position.x = radius * Math.sin(phi) * Math.cos(theta);
+                sparkle.position.y = radius * Math.sin(phi) * Math.sin(theta);
+                sparkle.position.z = radius * Math.cos(phi);
+                
+                sparkle.userData = {
+                    speed: Math.random() * 0.02 + 0.01,
+                    angle: Math.random() * Math.PI * 2,
+                    radius: radius,
+                    initialOpacity: sparkle.material.opacity
+                };
+                
+                sparkles.push(sparkle);
+                scene.add(sparkle);
+            }
+        }
+
+        function setupControls() {
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                spawnHearts(); // Spawn hearts on click
+                
+                // Hide instruction on first click
+                const instruction = document.getElementById('clickInstruction');
+                if (instruction && instruction.style.display !== 'none') {
+                    instruction.style.opacity = '0';
+                    setTimeout(() => {
+                        instruction.style.display = 'none';
+                    }, 500);
+                }
+            });
+
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+
+                    heart.rotation.z += deltaMove.x * 0.01;
+                    heart.rotation.x += deltaMove.y * 0.01;
+                }
+
+                previousMousePosition = {
+                    x: e.offsetX,
+                    y: e.offsetY
+                };
+            });
+
+            renderer.domElement.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.01;
+                camera.position.z = Math.max(8, Math.min(30, camera.position.z));
+            });
+
+            // Touch controls
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                spawnHearts(); // Spawn hearts on touch
+                
+                // Hide instruction on first touch
+                const instruction = document.getElementById('clickInstruction');
+                if (instruction && instruction.style.display !== 'none') {
+                    instruction.style.opacity = '0';
+                    setTimeout(() => {
+                        instruction.style.display = 'none';
+                    }, 500);
+                }
+            });
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const deltaX = e.touches[0].clientX - touchStartX;
+                const deltaY = e.touches[0].clientY - touchStartY;
+
+                heart.rotation.z += deltaX * 0.01;
+                heart.rotation.x += deltaY * 0.01;
+
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isAnimating) {
+                // Rotate heart slowly
+                heart.rotation.y += 0.005;
+                
+                // Pulse effect
+                const scale = 1 + Math.sin(Date.now() * 0.002) * 0.05;
+                heart.scale.set(scale, scale, scale);
+            }
+
+            // Animate sparkles
+            sparkles.forEach((sparkle, index) => {
+                sparkle.userData.angle += sparkle.userData.speed;
+                
+                const radius = sparkle.userData.radius;
+                sparkle.position.x = radius * Math.cos(sparkle.userData.angle);
+                sparkle.position.y = sparkle.position.y + Math.sin(Date.now() * 0.001 + index) * 0.02;
+                sparkle.position.z = radius * Math.sin(sparkle.userData.angle);
+                
+                // Twinkle effect
+                sparkle.material.opacity = sparkle.userData.initialOpacity * 
+                    (0.5 + Math.sin(Date.now() * 0.005 + index) * 0.5);
+                
+                // Rotate sparkles
+                sparkle.rotation.x += 0.02;
+                sparkle.rotation.y += 0.02;
+            });
+
+            // Animate flying hearts
+            for (let i = flyingHearts.length - 1; i >= 0; i--) {
+                const miniHeart = flyingHearts[i];
+                
+                // Move hearts outward
+                miniHeart.position.x += miniHeart.userData.velocityX;
+                miniHeart.position.y += miniHeart.userData.velocityY;
+                miniHeart.position.z += miniHeart.userData.velocityZ;
+                
+                // Add gravity effect
+                miniHeart.userData.velocityY -= 0.005;
+                
+                // Rotate hearts
+                miniHeart.rotation.x += miniHeart.userData.rotationSpeed.x;
+                miniHeart.rotation.y += miniHeart.userData.rotationSpeed.y;
+                miniHeart.rotation.z += miniHeart.userData.rotationSpeed.z;
+                
+                // Fade out
+                miniHeart.userData.life -= 1;
+                miniHeart.material.opacity = miniHeart.userData.life / 150;
+                
+                // Remove when life is over
+                if (miniHeart.userData.life <= 0) {
+                    scene.remove(miniHeart);
+                    flyingHearts.splice(i, 1);
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function resetCamera() {
+            camera.position.set(0, 0, 15);
+            camera.lookAt(0, 0, 0);
+            heart.rotation.set(0, 0, 0);
+        }
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+        }
+
+        function moreSparkles() {
+            createSparkles(50);
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
