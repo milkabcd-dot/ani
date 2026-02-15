@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>נערת הפטריה - אנימציה</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #87ceeb, #a8d5e2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* מונע גלילה מיותרת בנייד */
+        }
+
+        .main-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        .image-box {
+            position: relative;
+            /* אנימציית נשימה עדינה לתמונה */
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .butterfly {
+            position: absolute;
+            font-size: 50px;
+            animation: fly 4s ease-in-out infinite;
+            cursor: pointer;
+            user-select: none;
+            z-index: 10;
+        }
+
+        /* מיקומים התחלתיים שונים לפרפרים */
+        .b1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .b2 { top: 15%; right: 25%; animation-delay: 1s; }
+        .b3 { top: 50%; right: 10%; animation-delay: 2s; }
+
+        @keyframes fly {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(25px, -30px) rotate(15deg); }
+            50% { transform: translate(-15px, -50px) rotate(-10deg); }
+            75% { transform: translate(30px, -20px) rotate(5deg); }
+        }
+
+        .butterfly:hover {
+            animation-play-state: paused;
+            transform: scale(1.5) !important;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #764ba2; }
+
+        .info { color: #666; font-size: 13px; font-weight: bold; }
+
+        /* מצב השהיה */
+        .paused .butterfly,
+        .paused .image-box {
+            animation-play-state: paused !important;
+        }
+
+        /* אנימציית נצנוצים */
+        .sparkle {
+            position: fixed;
+            font-size: 30px;
+            pointer-events: none;
+            z-index: 999;
+            animation: sparkle-anim 1s ease-out forwards;
+        }
+
+        @keyframes sparkle-anim {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(2) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container" id="mainContainer">
+        <div class="image-box">
+            <img src="https://github.com/milkabcd-dot/ani/blob/main/%D7%90%D7%A0%D7%99.png?raw=true" alt="נערת הפטריה">
+            
+            <div class="butterfly b1" onclick="resetAnim(this)">🦋</div>
+            <div class="butterfly b2" onclick="resetAnim(this)">🦋</div>
+            <div class="butterfly b3" onclick="resetAnim(this)">🦋</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <span class="info">✨ לחצי על המסך!</span>
+        <button id="pauseBtn" onclick="togglePause()">⏸️ השהה</button>
+    </div>
+
+    <script>
+        let paused = false;
+
+        function togglePause() {
+            paused = !paused;
+            const container = document.getElementById('mainContainer');
+            const btn = document.getElementById('pauseBtn');
+            
+            if (paused) {
+                container.classList.add('paused');
+                btn.textContent = '▶️ המשך';
+            } else {
+                container.classList.remove('paused');
+                btn.textContent = '⏸️ השהה';
+            }
+        }
+
+        // פונקציה לאיפוס אנימציה בלחיצה על פרפר
+        function resetAnim(el) {
+            el.style.animation = 'none';
+            setTimeout(() => el.style.animation = '', 10);
+        }
+
+        // הוספת נצנוצים בלחיצה בכל מקום במסך
+        document.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.textContent = '✨';
+            sparkle.style.left = (e.pageX - 15) + 'px';
+            sparkle.style.top = (e.pageY - 15) + 'px';
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => sparkle.remove(), 1000);
+        });
+    </script>
+</body>
+</html>
