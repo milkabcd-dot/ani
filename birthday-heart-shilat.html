@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -21,52 +22,71 @@
             height: 100vh;
             position: relative;
         }
-        #info {
+        #header {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 0, 64, 0.3);
             z-index: 10;
-            max-width: 300px;
+            text-align: center;
         }
         h1 {
-            font-size: 24px;
-            color: #c06c84;
-            margin-bottom: 10px;
+            font-size: 32px;
+            color: #ff0040;
+            margin: 0;
+            font-weight: bold;
         }
-        p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 8px;
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90%;
+        }
+        .instruction-box {
+            background: rgba(255, 105, 180, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
         }
         .controls {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
             z-index: 10;
         }
         button {
-            background: #ff6b9d;
+            background: rgba(255, 105, 180, 0.9);
             color: white;
             border: none;
             padding: 10px 20px;
-            margin: 5px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.3s;
+            transition: all 0.3s;
             font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
         }
         button:hover {
-            background: #f67280;
+            background: #ff1493;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 64, 0.4);
         }
         #loading {
             position: absolute;
@@ -125,18 +145,18 @@
         <p>כל לחיצה תשחרר לבבות!</p>
     </div>
     
-    <div id="info">
-        <h1>💖 יום הולדת שמח לשילת! 💖</h1>
-        <p><strong>🖱️ סיבוב:</strong> גרור עם העכבר</p>
-        <p><strong>🔍 זום:</strong> גלגלת העכבר</p>
-        <p><strong>💕 לחץ:</strong> להוצאת לבבות!</p>
-        <p><strong>✨ נצנצים:</strong> אוטומטי</p>
+    <div id="header">
+        <h1>💖 יום הולדת שמח לשילת אנגל 💖</h1>
+    </div>
+
+    <div class="instructions">
+        <div class="instruction-box">🖱️ גרור לסיבוב</div>
+        <div class="instruction-box">💕 לחץ להוצאת לבבות</div>
     </div>
 
     <div class="controls">
-        <button onclick="resetCamera()">איפוס מצלמה</button>
-        <button onclick="toggleAnimation()">הפעל/עצור אנימציה</button>
-        <button onclick="moreSparkles()">עוד נצנצים! ✨</button>
+        <button onclick="resetCamera()">איפוס</button>
+        <button onclick="toggleAnimation()">עצור/הפעל</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
