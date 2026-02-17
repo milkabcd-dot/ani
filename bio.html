@@ -3,161 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חידון ביומימיקרי אינטראקטיבי</title>
+    <title>חידון ביומימיקרי - מילכה ברקו גרש</title>
     <style>
-        :root { --cell: 8vw; --max-cell: 45px; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 10px; overflow-x: hidden; }
+        :root { --cell: 7.5vw; --max-cell: 42px; --green: #2e7d32; }
+        body { font-family: 'Segoe UI', Arial; background: #f4f7f6; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 10px; }
         
-        h1 { font-size: 1.5rem; color: #1b5e20; margin: 10px 0; text-align: center; }
-        .author { font-size: 0.9rem; font-weight: bold; margin-bottom: 15px; }
+        h1 { font-size: 1.4rem; color: var(--green); margin: 10px 0; text-align: center; }
+        .author { font-size: 0.85rem; margin-bottom: 15px; font-weight: bold; }
 
-        /* אזור התשבץ - המרכז */
-        .board-wrapper { width: 100%; display: flex; justify-content: center; margin-bottom: 20px; }
+        /* לוח התשבץ */
+        .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 20px; }
         .grid { 
             display: grid; 
             grid-template-columns: repeat(13, min(var(--cell), var(--max-cell))); 
             grid-template-rows: repeat(15, min(var(--cell), var(--max-cell))); 
-            background: #222; border: 3px solid #000; gap: 1px;
+            background: #444; border: 2px solid #000; gap: 1px;
         }
-        .cell { width: 100%; height: 100%; background: #222; position: relative; }
+        .cell { width: 100%; height: 100%; background: #444; position: relative; }
         .white { background: white !important; }
-        .cell input { width: 100%; height: 100%; border: none; text-align: center; font-size: 1.2rem; font-weight: bold; outline: none; background: transparent; }
+        .cell input { width: 100%; height: 100%; border: none; text-align: center; font-size: 1.2rem; font-weight: bold; background: transparent; outline: none; }
         .num { position: absolute; top: 1px; right: 2px; font-size: 9px; font-weight: bold; color: #000; pointer-events: none; }
         .correct { background: #c8e6c9 !important; }
 
-        /* אזור בחירת ההגדרות */
-        .controls-area { width: 100%; max-width: 500px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); }
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 10px; border-bottom: 2px solid #eee; }
-        .tab { padding: 10px; cursor: pointer; font-weight: bold; color: #666; }
-        .tab.active { color: #2e7d32; border-bottom: 3px solid #2e7d32; }
+        /* אזור הבקרה */
+        .controls { width: 100%; max-width: 500px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 15px; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #888; }
+        .tab.active { color: var(--green); border-bottom: 3px solid var(--green); }
         
-        .numbers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 10px 0; }
-        .num-btn { padding: 10px; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
-        .num-btn:active { background: #a5d6a7; }
+        .numbers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .n-btn { padding: 10px; background: #f1f8e9; border: 1px solid #c8e6c9; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; }
+        .n-btn:hover { background: #c8e6c9; }
 
-        /* הצגת השאלה הנבחרת */
-        #clue-display { min-height: 60px; background: #f9f9f9; padding: 10px; border-right: 4px solid #2e7d32; margin-top: 10px; font-size: 1.1rem; display: none; }
-
-        .check-btn { width: 100%; margin-top: 15px; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; }
+        #question-box { margin-top: 15px; padding: 12px; border-right: 4px solid var(--green); background: #f9f9f9; min-height: 50px; font-size: 1.05rem; display: none; }
+        .check-btn { width: 100%; margin-top: 15px; padding: 15px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h1>פתרונות לצרכי האדם בהשראת הטבע </h1>
-    <div class="author">© מילכה ברקו גרש [cite: 2]</div>
+    <h1>פתרונות לצרכי האדם בהשראת הטבע</h1>
+    <div class="author">© כל הזכויות שמורות למילכה ברקו גרש</div>
 
-    <div class="board-wrapper">
-        <div class="grid" id="board"></div>
+    <div class="board-container">
+        <div class="grid" id="main-grid"></div>
     </div>
 
-    <div class="controls-area">
+    <div class="controls">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('across')">מאוזן [cite: 17]</div>
-            <div class="tab" onclick="showTab('down')">מאונך [cite: 26]</div>
+            <div id="t-across" class="tab active" onclick="switchTab('across')">מאוזן</div>
+            <div id="t-down" class="tab" onclick="switchTab('down')">מאונך</div>
         </div>
 
-        <div id="across-numbers" class="numbers-grid"></div>
-        <div id="down-numbers" class="numbers-grid" style="display:none;"></div>
+        <div id="btns-across" class="numbers-grid"></div>
+        <div id="btns-down" class="numbers-grid" style="display:none;"></div>
 
-        <div id="clue-display"></div>
-        <button class="check-btn" onclick="checkAll()">בדוק תשובות</button>
+        <div id="question-box"></div>
+        <button class="check-btn" onclick="validate()">בדוק את התשובות שלי</button>
     </div>
 
     <script>
-        const clues = {
+        const data = {
             across: {
-                1: "שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים. [cite: 18]",
-                3: "כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום. [cite: 19]",
-                5: "בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה. [cite: 20]",
-                6: "איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה. [cite: 21]",
-                8: "פירוש המילה: ביוס. [cite: 21]",
-                9: "קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים. [cite: 22]",
-                10: "שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב. [cite: 23]",
-                11: "יצור המפיק קורים גמישים וחזקים. [cite: 23]",
-                12: "סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש. [cite: 24]",
-                13: "בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך. [cite: 25]"
+                1: "שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.",
+                3: "כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
+                5: "בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס על משטחים גבוהים.",
+                6: "איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
+                8: "פירוש המילה: ביוס.",
+                9: "קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
+                10: "שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
+                11: "יצור המפיק קורים גמישים וחזקים.",
+                12: "סוג בעל חיים ממחלקת העופות, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש.",
+                13: "בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
             },
             down: {
-                2: "תליהם שמשו השראה לבנייה ממוזגת באופן טבעי. [cite: 27]",
-                4: "פירוש המילה: מימטיקה. [cite: 27]",
-                7: "סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים. [cite: 28]",
-                8: "השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים... [cite: 29]",
-                11: "יונקים מעופפים, מתקשרים באמצעות סונאר. [cite: 30]"
+                2: "תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
+                4: "פירוש המילה: מימטיקה.",
+                7: "סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
+                8: "השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
+                11: "יונקים מעופפים, מתקשרים באמצעות סונאר."
             }
         };
 
-        const schema = [
-            {x:0, y:1, a:'נ', n:3}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'},
+        const map = [
+            // מאוזן
             {x:4, y:1, a:'ל', n:1}, {x:5, y:1, a:'ו'}, {x:6, y:1, a:'ט'}, {x:7, y:1, a:'ו'}, {x:8, y:1, a:'ס'},
-            {x:6, y:2, a:'ר', n:2}, {x:2, y:2, a:'י', n:4},
-            {x:3, y:3, a:'ש', n:5}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'}, {x:2, y:3, a:'ק'},
-            {x:6, y:4, a:'ט'}, {x:8, y:4, a:'ח', n:6}, {x:9, y:4, a:'ד'}, {x:10, y:4, a:'ק'}, {x:2, y:4, a:'ו'},
-            {x:6, y:5, a:'י'}, {x:2, y:5, a:'י'}, {x:10, y:5, a:'ד', n:7},
-            {x:0, y:6, a:'ח', n:8}, {x:1, y:6, a:'י'}, {x:2, y:6, a:'י'}, {x:3, y:6, a:'ם'}, {x:6, y:6, a:'ם'}, {x:10, y:6, a:'ו'},
-            {x:5, y:7, a:'פ', n:9}, {x:6, y:7, a:'ר'}, {x:7, y:7, a:'פ'}, {x:8, y:7, a:'ר'}, {x:9, y:7, a:'י'}, {x:10, y:7, a:'ם'}, {x:3, y:7, a:'ז', n:8},
-            {x:6, y:8, a:'י'}, {x:10, y:8, a:'ר'}, {x:3, y:8, a:'ק'},
-            {x:2, y:9, a:'ע', n:11}, {x:3, y:9, a:'כ'}, {x:4, y:9, a:'ב'}, {x:5, y:9, a:'י'}, {x:6, y:9, a:'ש'}, {x:9, y:9, a:'צ', n:10}, {x:10, y:9, a:'מ'}, {x:11, y:9, a:'ד'}, {x:12, y:9, a:'ן'},
-            {x:6, y:10, a:'ל', n:11}, {x:10, y:10, a:'ב'}, {x:3, y:10, a:'י'},
-            {x:4, y:11, a:'ש', n:12}, {x:5, y:11, a:'ל'}, {x:6, y:11, a:'ד'}, {x:7, y:11, a:'ג'}, {x:10, y:11, a:'ן'}, {x:3, y:11, a:'ם'},
-            {x:6, y:12, a:'פ'}, {x:5, y:13, a:'כ', n:13}, {x:6, y:13, a:'ר'}, {x:7, y:13, a:'י'}, {x:8, y:13, a:'ש'}, {x:6, y:14, a:'י'}
+            {x:0, y:1, a:'נ', n:3}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'},
+            {x:3, y:3, a:'ש', n:5}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'},
+            {x:8, y:4, a:'ח', n:6}, {x:9, y:4, a:'ד'}, {x:10, y:4, a:'ק'},
+            {x:0, y:6, a:'ח', n:8}, {x:1, y:6, a:'י'}, {x:2, y:6, a:'י'}, {x:3, y:6, a:'ם'},
+            {x:5, y:7, a:'פ', n:9}, {x:6, y:7, a:'ר'}, {x:7, y:7, a:'פ'}, {x:8, y:7, a:'ר'}, {x:9, y:7, a:'י'}, {x:10, y:7, a:'ם'},
+            {x:9, y:9, a:'צ', n:10}, {x:10, y:9, a:'מ'}, {x:11, y:9, a:'ד'}, {x:12, y:9, a:'ן'},
+            {x:2, y:9, a:'ע', n:11}, {x:3, y:9, a:'כ'}, {x:4, y:9, a:'ב'}, {x:5, y:9, a:'י'}, {x:6, y:9, a:'ש'},
+            {x:4, y:11, a:'ש', n:12}, {x:5, y:11, a:'ל'}, {x:6, y:11, a:'ד'}, {x:7, y:11, a:'ג'},
+            {x:5, y:13, a:'כ', n:13}, {x:6, y:13, a:'ר'}, {x:7, y:13, a:'י'}, {x:8, y:13, a:'ש'},
+            // מאונך
+            {x:6, y:2, a:'ר', n:2}, {x:6, y:4, a:'מ'}, {x:6, y:5, a:'י'}, {x:6, y:6, a:'ט'}, {x:6, y:8, a:'י'}, {x:6, y:9, a:'ם'},
+            {x:2, y:2, a:'י', n:4}, {x:2, y:3, a:'ק'}, {x:2, y:4, a:'ו'}, {x:2, y:5, a:'י'},
+            {x:10, y:5, a:'ד', n:7}, {x:10, y:6, a:'ו'}, {x:10, y:7, a:'ר'}, {x:10, y:8, a:'ב'}, {x:10, y:10, a:'ן'},
+            {x:3, y:7, a:'ז', n:8}, {x:3, y:8, a:'ק'}, {x:3, y:10, a:'י'}, {x:3, y:11, a:'ם'},
+            {x:6, y:10, a:'ל', n:11}, {x:6, y:11, a:'פ'}, {x:6, y:12, a:'י'}, {x:6, y:14, a:'ם'}
         ];
 
-        // בניית הלוח
-        const board = document.getElementById('board');
-        for(let y=0; y<15; y++) {
-            for(let x=0; x<13; x++) {
-                const s = schema.find(i => i.x === x && i.y === y);
+        const grid = document.getElementById('main-grid');
+        for(let y=0; y<15; y++){
+            for(let x=0; x<13; x++){
+                const cellData = map.find(c => c.x === x && c.y === y);
                 const cell = document.createElement('div');
-                cell.className = 'cell' + (s ? ' white' : '');
-                if(s) {
-                    if(s.n) cell.innerHTML += `<span class="num">${s.n}</span>`;
-                    cell.innerHTML += `<input maxlength="1" id="i-${x}-${y}" data-ans="${s.a}" autocomplete="off">`;
+                cell.className = 'cell' + (cellData ? ' white' : '');
+                if(cellData){
+                    if(cellData.n) cell.innerHTML += `<span class="num">${cellData.n}</span>`;
+                    cell.innerHTML += `<input maxlength="1" id="in-${x}-${y}" data-ans="${cellData.a}" autocomplete="off">`;
                 }
-                board.appendChild(cell);
+                grid.appendChild(cell);
             }
         }
 
-        // ניהול כפתורי מספרים
-        function createButtons() {
-            const acrossGrid = document.getElementById('across-numbers');
-            const downGrid = document.getElementById('down-numbers');
-            
-            Object.keys(clues.across).forEach(num => {
-                const btn = document.createElement('div');
-                btn.className = 'num-btn'; btn.innerText = num;
-                btn.onclick = () => showClue('across', num);
-                acrossGrid.appendChild(btn);
-            });
-
-            Object.keys(clues.down).forEach(num => {
-                const btn = document.createElement('div');
-                btn.className = 'num-btn'; btn.innerText = num;
-                btn.onclick = () => showClue('down', num);
-                downGrid.appendChild(btn);
+        function createButtons(type) {
+            const container = document.getElementById(`btns-${type}`);
+            Object.keys(data[type]).forEach(num => {
+                const b = document.createElement('div');
+                b.className = 'n-btn'; b.innerText = num;
+                b.onclick = () => {
+                    const box = document.getElementById('question-box');
+                    box.style.display = 'block';
+                    box.innerHTML = `<strong>הגדרה ${num}:</strong> ${data[type][num]}`;
+                };
+                container.appendChild(b);
             });
         }
 
-        function showTab(type) {
+        function switchTab(type) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('across-numbers').style.display = type === 'across' ? 'grid' : 'none';
-            document.getElementById('down-numbers').style.display = type === 'down' ? 'grid' : 'none';
+            document.getElementById(`t-${type}`).classList.add('active');
+            document.getElementById('btns-across').style.display = type === 'across' ? 'grid' : 'none';
+            document.getElementById('btns-down').style.display = type === 'down' ? 'grid' : 'none';
         }
 
-        function showClue(type, num) {
-            const display = document.getElementById('clue-display');
-            display.style.display = 'block';
-            display.innerHTML = `<strong>${num}:</strong> ${clues[type][num]}`;
-        }
-
-        function checkAll() {
-            schema.forEach(s => {
-                const input = document.getElementById(`i-${s.x}-${s.y}`);
-                if(input && input.value === s.a) input.parentElement.classList.add('correct');
+        function validate() {
+            map.forEach(c => {
+                const input = document.getElementById(`in-${c.x}-${c.y}`);
+                if(input.value === c.a) input.parentElement.classList.add('correct');
             });
         }
 
-        createButtons();
+        createButtons('across'); createButtons('down');
     </script>
 </body>
 </html>
