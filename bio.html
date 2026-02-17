@@ -9,7 +9,7 @@
             --c: 7.5vw; 
             --primary: #2c5282;
             --correct: #48bb78;
-            --bg: #f0f4f8;
+            --bg: #f7fafc;
         }
         @media (min-width: 600px) { :root { --c: 40px; } }
 
@@ -17,39 +17,36 @@
             font-family: 'Segoe UI', system-ui, sans-serif; 
             background: var(--bg); margin: 0; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden; touch-action: manipulation;
+            overflow-x: hidden;
         }
 
-        .main-header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .main-header h1 {
-            color: var(--primary);
-            margin: 0;
-            font-size: 1.8rem;
-        }
-
-        .main-header p {
-            margin: 5px 0;
-            font-weight: bold;
-            color: #4a5568;
-        }
+        .main-header { text-align: center; margin-bottom: 10px; }
+        .main-header h1 { color: var(--primary); margin: 0; font-size: 1.6rem; }
+        .main-header p { margin: 2px 0; font-weight: bold; color: #4a5568; }
 
         #definition-display {
-            width: 90%; max-width: 500px; min-height: 65px;
+            width: 90%; max-width: 500px; min-height: 70px;
             background: white; border: 2px solid var(--primary);
             border-radius: 12px; padding: 12px; margin-bottom: 15px;
-            text-align: center; font-weight: bold; font-size: 1.05rem;
+            text-align: center; font-weight: bold; color: #2d3748;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* הלוח כעת גמיש יותר */
+        .board-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow: visible;
+        }
+
         .board { 
             position: relative; 
-            width: calc(14 * var(--c)); height: calc(15 * var(--c)); 
-            background: #cbd5e0; border: 2px solid #2d3748;
+            width: calc(15 * var(--c)); 
+            height: calc(15 * var(--c)); 
+            background: #cbd5e0; 
+            border: 2px solid #2d3748;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         
@@ -61,24 +58,23 @@
         .num {
             position: absolute; top: 1px; right: 2px;
             font-size: calc(var(--c) * 0.28); font-weight: bold; color: #3182ce;
+            z-index: 10;
         }
 
         input {
             width: 100%; height: 100%; border: none; text-align: center;
-            font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none;
+            font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; 
+            outline: none; padding: 0;
         }
 
-        .correct { background-color: var(--correct) !important; color: white; transition: background 0.3s; }
+        .correct { background-color: var(--correct) !important; color: white; }
 
         .btn-check {
             margin-top: 20px; padding: 12px 40px;
             background: var(--primary); color: white;
             border: none; border-radius: 30px; font-size: 1.1rem;
             font-weight: bold; cursor: pointer; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.1s;
         }
-        .btn-check:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -88,9 +84,11 @@
         <p>עריכה: מילכה ברקו גרש</p>
     </div>
 
-    <div id="definition-display">לחצו על משבצת עם מספר להצגת ההגדרה</div>
+    <div id="definition-display">לחצו על משבצת עם מספר</div>
 
-    <div class="board" id="board"></div>
+    <div class="board-container">
+        <div class="board" id="board"></div>
+    </div>
 
     <button class="btn-check" onclick="checkCrossword()">בדיקת תשובות ✅</button>
 
@@ -114,21 +112,22 @@
         };
 
         const skeleton = [
-            {x:8, y:1, n:1, a:"ל"}, {x:7, y:1, a:"ו"}, {x:6, y:1, n:2, a:"ט"}, {x:5, y:1, a:"ו"}, {x:4, y:1, a:"ס"},
-            {x:6, y:2, a:"ר"}, {x:6, y:3, a:"מ"}, {x:6, y:4, a:"י"}, {x:6, y:5, a:"ט"}, {x:6, y:6, a:"י"}, {x:6, y:7, a:"ם"},
-            {x:7, y:3, n:8, a:"ש"}, {x:5, y:3, a:"מ"}, {x:4, y:3, a:"י"}, {x:3, y:3, a:"ת"},
-            {x:10, y:6, n:9, a:"פ"}, {x:9, y:6, a:"ר"}, {x:8, y:6, a:"פ"}, {x:7, y:6, a:"ר"}, {x:6, y:6, a:"י"}, {x:5, y:6, a:"ם"},
-            {x:9, y:4, n:7, a:"ד"}, {x:9, y:5, a:"ו"}, {x:9, y:7, a:"ב"}, {x:9, y:8, a:"ן"},
-            {x:10, y:4, n:6, a:"ח"}, {x:8, y:4, a:"ק"},
-            {x:12, y:8, n:10, a:"צ"}, {x:11, y:8, a:"מ"}, {x:10, y:8, a:"ד"}, {x:9, y:8, a:"ן"},
-            {x:2, y:1, n:3, a:"נ"}, {x:1, y:1, n:4, a:"ח"}, {x:0, y:1, a:"ש"},
-            {x:1, y:2, a:"י"}, {x:1, y:3, a:"ק"}, {x:1, y:4, a:"ו"}, {x:1, y:5, a:"י"},
-            {x:2, y:5, n:5, a:"ח"}, {x:1, y:5, a:"ז"}, {x:0, y:5, a:"י"}, {x:-1, y:5, a:"ם"},
-            {x:2, y:6, a:"ז"}, {x:2, y:7, a:"ק"}, {x:2, y:8, a:"י"}, {x:2, y:9, a:"ם"},
-            {x:5, y:8, n:11, a:"ע"}, {x:4, y:8, a:"כ"}, {x:3, y:8, a:"ב"}, {x:2, y:8, a:"י"}, {x:1, y:8, a:"ש"},
-            {x:5, y:9, a:"ט"}, {x:5, y:10, a:"ל"}, {x:5, y:11, a:"פ"}, {x:5, y:12, a:"י"}, {x:5, y:13, a:"ם"},
-            {x:6, y:10, n:12, a:"ש"}, {x:4, y:10, a:"ל"}, {x:3, y:10, a:"ד"}, {x:2, y:10, a:"ג"},
-            {x:7, y:12, n:13, a:"כ"}, {x:6, y:12, a:"ר"}, {x:5, y:12, a:"י"}, {x:4, y:12, a:"ש"}
+            // הוספתי "offset" ל-x כדי למרכז את התשבץ בתוך הלוח
+            {x:10, y:1, n:1, a:"ל"}, {x:9, y:1, a:"ו"}, {x:8, y:1, n:2, a:"ט"}, {x:7, y:1, a:"ו"}, {x:6, y:1, a:"ס"},
+            {x:8, y:2, a:"ר"}, {x:8, y:3, a:"מ"}, {x:8, y:4, a:"י"}, {x:8, y:5, a:"ט"}, {x:8, y:6, a:"י"}, {x:8, y:7, a:"ם"},
+            {x:9, y:3, n:8, a:"ש"}, {x:7, y:3, a:"מ"}, {x:6, y:3, a:"י"}, {x:5, y:3, a:"ת"},
+            {x:12, y:6, n:9, a:"פ"}, {x:11, y:6, a:"ר"}, {x:10, y:6, a:"פ"}, {x:9, y:6, a:"ר"}, {x:8, y:6, a:"י"}, {x:7, y:6, a:"ם"},
+            {x:11, y:4, n:7, a:"ד"}, {x:11, y:5, a:"ו"}, {x:11, y:7, a:"ב"}, {x:11, y:8, a:"ן"},
+            {x:12, y:4, n:6, a:"ח"}, {x:10, y:4, a:"ק"},
+            {x:14, y:8, n:10, a:"צ"}, {x:13, y:8, a:"מ"}, {x:12, y:8, a:"ד"}, {x:11, y:8, a:"ן"},
+            {x:4, y:1, n:3, a:"נ"}, {x:3, y:1, n:4, a:"ח"}, {x:2, y:1, a:"ש"},
+            {x:3, y:2, a:"י"}, {x:3, y:3, a:"ק"}, {x:3, y:4, a:"ו"}, {x:3, y:5, a:"י"},
+            {x:4, y:5, n:5, a:"ח"}, {x:3, y:5, a:"ז"}, {x:2, y:5, a:"י"}, {x:1, y:5, a:"ם"},
+            {x:4, y:6, a:"ז"}, {x:4, y:7, a:"ק"}, {x:4, y:8, a:"י"}, {x:4, y:9, a:"ם"},
+            {x:7, y:8, n:11, a:"ע"}, {x:6, y:8, a:"כ"}, {x:5, y:8, a:"ב"}, {x:4, y:8, a:"י"}, {x:3, y:8, a:"ש"},
+            {x:7, y:9, a:"ט"}, {x:7, y:10, a:"ל"}, {x:7, y:11, a:"פ"}, {x:7, y:12, a:"י"}, {x:7, y:13, a:"ם"},
+            {x:8, y:10, n:12, a:"ש"}, {x:6, y:10, a:"ל"}, {x:5, y:10, a:"ד"}, {x:4, y:10, a:"ג"},
+            {x:9, y:12, n:13, a:"כ"}, {x:8, y:12, a:"ר"}, {x:7, y:12, a:"י"}, {x:6, y:12, a:"ש"}
         ];
 
         const board = document.getElementById('board');
@@ -137,8 +136,8 @@
         skeleton.forEach(pos => {
             const div = document.createElement('div');
             div.className = 'cell';
-            div.style.left = `calc(${(pos.x + 1)} * var(--c))`;
-            div.style.top = `calc(${(pos.y)} * var(--c))`;
+            div.style.left = `calc(${pos.x} * var(--c))`;
+            div.style.top = `calc(${pos.y} * var(--c))`;
             
             if(pos.n) {
                 const span = document.createElement('span');
@@ -162,9 +161,14 @@
         });
 
         function checkCrossword() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                if (input.value.trim() === input.dataset.answer) {
+            document.querySelectorAll('input').forEach(input => {
+                if (input.value.trim() === input.dataset.answer && input.dataset.answer !== "") {
                     input.classList.add('correct');
                 } else {
-                    input.classList.remove('
+                    input.classList.remove('correct');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
