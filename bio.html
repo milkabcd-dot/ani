@@ -2,93 +2,51 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>תשבץ ביומימיקרי אינטראקטיבי</title>
+    <title>תשבץ ביומימיקרי מתוקן</title>
     <style>
-        /* הגדלת המשבצות למחשב */
-        :root { --cell-size: 45px; }
+        :root { --size: 50px; } /* גודל משבצת גדול למחשב */
+        body { font-family: Arial, sans-serif; background: #fdfdfd; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .author { margin-bottom: 20px; font-weight: bold; color: #333; }
         
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        h1 { color: #1b5e20; margin-bottom: 5px; font-size: 28px; }
-        .author { margin-bottom: 25px; font-weight: bold; color: #444; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .main-container { display: flex; gap: 40px; align-items: flex-start; }
         
-        .main-layout { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; width: 100%; max-width: 1200px; }
-        
-        /* לוח תשבץ עם גבולות חזקים */
-        .crossword-board { 
+        /* הלוח */
+        .grid { 
             display: grid; 
-            grid-template-columns: repeat(14, var(--cell-size)); 
-            grid-template-rows: repeat(15, var(--cell-size)); 
-            background: #000; /* רקע שחור ליצירת גבולות */
-            border: 3px solid #000;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            grid-template-columns: repeat(13, var(--size)); 
+            grid-template-rows: repeat(12, var(--size)); 
+            background: #eee; /* צבע למשבצות ה"שחורות" שיהיה נעים בעין */
+            border: 2px solid #000;
         }
         
         .cell { 
-            width: var(--cell-size); 
-            height: var(--cell-size); 
-            background: #222; /* משבצות שחורות */
-            position: relative; 
-            box-sizing: border-box;
-            border: 1px solid #000;
+            width: var(--size); height: var(--size); 
+            box-sizing: border-box; border: 1px solid #ccc; 
+            position: relative;
         }
         
-        .cell.white { 
-            background: white; 
-            border: 2px solid #000; /* גבולות חזקים למשבצות לבנות */
+        /* משבצת לבנה למילוי */
+        .white { 
+            background: white !important; 
+            border: 2px solid #000 !important; 
         }
         
         .cell input { 
             width: 100%; height: 100%; border: none; text-align: center; 
-            font-size: 24px; font-weight: bold; background: transparent; outline: none;
-            color: #000;
+            font-size: 26px; font-weight: bold; outline: none; background: transparent;
         }
-        
-        .cell input:focus { background: #fffde7; }
-        
-        /* צבע הצלחה */
-        .cell.correct { background: #a5d6a7 !important; }
-        .cell.correct input { color: #1b5e20; }
 
-        /* הגדלת והדגשת המספרים */
         .num { 
-            position: absolute; 
-            top: 2px; 
-            right: 3px; 
-            font-size: 13px; 
-            font-weight: 900; 
-            color: #000; 
-            pointer-events: none;
-            z-index: 10;
+            position: absolute; top: 1px; right: 2px; 
+            font-size: 14px; font-weight: bold; color: #000; z-index: 5;
         }
 
-        /* רשימת הגדרות */
-        .clues-container { 
-            background: white; padding: 25px; border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; min-width: 350px;
-            max-height: 80vh; overflow-y: auto;
-        }
-        .clues-container h2 { color: #2e7d32; border-bottom: 3px solid #a5d6a7; padding-bottom: 8px; margin-top: 0; }
-        .clue-section { margin-bottom: 25px; }
-        .clue-item { margin-bottom: 12px; font-size: 16px; line-height: 1.5; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
-        .clue-item b { color: #000; font-size: 18px; margin-left: 8px; }
+        .clues { width: 350px; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .clues h3 { margin-top: 0; color: #2e7d32; border-bottom: 2px solid #2e7d32; }
+        .clue-item { margin-bottom: 10px; font-size: 16px; }
 
-        .controls { margin-top: 30px; display: flex; gap: 15px; }
-        button { 
-            padding: 15px 35px; border: none; border-radius: 30px; 
-            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn-check { background: #2e7d32; color: white; }
-        .btn-check:hover { background: #1b5e20; transform: translateY(-2px); }
-        .btn-reset { background: #b0bec5; color: #37474f; }
-        .btn-reset:hover { background: #90a4ae; }
-
-        @media (max-width: 800px) {
-            :root { --cell-size: 30px; }
-            .cell input { font-size: 16px; }
-            .num { font-size: 9px; }
-        }
+        .correct { background-color: #c8e6c9 !important; }
+        .btn { margin-top: 20px; padding: 15px 30px; font-size: 18px; cursor: pointer; background: #2e7d32; color: white; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -96,13 +54,71 @@
     <h1>פתרונות לצרכי האדם בהשראת הטבע</h1>
     <div class="author">© כל הזכויות שמורות למילכה ברקו גרש</div>
 
-    <div class="main-layout">
-        <div class="crossword-board" id="board"></div>
+    <div class="main-container">
+        <div class="grid" id="grid"></div>
 
-        <div class="clues-container">
-            <div class="clue-section">
-                <h2>מאוזן (שורה)</h2>
-                <div id="across-clues"></div>
-            </div>
-            <div class="clue-section">
-                <h2>מאונ
+        <div class="clues">
+            <h3>מאוזן</h3>
+            <div id="across"></div>
+            <h3>מאונך</h3>
+            <div id="down"></div>
+        </div>
+    </div>
+
+    <button class="btn" onclick="check()">בדוק תשובות</button>
+
+    <script>
+        const data = [
+            // מאוזן
+            {x:4, y:0, a:'ל', n:1}, {x:5, y:0, a:'ו'}, {x:6, y:0, a:'ט'}, {x:7, y:0, a:'ו'}, {x:8, y:0, a:'ס'},
+            {x:0, y:0, a:'נ', n:3}, {x:1, y:0, a:'ח'}, {x:2, y:0, a:'ש'},
+            {x:3, y:2, a:'ש', n:5}, {x:4, y:2, a:'מ'}, {x:5, y:2, a:'מ'}, {x:6, y:2, a:'י'}, {x:7, y:2, a:'ת'},
+            {x:8, y:3, a:'ח', n:6}, {x:9, y:3, a:'ד'}, {x:10, y:3, a:'ק'},
+            {x:0, y:4, a:'ח', n:8}, {x:1, y:4, a:'י'}, {x:2, y:4, a:'י'}, {x:3, y:4, a:'ם'},
+            {x:5, y:5, a:'פ', n:9}, {x:6, y:5, a:'ר'}, {x:7, y:5, a:'פ'}, {x:8, y:5, a:'ר'}, {x:9, y:5, a:'י'}, {x:10, y:5, a:'ם'},
+            {x:9, y:7, a:'צ', n:10}, {x:10, y:7, a:'מ'}, {x:11, y:7, a:'ד'}, {x:12, y:7, a:'ן'},
+            {x:2, y:7, a:'ע', n:11}, {x:3, y:7, a:'כ'}, {x:4, y:7, a:'ב'}, {x:5, y:7, a:'י'}, {x:6, y:7, a:'ש'},
+            {x:4, y:9, a:'ש', n:12}, {x:5, y:9, a:'ל'}, {x:6, y:9, a:'ד'}, {x:7, y:9, a:'ג'},
+            {x:5, y:11, a:'כ', n:13}, {x:6, y:11, a:'ר'}, {x:7, y:11, a:'י'}, {x:8, y:11, a:'ש'},
+            // מאונך
+            {x:6, y:1, a:'ר', n:2}, {x:6, y:3, a:'מ'}, {x:6, y:4, a:'י'}, {x:6, y:6, a:'ט'}, {x:6, y:8, a:'י'}, {x:6, y:9, a:'ם'},
+            {x:2, y:1, a:'י', n:4}, {x:2, y:2, a:'ק'}, {x:2, y:3, a:'ו'}, {x:2, y:5, a:'י'},
+            {x:10, y:4, a:'ד', n:7}, {x:10, y:6, a:'ו'}, {x:10, y:8, a:'ר'}, {x:10, y:9, a:'ב'}, {x:10, y:10, a:'ן'},
+            {x:3, y:5, a:'ז', n:8}, {x:3, y:6, a:'ק'}, {x:3, y:8, a:'י'}, {x:3, y:9, a:'ם'},
+            {x:6, y:10, a:'ל', n:11}, {x:6, y:12, a:'פ'}, {x:6, y:13, a:'י'}, {x:6, y:14, a:'ם'}
+        ];
+
+        const clues = {
+            across: ["1. לוטוס", "3. נחש", "5. שממית", "6. חדק", "8. חיים", "9. פרפרים", "10. צמדן", "11. עכביש", "12. שלדג", "13. כריש"],
+            down: ["2. טרמיטים", "4. חיקוי", "7. דורבן", "8. חזקים", "11. עטלפים"]
+        };
+
+        const gridEl = document.getElementById('grid');
+        const matrix = Array(12).fill().map(() => Array(13).fill(null));
+        data.forEach(d => { if(d.y < 12 && d.x < 13) matrix[d.y][d.x] = d; });
+
+        for(let y=0; y<12; y++) {
+            for(let x=0; x<13; x++) {
+                const d = matrix[y][x];
+                const cell = document.createElement('div');
+                cell.className = 'cell' + (d ? ' white' : '');
+                if(d) {
+                    if(d.n) cell.innerHTML += `<span class="num">${d.n}</span>`;
+                    cell.innerHTML += `<input maxlength="1" id="c-${x}-${y}" data-ans="${d.a}">`;
+                }
+                gridEl.appendChild(cell);
+            }
+        }
+
+        clues.across.forEach(c => document.getElementById('across').innerHTML += `<div class="clue-item">${c}</div>`);
+        clues.down.forEach(c => document.getElementById('down').innerHTML += `<div class="clue-item">${c}</div>`);
+
+        function check() {
+            data.forEach(d => {
+                const el = document.getElementById(`c-${d.x}-${d.y}`);
+                if(el && el.value === d.a) el.parentElement.classList.add('correct');
+            });
+        }
+    </script>
+</body>
+</html>
