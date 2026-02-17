@@ -5,158 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
     <style>
-        :root {
+        :root { 
+            --c: 6vw; 
             --primary: #2c5282;
             --correct: #48bb78;
-            --cell-size: 8vw; /* גודל דינמי למובייל */
+            --bg: #f7fafc;
         }
-        @media (min-width: 600px) { :root { --cell-size: 35px; } }
+        @media (min-width: 600px) { :root { --c: 38px; } }
 
         body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            background: #f7fafc; margin: 0; padding: 10px;
+            font-family: system-ui, sans-serif; 
+            background: var(--bg); margin: 0; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
         }
 
         .header { text-align: center; margin-bottom: 10px; }
-        .header h1 { color: var(--primary); font-size: 1.4rem; margin: 0; }
-        .header p { color: #4a5568; margin: 2px 0; font-weight: bold; }
+        .header h1 { color: var(--primary); margin: 0; font-size: 1.5rem; }
+        .header p { margin: 2px 0; font-weight: bold; color: #4a5568; }
 
-        #def-box {
-            width: 95%; max-width: 500px; min-height: 60px;
+        #definition-display {
+            width: 92%; max-width: 500px; min-height: 65px;
             background: white; border: 2px solid var(--primary);
-            border-radius: 12px; padding: 10px; margin-bottom: 10px;
-            text-align: center; font-weight: bold; font-size: 0.95rem;
+            border-radius: 12px; padding: 10px; margin-bottom: 15px;
+            text-align: center; font-weight: bold; color: #2d3748;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* לוח בשיטת גריד - הכי יציב בנייד */
-        .board {
-            display: grid;
-            grid-template-columns: repeat(14, var(--cell-size));
-            grid-template-rows: repeat(14, var(--cell-size));
-            gap: 0; border: 2px solid #2d3748; background: #cbd5e0;
-        }
+        .board-container { width: 100%; display: flex; justify-content: center; }
 
-        .cell {
-            width: var(--cell-size); height: var(--cell-size);
-            background: transparent; position: relative;
+        .board { 
+            position: relative; 
+            width: calc(15 * var(--c)); 
+            height: calc(14 * var(--c)); 
+            background: #cbd5e0; border: 2px solid #2d3748;
         }
-
-        .active { background: white; border: 0.5px solid #2d3748; }
+        
+        .cell { 
+            position: absolute; width: var(--c); height: var(--c); 
+            background: white; border: 0.5px solid #2d3748; box-sizing: border-box; 
+        }
 
         .num {
             position: absolute; top: 0; right: 1px;
-            font-size: calc(var(--cell-size) * 0.3); color: var(--primary);
-            pointer-events: none; z-index: 2;
+            font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce;
+            z-index: 10;
         }
 
         input {
             width: 100%; height: 100%; border: none; text-align: center;
-            font-size: calc(var(--cell-size) * 0.6); font-weight: bold;
-            background: transparent; outline: none; padding: 0;
+            font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; 
+            outline: none; padding: 0;
         }
 
         .correct { background-color: var(--correct) !important; color: white; }
 
-        .check-btn {
-            margin-top: 15px; padding: 12px 40px;
-            background: var(--primary); color: white; border-radius: 25px;
-            border: none; font-size: 1.1rem; font-weight: bold;
+        .btn-check {
+            margin-top: 20px; padding: 12px 40px;
+            background: var(--primary); color: white;
+            border: none; border-radius: 30px; font-size: 1.1rem;
+            font-weight: bold; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>תשבץ ביומימיקרי</h1>
-    <p>עריכה: מילכה ברקו גרש</p>
-</div>
+    <div class="header">
+        <h1>תשבץ ביומימיקרי</h1>
+        <p>עריכה: מילכה ברקו גרש</p>
+    </div>
 
-<div id="def-box">לחצו על מספר להתחלה</div>
+    <div id="definition-display">לחצו על משבצת עם מספר</div>
 
-<div class="board" id="grid-board"></div>
+    <div class="board-container">
+        <div class="board" id="board"></div>
+    </div>
 
-<button class="check-btn" onclick="checkAll()">בדיקת תשובות ✅</button>
+    <button class="btn-check" onclick="checkCrossword()">בדיקת תשובות ✅</button>
 
-<script>
-    const defs = {
-        1: "מאוזן: שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.",
-        2: "מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
-        3: "מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
-        4: "מאונך: פירוש המילה: מימטיקה.",
-        "5h": "מאוזן: פירוש המילה: ביוס.",
-        "5v": "מאונך: השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
-        6: "מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
-        7: "מאונך: סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
-        8: "מאוזן: בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.",
-        9: "מאוזן: קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
-        10: "מאוזן: שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
-        "11h": "מאוזן: יצור המפיק קורים גמישים וחזקים.",
-        "11v": "מאונך: יונקים מעופפים, מתקשרים באמצעות סונאר.",
-        12: "מאוזן: סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש.",
-        13: "מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
-    };
+    <script>
+        const definitions = {
+            "1": "מאוזן: שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.",
+            "2": "מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
+            "3": "מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
+            "4": "מאונך: פירוש המילה: מימטיקה.",
+            "5-h": "מאוזן: פירוש המילה: ביוס.",
+            "5-v": "מאונך: השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
+            "6": "מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
+            "7": "מאונך: סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
+            "8": "מאוזן: בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.",
+            "9": "מאוזן: קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
+            "10": "מאוזן: שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
+            "11-h": "מאוזן: יצור המפיק קורים גמישים וחזקים.",
+            "11-v": "מאונך: יונקים מעופפים, מתקשרים באמצעות סונאר.",
+            "12": "מאוזן: סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש.",
+            "13": "מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
+        };
 
-    // מבנה הנתונים: row, col, number, answer
-    const cells = [
-        {r:1, c:8, n:1, a:"ל"}, {r:1, c:7, a:"ו"}, {r:1, c:6, n:2, a:"ט"}, {r:1, c:5, a:"ו"}, {r:1, c:4, a:"ס"},
-        {r:2, c:6, a:"ר"}, {r:3, c:6, a:"מ"}, {r:4, c:6, a:"י"}, {r:5, c:6, a:"ט"}, {r:6, c:6, a:"י"}, {r:7, c:6, a:"ם"},
-        {r:3, c:7, n:8, a:"ש"}, {r:3, c:5, a:"מ"}, {r:3, c:4, a:"י"}, {r:3, c:3, a:"ת"},
-        {r:6, c:10, n:9, a:"פ"}, {r:6, c:9, a:"ר"}, {r:6, c:8, a:"פ"}, {r:6, c:7, a:"ר"}, {r:6, c:6, a:"י"}, {r:6, c:5, a:"ם"},
-        {r:4, c:9, n:7, a:"ד"}, {r:5, c:9, a:"ו"}, {r:7, c:9, a:"ב"}, {r:8, c:9, a:"ן"},
-        {r:4, c:10, n:6, a:"ח"}, {r:4, c:8, a:"ק"},
-        {r:8, c:12, n:10, a:"צ"}, {r:8, c:11, a:"מ"}, {r:8, c:10, a:"ד"}, {r:8, c:9, a:"ן"},
-        {r:1, c:2, n:3, a:"נ"}, {r:1, c:1, n:4, a:"ח"}, {r:1, c:0, a:"ש"},
-        {r:2, c:1, a:"י"}, {r:3, c:1, a:"ק"}, {r:4, c:1, a:"ו"}, {r:5, c:1, a:"י"},
-        {r:5, c:2, n:5, a:"ח"}, {r:5, c:1, a:"י"}, {r:5, c:0, a:"י"}, {r:5, c:-1, a:"ם"},
-        {r:6, c:2, a:"ז"}, {r:7, c:2, a:"ק"}, {r:8, c:2, a:"י"}, {r:9, c:2, a:"ם"},
-        {r:8, c:5, n:11, a:"ע"}, {r:8, c:4, a:"כ"}, {r:8, c:3, a:"ב"}, {r:8, c:2, a:"י"}, {r:8, c:1, a:"ש"},
-        {r:9, c:5, a:"ט"}, {r:10, c:5, a:"ל"}, {r:11, c:5, a:"פ"}, {r:12, c:5, a:"י"}, {r:13, c:5, a:"ם"},
-        // 12 מאוזן - שלדג - בדיוק 4 אותיות
-        {r:10, c:6, n:12, a:"ש"}, {r:10, c:4, a:"ל"}, {r:10, c:3, a:"ד"}, {r:10, c:2, a:"ג"},
-        {r:12, c:7, n:13, a:"כ"}, {r:12, c:6, a:"ר"}, {r:12, c:5, a:"י"}, {r:12, c:4, a:"ש"}
-    ];
+        const skeleton = [
+            {x:8, y:1, n:1, a:"ל"}, {x:7, y:1, a:"ו"}, {x:6, y:1, n:2, a:"ט"}, {x:5, y:1, a:"ו"}, {x:4, y:1, a:"ס"},
+            {x:6, y:2, a:"ר"}, {x:6, y:3, a:"מ"}, {x:6, y:4, a:"י"}, {x:6, y:5, a:"ט"}, {x:6, y:6, a:"י"}, {x:6, y:7, a:"ם"},
+            {x:7, y:3, n:8, a:"ש"}, {x:5, y:3, a:"מ"}, {x:4, y:3, a:"י"}, {x:3, y:3, a:"ת"},
+            {x:10, y:6, n:9, a:"פ"}, {x:9, y:6, a:"ר"}, {x:8, y:6, a:"פ"}, {x:7, y:6, a:"ר"}, {x:6, y:6, a:"י"}, {x:5, y:6, a:"ם"},
+            {x:9, y:4, n:7, a:"ד"}, {x:9, y:5, a:"ו"}, {x:9, y:7, a:"ב"}, {x:9, y:8, a:"ן"},
+            {x:10, y:4, n:6, a:"ח"}, {x:8, y:4, a:"ק"},
+            {x:12, y:8, n:10, a:"צ"}, {x:11, y:8, a:"מ"}, {x:10, y:8, a:"ד"}, {x:9, y:8, a:"ן"},
+            {x:2, y:1, n:3, a:"נ"}, {x:1, y:1, n:4, a:"ח"}, {x:0, y:1, a:"ש"},
+            {x:1, y:2, a:"י"}, {x:1, y:3, a:"ק"}, {x:1, y:4, a:"ו"}, {x:1, y:5, a:"י"},
+            {x:2, y:5, n:5, a:"ח"}, {x:1, y:5, a:"ז"}, {x:0, y:5, a:"י"}, {x:-1, y:5, a:"ם"},
+            {x:2, y:6, a:"ז"}, {x:2, y:7, a:"ק"}, {x:2, y:8, a:"י"}, {x:2, y:9, a:"ם"},
+            {x:5, y:8, n:11, a:"ע"}, {x:4, y:8, a:"כ"}, {x:3, y:8, a:"ב"}, {x:2, y:8, a:"י"}, {x:1, y:8, a:"ש"},
+            {x:5, y:9, a:"ט"}, {x:5, y:10, a:"ל"}, {x:5, y:11, a:"פ"}, {x:5, y:12, a:"י"}, {x:5, y:13, a:"ם"},
+            // 12 מאוזן - שלדג - 4 אותיות
+            {x:6, y:10, n:12, a:"ש"}, {x:5, y:10, a:"ל"}, {x:4, y:10, a:"ד"}, {x:3, y:10, a:"ג"},
+            {x:7, y:12, n:13, a:"כ"}, {x:6, y:12, a:"ר"}, {x:5, y:12, a:"י"}, {x:4, y:12, a:"ש"}
+        ];
 
-    const boardEl = document.getElementById('grid-board');
-    const defBox = document.getElementById('def-box');
+        const board = document.getElementById('board');
+        const display = document.getElementById('definition-display');
 
-    // יצירת הלוח הריק
-    for (let r = 0; r < 14; r++) {
-        for (let c = 0; c < 14; c++) {
+        skeleton.forEach(pos => {
             const div = document.createElement('div');
             div.className = 'cell';
-            const cellData = cells.find(cd => cd.r === r && cd.c === c);
+            div.style.left = `calc(${pos.x + 2} * var(--c))`;
+            div.style.top = `calc(${pos.y} * var(--c))`;
             
-            if (cellData) {
-                div.classList.add('active');
-                if (cellData.n) {
-                    const span = document.createElement('span');
-                    span.className = 'num';
-                    span.innerText = cellData.n;
-                    div.appendChild(span);
-                }
-                const input = document.createElement('input');
-                input.maxLength = 1;
-                input.dataset.a = cellData.a;
-                input.onfocus = () => {
-                    if (cellData.n === 5) defBox.innerText = defs["5h"] + " | " + defs["5v"];
-                    else if (cellData.n === 11) defBox.innerText = defs["11h"] + " | " + defs["11v"];
-                    else if (cellData.n) defBox.innerText = defs[cellData.n];
-                };
-                div.appendChild(input);
+            if(pos.n) {
+                const span = document.createElement('span');
+                span.className = 'num';
+                span.innerText = pos.n;
+                div.appendChild(span);
             }
-            boardEl.appendChild(div);
-        }
-    }
 
-    function checkAll() {
-        document.querySelectorAll('input').forEach(i => {
-            if (i.value === i.dataset.a) i.classList.add('correct');
-            else i.classList.remove('correct');
+            const input = document.createElement('input');
+            input.maxLength = 1;
+            input.dataset.answer = pos.a;
+            
+            input.onfocus = () => {
+                if (pos.n === 5) display.innerText = definitions["5-h"] + " | " + definitions["5-v"];
+                else if (pos.n === 11) display.innerText = definitions["11-h"] + " | " + definitions["11-v"];
+                else if (pos.n) display.innerText = definitions[pos.n.toString()];
+            };
+
+            div.appendChild(input);
+            board.appendChild(div);
         });
-    }
-</script>
 
+        function checkCrossword() {
+            document.querySelectorAll('input').forEach(input => {
+                if (input.value.trim() === input.dataset.answer) {
+                    input.classList.add('correct');
+                } else {
+                    input.classList.remove('correct');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
