@@ -3,18 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עריכת מבנה התשבץ - שלב 10</title>
+    <title>תשבץ ביומימיקרי</title>
     <style>
         :root { --c: 35px; }
         @media (min-width: 600px) { :root { --c: 45px; } }
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f4f7f6; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+            color: #333;
+        }
+
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
         .board { 
             position: relative; 
-            width: calc(16 * var(--c)); 
-            height: calc(16 * var(--c)); 
-            background: #ccc; 
-            border: 2px solid #333;
+            width: calc(15 * var(--c)); 
+            height: calc(15 * var(--c)); 
+            background: #cbd5e0; 
+            border: 3px solid #2d3748;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         
         .cell { 
@@ -22,7 +43,7 @@
             width: var(--c); 
             height: var(--c); 
             background: white; 
-            border: 1px solid #000; 
+            border: 1px solid #2d3748; 
             box-sizing: border-box; 
         }
 
@@ -30,10 +51,11 @@
             position: absolute;
             top: 1px;
             right: 2px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
-            color: #000;
+            color: #2d3748;
             pointer-events: none;
+            z-index: 10;
         }
 
         input {
@@ -41,53 +63,104 @@
             height: 100%;
             border: none;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: bold;
             background: transparent;
             outline: none;
+            color: #2c5282;
+        }
+
+        .definitions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            line-height: 1.6;
+        }
+
+        .def-section h3 {
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 5px;
+            margin-top: 0;
+            color: #2d3748;
+        }
+
+        .def-item { margin-bottom: 8px; font-size: 0.95rem; }
+        .def-num { font-weight: bold; margin-left: 5px; color: #3182ce; }
+
+        @media (max-width: 768px) {
+            .definitions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <h3>עריכת שלד התשבץ</h3>
-    <p>תיקון: נוספה שורה אופקית בתחתית עמודה 7. לקובייה הימנית ביותר קראנו 10.</p>
+    <h2>תשבץ ביומימיקרי: ללמוד מהטבע</h2>
 
-    <div class="board" id="board"></div>
+    <div class="main-container">
+        <div class="board" id="board"></div>
+
+        <div class="definitions">
+            <div class="def-section">
+                <h3>מאוזן</h3>
+                <div class="def-item"><span class="def-num">.1</span>שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.</div>
+                <div class="def-item"><span class="def-num">.3</span>כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.</div>
+                <div class="def-item"><span class="def-num">.5</span>בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.</div>
+                <div class="def-item"><span class="def-num">.6</span>איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.</div>
+                <div class="def-item"><span class="def-num">.8</span>פירוש המילה: ביוס.</div>
+                <div class="def-item"><span class="def-num">.9</span>קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.</div>
+                <div class="def-item"><span class="def-num">.10</span>שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.</div>
+                <div class="def-item"><span class="def-num">.11</span>יצור המפיק קורים גמישים וחזקים.</div>
+                <div class="def-item"><span class="def-num">.12</span>סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש.</div>
+                <div class="def-item"><span class="def-num">.13</span>בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך.</div>
+            </div>
+            
+            <div class="def-section">
+                <h3>מאונך</h3>
+                <div class="def-item"><span class="def-num">.2</span>תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.</div>
+                <div class="def-item"><span class="def-num">.4</span>פירוש המילה: מימטיקה.</div>
+                <div class="def-item"><span class="def-num">.7</span>סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.</div>
+                <div class="def-item"><span class="def-num">.8</span>השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...</div>
+                <div class="def-item"><span class="def-num">.11</span>יונקים מעופפים, מתקשרים באמצעות סונאר.</div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const skeleton = [
             // שורה עליונה ימנית (y:1)
             {x:8, y:1, n:1}, {x:7, y:1}, {x:6, y:1, n:2}, {x:5, y:1}, {x:4, y:1},
-            
             // עמודה 2 מאונך (x:6)
             {x:6, y:2}, {x:6, y:3}, {x:6, y:4}, {x:6, y:5}, {x:6, y:6}, {x:6, y:7},
-
             // שורה אופקית 5 (y:3)
             {x:7, y:3, n:5}, {x:6, y:3}, {x:5, y:3}, {x:4, y:3}, {x:3, y:3},
-
-            // שלוחה אופקית 9 (שורה y:6)
+            // שלוחה אופקית 9 (y:6)
             {x:10, y:6, n:9}, {x:9, y:6}, {x:8, y:6}, {x:7, y:6}, {x:6, y:6}, {x:5, y:6},
-
-            // עמודה אנכית 7 (ב-x:9)
+            // עמודה אנכית 7 (x:9)
             {x:9, y:4, n:7}, {x:9, y:5}, {x:9, y:7}, {x:9, y:8},
-
-            // שורה אופקית 8 (שורה y:4)
+            // שורה אופקית 8 (y:4)
             {x:10, y:4, n:8}, {x:8, y:4},
-
-            // התוספת החדשה: שורה אופקית בתחתית 7 (שורה y:8)
-            {x:12, y:8, n:10}, // ימנית ביותר (3 צעדים מ-x:9)
-            {x:11, y:8},
-            {x:10, y:8},
-            // {x:9, y:8} כבר קיימת כבסיס העמודה
-
-            // שאר המבנה (שמאל ותחתון)
-            {x:2, y:1, n:3}, {x:1, y:1, n:4}, {x:0, y:1},      
-            {x:1, y:2}, {x:1, y:3}, {x:1, y:4}, {x:1, y:5}, 
-            {x:2, y:5, n:5}, {x:0, y:5}, {x:-1, y:5}, 
+            // שורה אופקית 10 (y:8)
+            {x:12, y:8, n:10}, {x:11, y:8}, {x:10, y:8},
+            // קודקוד ה-T השמאלי (y:1)
+            {x:2, y:1, n:3}, {x:1, y:1, n:4}, {x:0, y:1},
+            // עמודה T שמאלי (x:1)
+            {x:1, y:2}, {x:1, y:3}, {x:1, y:4}, {x:1, y:5},
+            // שורה 5 תחתונה (y:5)
+            {x:2, y:5, n:5}, {x:0, y:5}, {x:-1, y:5},
+            // עמודה מתחת ל-5 (x:2)
             {x:2, y:6}, {x:2, y:7}, {x:2, y:8}, {x:2, y:9},
+            // שורה 11 (y:8)
             {x:5, y:8, n:11}, {x:4, y:8}, {x:3, y:8}, {x:2, y:8}, {x:1, y:8},
+            // 11 מאונך (x:5)
             {x:5, y:9}, {x:5, y:10}, {x:5, y:11}, {x:5, y:12}, {x:5, y:13},
-            {x:6, y:10, n:12}, {x:5, y:10}, {x:4, y:10}, {x:3, y:10}, 
+            // שורה 12 (y:10)
+            {x:6, y:10, n:12}, {x:5, y:10}, {x:4, y:10}, {x:3, y:10},
+            // שורה 13 (y:12)
             {x:7, y:12, n:13}, {x:6, y:12}, {x:5, y:12}, {x:4, y:12}
         ];
 
@@ -101,15 +174,9 @@
 
             const div = document.createElement('div');
             div.className = 'cell';
-            div.style.left = `calc(${(pos.x + 1.5)} * var(--c))`;
-            div.style.top = `calc(${pos.y} * var(--c))`;
+            // Offset to center the skeleton in the 15x15 board
+            div.style.left = `calc(${(pos.x + 2)} * var(--c))`;
+            div.style.top = `calc(${(pos.y)} * var(--c))`;
             
             if(pos.n) {
                 div.innerHTML = `<span class="num">${pos.n}</span>`;
-            }
-            div.innerHTML += '<input maxlength="1">';
-            board.appendChild(div);
-        });
-    </script>
-</body>
-</html>
