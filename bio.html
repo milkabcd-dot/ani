@@ -3,70 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חידון ביומימיקרי - תיקון משבצות</title>
+    <title>תיקון מבנה תשבץ</title>
     <style>
-        :root { --c: 32px; --green: #2e7d32; }
+        :root { --c: 35px; --green: #2e7d32; }
         @media (min-width: 600px) { :root { --c: 45px; } }
-        
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 10px; }
-        .author { font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
-        
-        .board { position: relative; width: calc(13 * var(--c)); height: calc(16 * var(--c)); background: #ddd; border: 2px solid #333; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+        .board { position: relative; width: calc(13 * var(--c)); height: calc(15 * var(--c)); background: #eee; border: 2px solid #333; margin-bottom: 20px; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 1px solid #000; box-sizing: border-box; }
         .cell input { width: 100%; height: 100%; border: none; text-align: center; font-size: 1.2rem; font-weight: bold; background: transparent; outline: none; }
-        .num { position: absolute; top: 1px; right: 2px; font-size: 10px; font-weight: bold; color: #000; pointer-events: none; }
         .correct { background: #c8e6c9 !important; }
-
         .controls { width: 100%; max-width: 500px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 15px; }
-        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #888; }
-        .tab.active { color: var(--green); border-bottom: 3px solid var(--green); }
-        .btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
         .n-btn { padding: 8px; background: #f1f8e9; border: 1px solid #c8e6c9; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold; }
-        #q-box { margin-top: 15px; padding: 10px; border-right: 4px solid var(--green); background: #f9f9f9; min-height: 40px; display: none; }
-        .check-btn { width: 100%; margin-top: 15px; padding: 12px; background: var(--green); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #q-box { margin-top: 15px; padding: 10px; border-right: 4px solid var(--green); background: #f9f9f9; display: none; }
     </style>
 </head>
 <body>
 
-    <h1 style="font-size: 1.2rem; color: #1b5e20;">פתרונות לצרכי האדם בהשראת הטבע</h1>
-    <div class="author">© מילכה ברקו גרש</div>
-
     <div class="board" id="board"></div>
 
     <div class="controls">
-        <div class="tabs">
-            <div id="t-across" class="tab active" onclick="setTab('across')">מאוזן</div>
-            <div id="t-down" class="tab" onclick="setTab('down')">מאונך</div>
-        </div>
-        <div id="btns-across" class="btn-grid"></div>
-        <div id="btns-down" class="btn-grid" style="display:none;"></div>
+        <div style="font-weight:bold;">בחר מספר הגדרה:</div>
+        <div id="btns" class="btn-grid"></div>
         <div id="q-box"></div>
-        <button class="check-btn" onclick="check()">בדוק תשובות</button>
+        <button style="width:100%; margin-top:15px; padding:10px; background:var(--green); color:white; border:none; border-radius:5px; cursor:pointer;" onclick="check()">בדוק תשובות</button>
     </div>
 
     <script>
         const clues = {
-            across: { 1:"לוטוס", 3:"נחש", 5:"שממית", 6:"חדק", 8:"חיים", 9:"פרפרים", 10:"צמדן", 11:"עכביש", 12:"שלדג", 13:"כריש" },
-            down: { 2:"טרמיטים", 4:"חיקוי", 7:"דורבן", 8:"חזקים", 11:"עטלפים" }
-        };
-        const texts = {
-            1: "שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.", 3: "כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
-            5: "בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס על משטחים גבוהים.", 6: "איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
-            8: "פירוש המילה: ביוס.", 9: "קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.", 10: "שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
-            11: "יצור המפיק קורים גמישים וחזקים.", 12: "סוג בעל חיים ממחלקת העופות, בהשראתו שופרה חזות הרכבת המהירה ביפן כמענה לבעיית רעש.", 13: "בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך.",
-            2: "תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.", 4: "פירוש המילה: מימטיקה.", 7: "סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
-            8: "השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...", 11: "יונקים מעופפים, מתקשרים באמצעות סונאר."
+            1: "שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.",
+            2: "תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
+            3: "כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
+            4: "פירוש המילה: מימטיקה.",
+            5: "בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס על משטחים גבוהים."
         };
 
+        // מיפוי מחדש - נקי ומדויק
         const layout = [
-            {x:0, y:1, a:'נ', n:3}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'}, 
-            {x:4, y:1, a:'ל', n:1}, {x:5, y:1, a:'ו'}, {x:6, y:1, a:'ט'}, {x:7, y:1, a:'ו'}, {x:8, y:1, a:'ס'}, 
-            {x:6, y:2, a:'ר', n:2}, {x:6, y:3, a:'מ'}, {x:6, y:4, a:'י'}, {x:6, y:5, a:'ט'}, {x:6, y:6, a:'י'}, {x:6, y:7, a:'ם'}, 
-            // תיקון מילה 4 מאונך (חיקוי) ל-4 משבצות
-            {x:1, y:2, a:'י', n:4}, {x:1, y:3, a:'ק'}, {x:1, y:4, a:'ו'}, {x:1, y:5, a:'י'}, 
-            {x:3, y:3, a:'ש', n:5}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'}, 
-            {x:8, y:4, a:'ח', n:6}, {x:9, y:4, a:'ד'}, {x:10, y:4, a:'ק'}, 
-            {x:10, y:5, a:'ד', n:7}, {x:10, y:6, a:'ו'}, {x:10, y:7, a:'ר'}, {x:10, y:8, a:'ב'}, {x:10, y:9, a:'ן'}, 
-            {x:0, y:6, a:'ח', n:8}, {x:1, y:6, a:'י'}, {x:2, y:6, a:'י'}, {x:3, y:6, a:'ם'}, 
-            {x:3, y:7, a:'ז', n:8}, {x:3, y
+            // שורה 1: נחש (3) ולוטוס (1)
+            {x:0, y:1, a:'נ'}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'}, 
+            {x:4, y:1, a:'ל'}, {x:5, y:1, a:'ו'}, {x:6, y:1, a:'ט'}, {x:7, y:1, a:'ו'}, {x:8, y:1, a:'ס'},
+            // מאונך: חיקוי (4) - רק 4 קוביות
+            {x:1, y:2, a:'י'}, {x:1, y:3, a:'ק'}, {x:1, y:4, a:'ו'}, {x:1, y:5, a:'י'},
+            // מאונך: טרמיטים (2)
+            {x:6, y:2, a:'ר'}, {x:6, y:3, a:'מ'}, {x:6, y:4, a:'י'}, {x:6, y:5, a:'ט'}, {x:6, y:6, a:'י'}, {x:6, y:7, a:'ם'},
+            // מאוזן: שממית (5)
+            {x:3, y:3, a:'ש'}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'}
+        ];
+
+        const board = document.getElementById('board');
+        layout.forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'cell';
+            d.style.left = `calc(${c.x} * var(--c))`;
+            d.style.top = `calc(${c.y} * var(--c))`;
+            d.innerHTML = `<input maxlength="1" id="i-${c.x}-${c.y}" data-ans="${c.a}" autocomplete="off">`;
+            board.appendChild(d);
+        });
+
+        const btnDiv = document.getElementById('btns');
+        Object.keys(clues).forEach(n => {
+            const b = document.createElement('div'); b.className = 'n-btn'; b.innerText = n;
+            b.onclick = () => {
+                const q = document.getElementById('q-box');
+                q.style.display = 'block';
+                q.innerHTML = `<strong>${n}:</strong> ${clues[n]}`;
+            };
+            btnDiv.appendChild(b);
+        });
+
+        function check() {
+            layout.forEach(c => {
+                const i = document.getElementById(`i-${c.x}-${c.y}`);
+                if(i.value === c.a) i.parentElement.classList.add('correct');
+            });
+        }
+    </script>
+</body>
+</html>
