@@ -6,12 +6,12 @@
     <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
     <style>
         :root { 
-            --c: 7.5vw; 
+            --c: 35px; 
             --primary: #2c5282;
             --correct: #48bb78;
             --bg: #f7fafc;
         }
-        @media (min-width: 600px) { :root { --c: 40px; } }
+        @media (min-width: 600px) { :root { --c: 45px; } }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
@@ -25,7 +25,7 @@
         .main-header p { margin: 2px 0; font-weight: bold; color: #4a5568; }
 
         #definition-display {
-            width: 90%; max-width: 500px; min-height: 70px;
+            width: 95%; max-width: 500px; min-height: 70px;
             background: white; border: 2px solid var(--primary);
             border-radius: 12px; padding: 12px; margin-bottom: 15px;
             text-align: center; font-weight: bold; color: #2d3748;
@@ -37,13 +37,14 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            overflow: visible;
+            padding: 10px;
         }
 
         .board { 
             position: relative; 
-            width: calc(15 * var(--c)); 
-            height: calc(15 * var(--c)); 
+            /* הגדלת שטח הלוח כדי להבטיח שהכל נכנס */
+            width: calc(18 * var(--c)); 
+            height: calc(16 * var(--c)); 
             background: #cbd5e0; 
             border: 2px solid #2d3748;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
@@ -111,6 +112,7 @@
         };
 
         const skeleton = [
+            // שימוש בקואורדינאטות יחסיות יציבות
             {x:10, y:1, n:1, a:"ל"}, {x:9, y:1, a:"ו"}, {x:8, y:1, n:2, a:"ט"}, {x:7, y:1, a:"ו"}, {x:6, y:1, a:"ס"},
             {x:8, y:2, a:"ר"}, {x:8, y:3, a:"מ"}, {x:8, y:4, a:"י"}, {x:8, y:5, a:"ט"}, {x:8, y:6, a:"י"}, {x:8, y:7, a:"ם"},
             {x:9, y:3, n:8, a:"ש"}, {x:7, y:3, a:"מ"}, {x:6, y:3, a:"י"}, {x:5, y:3, a:"ת"},
@@ -119,4 +121,55 @@
             {x:12, y:4, n:6, a:"ח"}, {x:10, y:4, a:"ק"},
             {x:14, y:8, n:10, a:"צ"}, {x:13, y:8, a:"מ"}, {x:12, y:8, a:"ד"}, {x:11, y:8, a:"ן"},
             {x:4, y:1, n:3, a:"נ"}, {x:3, y:1, n:4, a:"ח"}, {x:2, y:1, a:"ש"},
-            {x:3, y:2, a:"י"}, {x:3, y:3, a:"ק"}, {x:3, y:4, a:"ו"}, {x:3
+            {x:3, y:2, a:"י"}, {x:3, y:3, a:"ק"}, {x:3, y:4, a:"ו"}, {x:3, y:5, a:"י"},
+            {x:4, y:5, n:5, a:"ח"}, {x:3, y:5, a:"ז"}, {x:2, y:5, a:"י"}, {x:1, y:5, a:"ם"},
+            {x:4, y:6, a:"ז"}, {x:4, y:7, a:"ק"}, {x:4, y:8, a:"י"}, {x:4, y:9, a:"ם"},
+            {x:7, y:8, n:11, a:"ע"}, {x:6, y:8, a:"כ"}, {x:5, y:8, a:"ב"}, {x:4, y:8, a:"י"}, {x:3, y:8, a:"ש"},
+            {x:7, y:9, a:"ט"}, {x:7, y:10, a:"ל"}, {x:7, y:11, a:"פ"}, {x:7, y:12, a:"י"}, {x:7, y:13, a:"ם"},
+            {x:8, y:10, n:12, a:"ש"}, {x:6, y:10, a:"ל"}, {x:5, y:10, a:"ד"}, {x:4, y:10, a:"ג"},
+            {x:9, y:12, n:13, a:"כ"}, {x:8, y:12, a:"ר"}, {x:7, y:12, a:"י"}, {x:6, y:12, a:"ש"}
+        ];
+
+        const board = document.getElementById('board');
+        const display = document.getElementById('definition-display');
+
+        skeleton.forEach(pos => {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            // הוספת מרווח ביטחון קטן מפינות הלוח
+            div.style.left = `calc(${pos.x + 1} * var(--c))`;
+            div.style.top = `calc(${pos.y + 1} * var(--c))`;
+            
+            if(pos.n) {
+                const span = document.createElement('span');
+                span.className = 'num';
+                span.innerText = pos.n;
+                div.appendChild(span);
+            }
+
+            const input = document.createElement('input');
+            input.maxLength = 1;
+            input.dataset.answer = pos.a || ""; 
+            
+            input.onfocus = () => {
+                if (pos.n === 5) display.innerText = definitions["5-h"] + " | " + definitions["5-v"];
+                else if (pos.n === 11) display.innerText = definitions["11-h"] + " | " + definitions["11-v"];
+                else if (pos.n) display.innerText = definitions[pos.n.toString()];
+            };
+
+            div.appendChild(input);
+            board.appendChild(div);
+        });
+
+        function checkCrossword() {
+            document.querySelectorAll('input').forEach(input => {
+                if (input.value.trim() === input.dataset.answer && input.dataset.answer !== "") {
+                    input.classList.add('correct');
+                } else {
+                    input.classList.remove('correct');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
