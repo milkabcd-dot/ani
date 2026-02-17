@@ -6,12 +6,12 @@
     <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
     <style>
         :root { 
-            --c: 6vw; /* גודל דינמי לפי רוחב המסך */
+            --c: 6.2vw; 
             --primary: #2c5282;
             --correct: #48bb78;
             --bg: #f7fafc;
         }
-        @media (min-width: 600px) { :root { --c: 35px; } }
+        @media (min-width: 600px) { :root { --c: 38px; } }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
@@ -40,9 +40,8 @@
 
         .board { 
             position: relative; 
-            /* הלוח מתאים את עצמו בדיוק למספר המשבצות */
-            width: calc(16 * var(--c)); 
-            height: calc(15 * var(--c)); 
+            width: calc(15 * var(--c)); 
+            height: calc(14 * var(--c)); 
             background: #cbd5e0; border: 2px solid #2d3748;
         }
         
@@ -69,7 +68,7 @@
             margin-top: 10px; padding: 10px 30px;
             background: var(--primary); color: white;
             border: none; border-radius: 20px; font-size: 1rem;
-            font-weight: bold; cursor: pointer; -webkit-tap-highlight-color: transparent;
+            font-weight: bold; cursor: pointer;
         }
     </style>
 </head>
@@ -108,7 +107,6 @@
         };
 
         const skeleton = [
-            // הסטתי את הקואורדינאטות שמאלה (x-2) כדי שלא יחרגו מהמסך בטלפון
             {x:8, y:1, n:1, a:"ל"}, {x:7, y:1, a:"ו"}, {x:6, y:1, n:2, a:"ט"}, {x:5, y:1, a:"ו"}, {x:4, y:1, a:"ס"},
             {x:6, y:2, a:"ר"}, {x:6, y:3, a:"מ"}, {x:6, y:4, a:"י"}, {x:6, y:5, a:"ט"}, {x:6, y:6, a:"י"}, {x:6, y:7, a:"ם"},
             {x:7, y:3, n:8, a:"ש"}, {x:5, y:3, a:"מ"}, {x:4, y:3, a:"י"}, {x:3, y:3, a:"ת"},
@@ -122,7 +120,8 @@
             {x:2, y:6, a:"ז"}, {x:2, y:7, a:"ק"}, {x:2, y:8, a:"י"}, {x:2, y:9, a:"ם"},
             {x:5, y:8, n:11, a:"ע"}, {x:4, y:8, a:"כ"}, {x:3, y:8, a:"ב"}, {x:2, y:8, a:"י"}, {x:1, y:8, a:"ש"},
             {x:5, y:9, a:"ט"}, {x:5, y:10, a:"ל"}, {x:5, y:11, a:"פ"}, {x:5, y:12, a:"י"}, {x:5, y:13, a:"ם"},
-            {x:6, y:10, n:12, a:"ש"}, {x:4, y:10, a:"ל"}, {x:3, y:10, a:"ד"}, {x:2, y:10, a:"ג"},
+            // 12 מאוזן - תוקן ל-4 אותיות בלבד
+            {x:6, y:10, n:12, a:"ש"}, {x:5, y:10}, {x:4, y:10, a:"ל"}, {x:3, y:10, a:"ד"}, {x:2, y:10, a:"ג"},
             {x:7, y:12, n:13, a:"כ"}, {x:6, y:12, a:"ר"}, {x:5, y:12, a:"י"}, {x:4, y:12, a:"ש"}
         ];
 
@@ -130,9 +129,9 @@
         const display = document.getElementById('definition-display');
 
         skeleton.forEach(pos => {
+            if (!pos.a && !pos.n) return; // הגנה ממשבצות ריקות
             const div = document.createElement('div');
             div.className = 'cell';
-            // הוספת אופסט קטן כדי ש- -1 יופיע בתוך הלוח
             div.style.left = `calc(${pos.x + 2} * var(--c))`;
             div.style.top = `calc(${pos.y} * var(--c))`;
             
