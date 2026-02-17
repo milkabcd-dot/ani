@@ -2,50 +2,50 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>חידון ביומימיקרי - בואו נראה אתכם!</title>
+    <title>חידון ביומימיקרי - בואו נפתור!</title>
     <style>
-        :root { --cell: 45px; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .main-layout { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+        :root { --cell: 48px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdfdfd; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .main-layout { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
         
-        /* לוח התשבץ - רקע כהה למשבצות ה"שחורות" */
+        /* לוח התשבץ המדויק לפי התמונה */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(13, var(--cell)); 
-            grid-template-rows: repeat(15, var(--cell)); 
-            background: #444; 
+            grid-template-rows: repeat(13, var(--cell)); 
+            background: #333; /* צבע למשבצות השחורות */
             border: 3px solid #000;
             gap: 1px;
         }
 
-        .cell { width: var(--cell); height: var(--cell); background: #444; position: relative; }
+        .cell { width: var(--cell); height: var(--cell); background: #333; position: relative; }
         .white { background: white !important; border: 1px solid #000; }
+        
         .cell input { 
             width: 100%; height: 100%; border: none; text-align: center; 
-            font-size: 24px; font-weight: bold; background: transparent; outline: none;
+            font-size: 26px; font-weight: bold; background: transparent; outline: none;
         }
-        
-        /* מספר קטן בפינה */
-        .num { position: absolute; top: 1px; right: 2px; font-size: 11px; font-weight: bold; color: #000; pointer-events: none; }
-        
-        /* עיצוב הגדרות */
-        .clues { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 450px; }
-        h2 { color: #2e7d32; border-bottom: 2px solid #2e7d32; margin-top: 15px; }
-        .clue-item { margin-bottom: 10px; font-size: 15px; line-height: 1.4; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        
-        .check-btn { margin-top: 25px; padding: 15px 45px; font-size: 20px; background: #2e7d32; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+
+        .num { position: absolute; top: 1px; right: 2px; font-size: 13px; font-weight: bold; color: #000; pointer-events: none; }
         .correct { background: #c8e6c9 !important; }
+
+        .clues-container { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 450px; }
+        h2 { color: #1b5e20; border-bottom: 3px solid #1b5e20; padding-bottom: 5px; }
+        .clue-item { margin-bottom: 12px; font-size: 16px; line-height: 1.4; border-bottom: 1px dashed #ddd; padding-bottom: 4px; }
+        
+        .btn-check { margin-top: 30px; padding: 15px 50px; font-size: 22px; background: #2e7d32; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-check:hover { background: #1b5e20; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <h1>פתרונות לצרכי האדם בהשראת הטבע</h1>
-    <p style="font-weight: bold;">© כל הזכויות שמורות למילכה ברקו גרש</p>
+    <p><b>© כל הזכויות שמורות למילכה ברקו גרש</b></p>
 
     <div class="main-layout">
-        <div class="grid" id="puzzle"></div>
+        <div class="grid" id="board"></div>
 
-        <div class="clues">
+        <div class="clues-container">
             <h2>מאוזן</h2>
             <div class="clue-item"><b>1.</b> שם צמח מים, עליו משמשים השראה לפיתוח חומרים דוחי מים.</div>
             <div class="clue-item"><b>3.</b> כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.</div>
@@ -67,54 +67,51 @@
         </div>
     </div>
 
-    <button class="check-btn" onclick="validate()">בדוק את התשובות שלי</button>
+    <button class="btn-check" onclick="checkAll()">בדוק את התשובות שלי</button>
 
     <script>
-        // המיפוי של הלוח הלבן (x=עמודה, y=שורה)
-        const cells = [
+        // מיפוי קואורדינטות (X=עמודה, Y=שורה) לפי התמונה המקורית
+        const schema = [
             // מאוזן
-            {x:4, y:1, a:'ל', n:1}, {x:5, y:1, a:'ו'}, {x:6, y:1, a:'ט'}, {x:7, y:1, a:'ו'}, {x:8, y:1, a:'ס'},
-            {x:0, y:1, a:'נ', n:3}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'},
-            {x:3, y:3, a:'ש', n:5}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'},
-            {x:8, y:4, a:'ח', n:6}, {x:9, y:4, a:'ד'}, {x:10, y:4, a:'ק'},
-            {x:0, y:6, a:'ח', n:8}, {x:1, y:6, a:'י'}, {x:2, y:6, a:'י'}, {x:3, y:6, a:'ם'},
-            {x:5, y:7, a:'פ', n:9}, {x:6, y:7, a:'ר'}, {x:7, y:7, a:'פ'}, {x:8, y:7, a:'ר'}, {x:9, y:7, a:'י'}, {x:10, y:7, a:'ם'},
-            {x:2, y:9, a:'ע', n:11}, {x:3, y:9, a:'כ'}, {x:4, y:9, a:'ב'}, {x:5, y:9, a:'י'}, {x:6, y:9, a:'ש'},
-            {x:9, y:9, a:'צ', n:10}, {x:10, y:9, a:'מ'}, {x:11, y:9, a:'ד'}, {x:12, y:9, a:'ן'},
-            {x:4, y:11, a:'ש', n:12}, {x:5, y:11, a:'ל'}, {x:6, y:11, a:'ד'}, {x:7, y:11, a:'ג'},
-            {x:5, y:13, a:'כ', n:13}, {x:6, y:13, a:'ר'}, {x:7, y:13, a:'י'}, {x:8, y:13, a:'ש'},
-            // מאונך (תוספות)
-            {x:6, y:2, a:'ר', n:2}, {x:6, y:4, a:'מ'}, {x:6, y:5, a:'י'}, {x:6, y:6, a:'ט'}, {x:6, y:8, a:'י'}, {x:6, y:9, a:'ם'},
-            {x:2, y:2, a:'י', n:4}, {x:2, y:3, a:'ק'}, {x:2, y:4, a:'ו'}, {x:2, y:5, a:'י'},
-            {x:10, y:5, a:'ד', n:7}, {x:10, y:6, a:'ו'}, {x:10, y:7, a:'ר'}, {x:10, y:8, a:'ב'}, {x:10, y:10, a:'ן'},
-            {x:3, y:7, a:'ז', n:8}, {x:3, y:8, a:'ק'}, {x:3, y:10, a:'י'}, {x:3, y:11, a:'ם'},
-            {x:6, y:10, a:'ל', n:11}, {x:6, y:11, a:'פ'}, {x:6, y:12, a:'י'}, {x:6, y:14, a:'ם'}
+            {x:0, y:1, a:'נ', n:3}, {x:1, y:1, a:'ח'}, {x:2, y:1, a:'ש'}, // נחש (3)
+            {x:4, y:1, a:'ל', n:1}, {x:5, y:1, a:'ו'}, {x:6, y:1, a:'ט'}, {x:7, y:1, a:'ו'}, {x:8, y:1, a:'ס'}, // לוטוס (1)
+            {x:3, y:3, a:'ש', n:5}, {x:4, y:3, a:'מ'}, {x:5, y:3, a:'מ'}, {x:6, y:3, a:'י'}, {x:7, y:3, a:'ת'}, // שממית (5)
+            {x:8, y:4, a:'ח', n:6}, {x:9, y:4, a:'ד'}, {x:10, y:4, a:'ק'}, // חדק (6)
+            {x:0, y:6, a:'ח', n:8}, {x:1, y:6, a:'י'}, {x:2, y:6, a:'י'}, {x:3, y:6, a:'ם'}, // חיים (8 מאוזן)
+            {x:5, y:7, a:'פ', n:9}, {x:6, y:7, a:'ר'}, {x:7, y:7, a:'פ'}, {x:8, y:7, a:'ר'}, {x:9, y:7, a:'י'}, {x:10, y:7, a:'ם'}, // פרפרים (9)
+            {x:2, y:9, a:'ע', n:11}, {x:3, y:9, a:'כ'}, {x:4, y:9, a:'ב'}, {x:5, y:9, a:'י'}, {x:6, y:9, a:'ש'}, // עכביש (11 מאוזן)
+            {x:9, y:9, a:'צ', n:10}, {x:10, y:9, a:'מ'}, {x:11, y:9, a:'ד'}, {x:12, y:9, a:'ן'}, // צמדן (10)
+            {x:4, y:11, a:'ש', n:12}, {x:5, y:11, a:'ל'}, {x:6, y:11, a:'ד'}, {x:7, y:11, a:'ג'}, // שלדג (12)
+            {x:5, y:13, a:'כ', n:13}, {x:6, y:13, a:'ר'}, {x:7, y:13, a:'י'}, {x:8, y:13, a:'ש'}, // כריש (13)
+
+            // מאונך (השלמת אותיות חסרות והצטלבויות)
+            {x:6, y:2, a:'ר', n:2}, {x:6, y:4, a:'מ'}, {x:6, y:5, a:'י'}, {x:6, y:6, a:'ט'}, {x:6, y:8, a:'י'}, {x:6, y:9, a:'ם'}, // טרמיטים (2)
+            {x:2, y:2, a:'י', n:4}, {x:2, y:3, a:'ק'}, {x:2, y:4, a:'ו'}, {x:2, y:5, a:'י'}, // חיקוי (4)
+            {x:10, y:5, a:'ד', n:7}, {x:10, y:6, a:'ו'}, {x:10, y:7, a:'ר'}, {x:10, y:8, a:'ב'}, {x:10, y:10, a:'ן'}, // דורבן (7)
+            {x:3, y:7, a:'ז', n:8}, {x:3, y:8, a:'ק'}, {x:3, y:10, a:'י'}, {x:3, y:11, a:'ם'}, // חזקים (8 מאונך)
+            {x:6, y:10, a:'ל', n:11}, {x:6, y:12, a:'פ'}, {x:6, y:14, a:'י'}, {x:6, y:15, a:'ם'} // עטלפים (11 מאונך)
         ];
 
-        const container = document.getElementById('puzzle');
-        
-        // יצירת הלוח
-        for(let y=0; y<15; y++) {
+        const board = document.getElementById('board');
+        for(let y=0; y<13; y++) {
             for(let x=0; x<13; x++) {
-                const cellData = cells.find(c => c.x === x && c.y === y);
-                const cellDiv = document.createElement('div');
-                cellDiv.className = 'cell' + (cellData ? ' white' : '');
-                
-                if(cellData) {
-                    if(cellData.num) cellDiv.innerHTML += `<span class="num">${cellData.num}</span>`;
-                    cellDiv.innerHTML += `<input maxlength="1" id="in-${x}-${y}" data-ans="${cellData.a}">`;
+                const s = schema.find(item => item.x === x && item.y === y);
+                const cell = document.createElement('div');
+                cell.className = 'cell' + (s ? ' white' : '');
+                if(s) {
+                    if(s.n) cell.innerHTML += `<span class="num">${s.n}</span>`;
+                    cell.innerHTML += `<input maxlength="1" id="i-${x}-${y}" data-ans="${s.a}" autocomplete="off">`;
                 }
-                container.appendChild(cellDiv);
+                board.appendChild(cell);
             }
         }
 
-        // בדיקה
-        function validate() {
-            cells.forEach(c => {
-                const input = document.getElementById(`in-${c.x}-${c.y}`);
-                if(input.value === c.a) {
+        function checkAll() {
+            schema.forEach(s => {
+                const input = document.getElementById(`i-${s.x}-${s.y}`);
+                if(input && input.value === s.a) {
                     input.parentElement.classList.add('correct');
-                } else {
+                } else if(input) {
                     input.parentElement.classList.remove('correct');
                 }
             });
