@@ -6,7 +6,7 @@
     <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
     <style>
         :root { 
-            --c: 6vw; 
+            --c: 6.2vw; 
             --primary: #2c5282;
             --correct: #48bb78;
             --bg: #f7fafc;
@@ -49,17 +49,17 @@
 
         .num {
             position: absolute; top: 0; right: 1px;
-            font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce;
+            font-size: calc(var(--c) * 0.32); font-weight: bold; color: #3182ce;
             z-index: 10;
         }
 
         input {
             width: 100%; height: 100%; border: none; text-align: center;
             font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; 
-            outline: none; padding: 0;
+            outline: none; padding: 0; color: #2d3748;
         }
 
-        .correct { background-color: var(--correct) !important; color: white; }
+        .correct { background-color: var(--correct) !important; color: white !important; }
 
         .btn-check {
             margin-top: 20px; padding: 12px 40px;
@@ -103,23 +103,38 @@
             "13": "מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
         };
 
+        // בניית השלד ללא כפילויות במשבצות הצלבה
         const skeleton = [
+            // 1 מאוזן: לוטוס (ה-ט' מצטלב עם 2)
             {x:8, y:1, n:1, a:"ל"}, {x:7, y:1, a:"ו"}, {x:6, y:1, n:2, a:"ט"}, {x:5, y:1, a:"ו"}, {x:4, y:1, a:"ס"},
+            // 2 מאונך: טרמיטים (ה-ט' כבר קיים, ה-י' מצטלב עם 9, ה-מ' בסוף)
             {x:6, y:2, a:"ר"}, {x:6, y:3, a:"מ"}, {x:6, y:4, a:"י"}, {x:6, y:5, a:"ט"}, {x:6, y:6, a:"י"}, {x:6, y:7, a:"ם"},
+            // 8 מאוזן: שממית (ה-מ' השנייה מצטלבת עם 2)
             {x:7, y:3, n:8, a:"ש"}, {x:5, y:3, a:"מ"}, {x:4, y:3, a:"י"}, {x:3, y:3, a:"ת"},
-            {x:10, y:6, n:9, a:"פ"}, {x:9, y:6, a:"ר"}, {x:8, y:6, a:"פ"}, {x:7, y:6, a:"ר"}, {x:6, y:6, a:"י"}, {x:5, y:6, a:"ם"},
+            // 9 מאוזן: פרפרים (ה-י' מצטלבת עם 2)
+            {x:10, y:6, n:9, a:"פ"}, {x:9, y:6, a:"ר"}, {x:8, y:6, a:"פ"}, {x:7, y:6, a:"ר"}, {x:5, y:6, a:"ם"},
+            // 7 מאונך: דורבן (ה-ן' מצטלבת עם 10)
             {x:9, y:4, n:7, a:"ד"}, {x:9, y:5, a:"ו"}, {x:9, y:7, a:"ב"}, {x:9, y:8, a:"ן"},
+            // 6 מאוזן: חדק (ה-ד' מצטלבת עם 7)
             {x:10, y:4, n:6, a:"ח"}, {x:8, y:4, a:"ק"},
-            {x:12, y:8, n:10, a:"צ"}, {x:11, y:8, a:"מ"}, {x:10, y:8, a:"ד"}, {x:9, y:8, a:"ן"},
+            // 10 מאוזן: צמדן (ה-ד' מצטלבת עם 7, ה-ן' היא סוף המילה)
+            {x:12, y:8, n:10, a:"צ"}, {x:11, y:8, a:"מ"}, {x:10, y:8, a:"ד"},
+            // 3 מאוזן: נחש (ה-ח' מצטלבת עם 4)
             {x:2, y:1, n:3, a:"נ"}, {x:1, y:1, n:4, a:"ח"}, {x:0, y:1, a:"ש"},
+            // 4 מאונך: חיקוי (ה-ח' קיימת, ה-י' מצטלבת עם 5)
             {x:1, y:2, a:"י"}, {x:1, y:3, a:"ק"}, {x:1, y:4, a:"ו"}, {x:1, y:5, a:"י"},
-            {x:2, y:5, n:5, a:"ח"}, {x:1, y:5, a:"ז"}, {x:0, y:5, a:"י"}, {x:-1, y:5, a:"ם"},
+            // 5 מאוזן: חיים (ה-י' מצטלבת עם 4, ה-מ' בסוף)
+            {x:2, y:5, n:5, a:"ח"}, {x:0, y:5, a:"י"}, {x:-1, y:5, a:"ם"},
+            // 5 מאונך: חזקים (ה-ח' קיימת, ה-י' מצטלבת עם 11)
             {x:2, y:6, a:"ז"}, {x:2, y:7, a:"ק"}, {x:2, y:8, a:"י"}, {x:2, y:9, a:"ם"},
-            {x:5, y:8, n:11, a:"ע"}, {x:4, y:8, a:"כ"}, {x:3, y:8, a:"ב"}, {x:2, y:8, a:"י"}, {x:1, y:8, a:"ש"},
+            // 11 מאוזן: עכביש (ה-י' מצטלבת עם 5 מאונך)
+            {x:5, y:8, n:11, a:"ע"}, {x:4, y:8, a:"כ"}, {x:3, y:8, a:"ב"}, {x:1, y:8, a:"ש"},
+            // 11 מאונך: עטלפים (ה-ע' קיימת, ה-י' מצטלבת עם 13, ה-מ' בסוף)
             {x:5, y:9, a:"ט"}, {x:5, y:10, a:"ל"}, {x:5, y:11, a:"פ"}, {x:5, y:12, a:"י"}, {x:5, y:13, a:"ם"},
-            // 12 מאוזן - שלדג - 4 אותיות
-            {x:6, y:10, n:12, a:"ש"}, {x:5, y:10, a:"ל"}, {x:4, y:10, a:"ד"}, {x:3, y:10, a:"ג"},
-            {x:7, y:12, n:13, a:"כ"}, {x:6, y:12, a:"ר"}, {x:5, y:12, a:"י"}, {x:4, y:12, a:"ש"}
+            // 12 מאוזן: שלדג (ה-ל' מצטלבת עם 11 מאונך)
+            {x:6, y:10, n:12, a:"ש"}, {x:4, y:10, a:"ד"}, {x:3, y:10, a:"ג"},
+            // 13 מאוזן: כריש (ה-י' מצטלבת עם 11 מאונך)
+            {x:7, y:12, n:13, a:"כ"}, {x:6, y:12, a:"ר"}, {x:4, y:12, a:"ש"}
         ];
 
         const board = document.getElementById('board');
@@ -143,9 +158,10 @@
             input.dataset.answer = pos.a;
             
             input.onfocus = () => {
-                if (pos.n === 5) display.innerText = definitions["5-h"] + " | " + definitions["5-v"];
-                else if (pos.n === 11) display.innerText = definitions["11-h"] + " | " + definitions["11-v"];
-                else if (pos.n) display.innerText = definitions[pos.n.toString()];
+                let id = pos.n ? pos.n.toString() : "";
+                if (id === "5") display.innerText = definitions["5-h"] + " | " + definitions["5-v"];
+                else if (id === "11") display.innerText = definitions["11-h"] + " | " + definitions["11-v"];
+                else if (id && definitions[id]) display.innerText = definitions[id];
             };
 
             div.appendChild(input);
@@ -154,7 +170,8 @@
 
         function checkCrossword() {
             document.querySelectorAll('input').forEach(input => {
-                if (input.value.trim() === input.dataset.answer) {
+                const userVal = input.value.trim();
+                if (userVal === input.dataset.answer) {
                     input.classList.add('correct');
                 } else {
                     input.classList.remove('correct');
