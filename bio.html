@@ -7,95 +7,16 @@
     <style>
         :root { --c: 6.5vw; --primary: #2c5282; }
         @media (min-width: 600px) { :root { --c: 38px; } }
-        
-        body { 
-            font-family: system-ui, sans-serif; 
-            background: #f7fafc; 
-            margin: 0; 
-            padding: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-
-        .header-section { 
-            text-align: center; 
-            margin-bottom: 20px; 
-        }
-
+        body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .header-section { text-align: center; margin-bottom: 20px; }
         h2 { margin: 0; color: #2c5282; font-size: 1.4rem; }
         .credit { margin: 5px 0 0 0; font-size: 0.95rem; color: #4a5568; }
-
-        #definition-display { 
-            width: 90%; 
-            max-width: 500px; 
-            min-height: 80px; 
-            background: white; 
-            border: 2px solid var(--primary); 
-            border-radius: 12px; 
-            padding: 12px; 
-            margin-bottom: 25px; 
-            text-align: center; 
-            font-weight: bold; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            font-size: 0.95rem; 
-            line-height: 1.4; 
-            color: #2d3748; 
-        }
-
-        .board-container { 
-            width: 100%; 
-            display: flex; 
-            justify-content: center; 
-            padding-bottom: 40px;
-        }
-
-        .board { 
-            position: relative; 
-            width: calc(14 * var(--c)); 
-            height: calc(15 * var(--c)); 
-            background: #cbd5e0; 
-            border: 2px solid #2d3748; 
-        }
-
-        .cell { 
-            position: absolute; 
-            width: var(--c); 
-            height: var(--c); 
-            background: white; 
-            border: 0.5px solid #2d3748; 
-            box-sizing: border-box; 
-        }
-
-        .num { 
-            position: absolute; 
-            top: 0; 
-            right: 1px; 
-            font-size: calc(var(--c) * 0.35); 
-            font-weight: bold; 
-            color: #3182ce; 
-            z-index: 5; 
-            pointer-events: none; 
-        }
-
-        input { 
-            width: 100%; 
-            height: 100%; 
-            border: none; 
-            text-align: center; 
-            font-size: calc(var(--c) * 0.6); 
-            font-weight: bold; 
-            background: transparent; 
-            outline: none; 
-            padding: 0; 
-            color: #2d3748; 
-            -webkit-appearance: none;
-            border-radius: 0;
-        }
-        
+        #definition-display { width: 90%; max-width: 500px; min-height: 80px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 12px; margin-bottom: 25px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.95rem; line-height: 1.4; color: #2d3748; }
+        .board-container { width: 100%; display: flex; justify-content: center; padding-bottom: 40px; }
+        .board { position: relative; width: calc(14 * var(--c)); height: calc(16 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
+        .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
+        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.35); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
+        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.6); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; -webkit-appearance: none; border-radius: 0; }
         input.is-correct { background-color: #48bb78 !important; color: white !important; }
         input.is-wrong { background-color: #fc8181 !important; color: white !important; }
     </style>
@@ -105,12 +26,8 @@
         <h2>תשבץ ביומימיקרי</h2>
         <p class="credit">עריכה: מילכה ברקו גרש</p>
     </div>
-
     <div id="definition-display">לחצו על משבצת עם מספר כדי לראות את ההגדרה המתאימה.</div>
-
-    <div class="board-container">
-        <div class="board" id="board"></div>
-    </div>
+    <div class="board-container"><div class="board" id="board"></div></div>
 
 <script>
     const defs = { 
@@ -130,60 +47,57 @@
     };
     
     const cellData = [
+        // 1 מאוזן ו-2 מאונך
         {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
         {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
+        // 8 מאוזן ו-6,7 מאונך
         {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"},
         {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"},
         {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"},
         {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"},
+        // 10 מאוזן (צמדן)
         {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"},{x:9,y:8,a:"ן"},
+        // 3 מאוזן ו-4 מאונך (נחש, חיקוי)
         {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"},
         {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"},
+        // 5 ביוס (מאוזן) ו-5 חיים (מאונך)
         {x:2,y:5,n:5,a:"ב"},{x:1,y:5,a:"י"},{x:0,y:5,a:"ו"},{x:-1,y:5,a:"ס"},
-        {x:2,y:6,a:"ח"},{x:2,y:7,a:"י"},{x:2,y:8,a:"י"},{x:2,y:9,a:"ם"}, // תיקון מילה "חיים"
+        {x:2,y:6,a:"ח"},{x:2,y:7,a:"י"},{x:2,y:8,a:"י"},{x:2,y:9,a:"ם"}, 
+        // 11 עכביש (מאוזן) ו-11 חזקים (מאונך)
         {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:2,y:8,a:"י"},{x:1,y:8,a:"ש"},
-        {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"ם"},
-        {x:6,y:10,n:12,a:"ש"},{x:5,y:10,a:"ל"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"},
+        {x:5,y:9,a:"ח"},{x:5,y:10,a:"ז"},{x:5,y:11,a:"ק"},{x:5,y:12,a:"י"},{x:5,y:13,a:"ם"},
+        // 12 שלדג ו-13 כריש
+        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"},
         {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:5,y:12,a:"י"},{x:4,y:12,a:"ש"}
     ];
 
     const norm = {"ם":"מ","ן":"נ","ף":"פ","ץ":"צ","ך":"כ"};
     const board = document.getElementById('board');
+    const usedPos = new Set();
 
     cellData.forEach(p => {
+        const key = `${p.x},${p.y}`;
+        if (usedPos.has(key)) return;
+        usedPos.add(key);
+
         const div = document.createElement('div');
         div.className = 'cell';
         div.style.left = `calc(${p.x + 1} * var(--c))`;
         div.style.top = `calc(${p.y} * var(--c))`;
-        
-        if(p.n){
-            const s = document.createElement('span');
-            s.className = 'num';
-            s.innerText = p.n;
-            div.appendChild(s);
-        }
+        if(p.n){ div.innerHTML = `<span class="num">${p.n}</span>`; }
 
         const input = document.createElement('input');
         input.maxLength = 1;
         input.dataset.answer = p.a;
-        
-        input.onfocus = () => {
-            if(p.n) document.getElementById('definition-display').innerText = defs[p.n];
-        };
-
+        input.onfocus = () => { if(p.n) document.getElementById('definition-display').innerText = defs[p.n]; };
         input.oninput = () => {
             let val = input.value.trim();
             let ans = input.dataset.answer;
             input.classList.remove('is-correct', 'is-wrong');
             if (!val) return;
-            
-            let v = norm[val] || val;
-            let a = norm[ans] || ans;
-            
-            if (v === a) input.classList.add('is-correct');
+            if ((norm[val] || val) === (norm[ans] || ans)) input.classList.add('is-correct');
             else input.classList.add('is-wrong');
         };
-
         div.appendChild(input);
         board.appendChild(div);
     });
