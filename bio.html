@@ -7,20 +7,27 @@
     <style>
         :root { --c: 6.2vw; --primary: #2c5282; }
         @media (min-width: 600px) { :root { --c: 38px; } }
-        body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; touch-action: manipulation; }
         #definition-display { width: 92%; max-width: 500px; min-height: 80px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.95rem; line-height: 1.4; }
         .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
         .board { position: relative; width: calc(15 * var(--c)); height: calc(16 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
-        .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
-        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; caret-color: transparent; }
         
-        input.correct-fill { background-color: #48bb78 !important; color: white !important; }
-        input.wrong-fill { background-color: #fc8181 !important; color: white !important; }
+        .cell { 
+            position: absolute; width: var(--c); height: var(--c); background: white; 
+            border: 0.5px solid #2d3748; box-sizing: border-box; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: calc(var(--c) * 0.55); font-weight: bold; color: #2d3748;
+            cursor: pointer; user-select: none;
+        }
+        .cell.active { outline: 3px solid #4299e1; z-index: 10; background: #ebf8ff; }
+        .cell.is-correct { background-color: #48bb78 !important; color: white !important; }
+        .cell.is-wrong { background-color: #fc8181 !important; color: white !important; }
+
+        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; }
 
         .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
-        .key { width: 32px; height: 38px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; touch-action: manipulation; }
-        .key:active { background: #e2e8f0; }
+        .key { width: 34px; height: 42px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; touch-action: manipulation; }
+        .key:active { background: #cbd5e0; }
     </style>
 </head>
 <body>
@@ -64,7 +71,7 @@
         {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:5,y:12,a:"י"},{x:4,y:12,a:"ש"}
     ];
 
-    let currInput = null;
+    let activeCell = null;
     const norm = {"ם":"מ","ן":"נ","ף":"פ","ץ":"צ","ך":"כ"};
 
     cellData.forEach(p => {
@@ -72,40 +79,49 @@
         div.className = 'cell';
         div.style.left = `calc(${p.x + 2} * var(--c))`;
         div.style.top = `calc(${p.y} * var(--c))`;
-        if(p.n){ div.innerHTML += `<span class="num">${p.n}</span>`; }
-        const input = document.createElement('input');
-        input.setAttribute('inputmode', 'none'); // ביטול מקלדת מקורית
-        input.dataset.answer = p.a;
-        input.onfocus = () => { currInput = input; if(p.n) document.getElementById('definition-display').innerText = defs[p.n]; };
-        div.appendChild(input);
+        if(p.n) div.innerHTML = `<span class="num">${p.n}</span>`;
+        
+        div.onclick = () => {
+            if (activeCell) activeCell.classList.remove('active');
+            activeCell = div;
+            activeCell.classList.add('active');
+            if(p.n) document.getElementById('definition-display').innerText = defs[p.n];
+        };
+        
+        div.dataset.answer = p.a;
         document.getElementById('board').appendChild(div);
     });
 
-    function check(el) {
-        let val = el.value.trim();
-        let ans = el.dataset.answer;
-        el.classList.remove('correct-fill', 'wrong-fill');
-        if (!val) return;
-        let v = norm[val] || val;
+    function handleInput(char) {
+        if (!activeCell) return;
+        activeCell.innerText = char;
+        // שחזור המספר אם היה קיים
+        const cellInfo = cellData.find(c => `calc(${c.x + 2} * var(--c))` === activeCell.style.left && `calc(${c.y} * var(--c))` === activeCell.style.top);
+        if(cellInfo && cellInfo.n) {
+            const s = document.createElement('span'); s.className='num'; s.innerText=cellInfo.n;
+            activeCell.appendChild(s);
+        }
+
+        let ans = activeCell.dataset.answer;
+        activeCell.classList.remove('is-correct', 'is-wrong');
+        
+        if (char === "") return;
+        
+        let v = norm[char] || char;
         let a = norm[ans] || ans;
-        if (v === a) el.classList.add('correct-fill');
-        else el.classList.add('wrong-fill');
+        
+        if (v === a) activeCell.classList.add('is-correct');
+        else activeCell.classList.add('is-wrong');
     }
 
     "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
         const k = document.createElement('div'); k.className = 'key'; k.innerText = l;
-        k.onclick = (e) => { 
-            e.preventDefault();
-            if (currInput) { currInput.value = l; check(currInput); } 
-        };
+        k.onclick = (e) => { e.preventDefault(); handleInput(l); };
         document.getElementById('keyboard').appendChild(k);
     });
 
     const del = document.createElement('div'); del.className = 'key'; del.innerText = "⌫"; del.style.width = "45px";
-    del.onclick = (e) => { 
-        e.preventDefault();
-        if (currInput) { currInput.value = ""; check(currInput); } 
-    };
+    del.onclick = (e) => { e.preventDefault(); handleInput(""); };
     document.getElementById('keyboard').appendChild(del);
 </script>
 </body>
