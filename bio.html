@@ -8,14 +8,12 @@
         :root { --c: 6.2vw; --primary: #2c5282; --correct: #48bb78; --wrong: #fc8181; }
         @media (min-width: 600px) { :root { --c: 38px; } }
         body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 5px; }
         #definition-display { width: 92%; max-width: 500px; min-height: 70px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.95rem; }
         .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
         .board { position: relative; width: calc(15 * var(--c)); height: calc(15 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
         .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; cursor: pointer; }
-        /* עיצוב הצבעים - חשוב מאוד */
+        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
         .is-correct { background-color: var(--correct) !important; color: white !important; }
         .is-wrong { background-color: var(--wrong) !important; color: white !important; }
         .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
@@ -23,7 +21,7 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1>תשבץ ביומימיקרי</h1><p>עריכה: מילכה ברקו גרש</p></div>
+    <div style="text-align: center;"><h2>תשבץ ביומימיקרי</h2><p>עריכה: מילכה ברקו גרש</p></div>
     <div id="definition-display">לחצו על משבצת להתחלה</div>
     <div class="board-container"><div class="board" id="board"></div></div>
     <div class="keyboard" id="keyboard"></div>
@@ -45,96 +43,65 @@
         "13":"13 מאוזן: מבנה עורו השראה למשטחים דוחי חיידקים."
     };
     
-    // רשימה מאוחדת וסופית - כל משבצת מופיעה פעם אחת בלבד
+    // רשימת כל האותיות כולל הלבנות שהיו חסרות
     const cellData = [
         {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
-        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
-        {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"},
-        {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"},
-        {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"},
-        {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"},
-        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"},
-        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"},
-        {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"},
-        {x:2,y:5,n:5,a:"ח"},{x:1,y:5,a:"ז"},{x:0,y:5,a:"י"},{x:-1,y:5,a:"ם"},
-        {x:2,y:6,a:"ז"},{x:2,y:7,a:"ק"},{x:2,y:8,a:"י"},{x:2,y:9,a:"ם"},
-        {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:2,y:8,a:"י"},{x:1,y:8,a:"ש"},
-        {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"ם"},
-        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"},
-        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:4,y:12,a:"ש"}
+        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"מ"}, // טרמיטים
+        {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"}, // שממית
+        {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"מ"}, // פרפרים
+        {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"נ"}, // דורבן
+        {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"}, // חדק
+        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"}, // צמדן (ה-ן' משותפת לדורבן)
+        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"}, // נחש
+        {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"}, // חיקוי
+        {x:2,y:5,n:5,a:"ח"},{x:1,y:5,a:"ז"},{x:0,y:5,a:"י"},{x:-1,y:5,a:"מ"}, // חיים + חזקים
+        {x:2,y:6,a:"ז"},{x:2,y:7,a:"ק"},{x:2,y:8,a:"י"},{x:2,y:9,a:"מ"}, // חזקים
+        {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:2,y:8,a:"י"},{x:1,y:8,a:"ש"}, // עכביש
+        {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"מ"}, // עטלפים
+        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"}, // שלדג
+        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:4,y:12,a:"ש"} // כריש
     ];
 
     let currInput = null;
     const board = document.getElementById('board');
+    const finalMap = { "מ":"ם", "ם":"מ", "נ":"ן", "ן":"נ", "פ":"ף", "ף":"פ", "כ":"ך", "ך":"כ", "צ":"ץ", "ץ":"צ" };
 
-    // יצירת הלוח
     cellData.forEach(p => {
         const div = document.createElement('div');
         div.className = 'cell';
         div.style.left = `calc(${p.x + 2} * var(--c))`;
         div.style.top = `calc(${p.y} * var(--c))`;
-        
-        if(p.n) {
-            const s = document.createElement('span');
-            s.className = 'num';
-            s.innerText = p.n;
-            div.appendChild(s);
-        }
-
+        if(p.n){ const s = document.createElement('span'); s.className='num'; s.innerText=p.n; div.appendChild(s); }
         const input = document.createElement('input');
         input.maxLength = 1;
         input.dataset.answer = p.a;
-        input.onfocus = () => {
-            currInput = input;
-            if (p.n && defs[p.n]) document.getElementById('definition-display').innerText = defs[p.n];
-        };
-        
+        input.onfocus = () => { currInput = input; if(p.n) document.getElementById('definition-display').innerText = defs[p.n]; };
         div.appendChild(input);
         board.appendChild(div);
     });
 
-    // פונקציית הבדיקה והצביעה
     function applyColor(el) {
         const val = el.value.trim();
         const ans = el.dataset.answer;
-        
         el.classList.remove('is-correct', 'is-wrong');
-        
-        if (val === "") return;
-        
-        if (val === ans) {
+        if (!val) return;
+        // בדיקה אם האות זהה או הגרסה הסופית שלה זהה
+        if (val === ans || finalMap[val] === ans) {
             el.classList.add('is-correct');
         } else {
             el.classList.add('is-wrong');
         }
     }
 
-    // מקלדת
-    const keyboard = document.getElementById('keyboard');
     "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
-        const k = document.createElement('div');
-        k.className = 'key';
-        k.innerText = l;
-        k.onclick = () => {
-            if (currInput) {
-                currInput.value = l;
-                applyColor(currInput);
-            }
-        };
-        keyboard.appendChild(k);
+        const k = document.createElement('div'); k.className = 'key'; k.innerText = l;
+        k.onclick = () => { if (currInput) { currInput.value = l; applyColor(currInput); } };
+        document.getElementById('keyboard').appendChild(k);
     });
 
-    const del = document.createElement('div');
-    del.className = 'key';
-    del.innerText = "⌫";
-    del.style.width = "45px";
-    del.onclick = () => {
-        if (currInput) {
-            currInput.value = "";
-            applyColor(currInput);
-        }
-    };
-    keyboard.appendChild(del);
+    const del = document.createElement('div'); del.className = 'key'; del.innerText = "⌫"; del.style.width = "45px";
+    del.onclick = () => { if (currInput) { currInput.value = ""; applyColor(currInput); } };
+    document.getElementById('keyboard').appendChild(del);
 </script>
 </body>
 </html>
