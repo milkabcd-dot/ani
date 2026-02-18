@@ -7,19 +7,18 @@
     <style>
         :root { --c: 6.2vw; --primary: #2c5282; --correct: #48bb78; }
         @media (min-width: 600px) { :root { --c: 38px; } }
-        body { font-family: sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        body { font-family: sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         .header { text-align: center; margin-bottom: 5px; }
-        .header h1 { color: var(--primary); margin: 0; font-size: 1.3rem; }
-        #definition-display { width: 92%; max-width: 500px; min-height: 60px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #definition-display { width: 92%; max-width: 500px; min-height: 70px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.95rem; }
         .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
         .board { position: relative; width: calc(15 * var(--c)); height: calc(15 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
         .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.5); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
+        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
         .correct { background-color: var(--correct) !important; color: white !important; }
-        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 400px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
-        .key { width: 30px; height: 35px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; }
-        .btn-check { margin: 15px 0; padding: 10px 30px; background: var(--primary); color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
+        .key { width: 32px; height: 38px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; }
+        .btn-check { margin: 15px 0; padding: 12px 40px; background: var(--primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -30,27 +29,44 @@
     <button class="btn-check" onclick="checkCrossword()">בדיקת תשובות ✅</button>
 
 <script>
-    const defs = { "1":"1 מאוזן: שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.", "2":"2 מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.", "3":"3 מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.", "4":"4 מאונך: פירוש המילה: מימטיקה.", "5":"5: ביוס (מאוזן) | מודל לחומרים (מאונך)", "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.", "7":"7 מאונך: יונק שקוציו השראה למחטים ודבקים.", "8":"8 מאוזן: זוחל, השראה לדבקים וטיפוס.", "9":"9 מאוזן: קבוצת חרקים, השראה לצבעים פיזיקליים.", "10":"10 מאוזן: מוצר שהומצא בהשראת זרעים שנצמדו לפרוות כלב.", "11":"11: קורים (מאוזן) | סונאר (מאונך)", "12":"12 מאוזן: ציפור, השראה לשיפור חזות הרכבת המהירה ביפן.", "13":"13 מאוזן: מבנה עורו השראה למשטחים דוחי חיידקים." };
-    const skeleton = [
-        {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
-        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
-        {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"},
-        {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"},
-        {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"},
-        {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"},
-        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"},{x:9,y:8,a:"ן"},
-        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"},
-        {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"},
-        {x:2,y:5,n:5,a:"ח"},{x:1,y:5,a:"ז"},{x:0,y:5,a:"י"},{x:-1,y:5,a:"ם"},
-        {x:2,y:6,a:"ז"},{x:2,y:7,a:"ק"},{x:2,y:8,a:"י"},{x:2,y:9,a:"ם"},
-        {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:2,y:8,a:"י"},{x:1,y:8,a:"ש"},
-        {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"ם"},
-        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"},
-        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:4,y:12,a:"ש"}
+    const defs = { 
+        "1":"1 מאוזן: שם צמח מים, עליו משמשים השראה לפתוח חומרים דוחי מים.",
+        "2":"2 מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
+        "3":"3 מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
+        "4":"4 מאונך: פירוש המילה: מימטיקה.",
+        "5":"5 מאוזן: פירוש המילה: ביוס. | מאונך: השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
+        "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
+        "7":"7 מאונך: סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
+        "8":"8 מאוזן: בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.",
+        "9":"9 מאוזן: קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
+        "10":"10 מאוזן: שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
+        "11":"11 מאוזן: יצור המפיק קורים גמישים וחזקים. | מאונך: יונקים מעופפים, מתקשרים באמצעות סונאר.",
+        "12":"12 מאוזן: סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן.",
+        "13":"13 מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
+    };
+    
+    // מיקומים סופיים - כל משבצת פעם אחת בלבד למניעת שכבות לבנות
+    const cells = [
+        {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"}, // לוטוס
+        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"}, // טרמיטים
+        {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"}, // שממית
+        {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"}, // פרפרים (מ' מצטלבת)
+        {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"}, // דורבן
+        {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"}, // חדק
+        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"}, // צמדן (ה-ן' היא של דורבן)
+        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"}, // נחש
+        {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"}, // חיקוי
+        {x:2,y:5,n:5,a:"ח"},{x:0,y:5,a:"י"},{x:-1,y:5,a:"ם"}, // חיים
+        {x:2,y:6,a:"ז"},{x:2,y:7,a:"ק"},{x:2,y:8,a:"י"},{x:2,y:9,a:"ם"}, // חזקים
+        {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:1,y:8,a:"ש"}, // עכביש
+        {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"ם"}, // עטלפים
+        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"}, // שלדג (ה-ל' מצטלבת)
+        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:4,y:12,a:"ש"} // כריש (ה-י' מצטלבת)
     ];
+
     let curr = null;
     const board = document.getElementById('board');
-    skeleton.forEach(p => {
+    cells.forEach(p => {
         const d = document.createElement('div'); d.className = 'cell';
         d.style.left = `calc(${p.x + 2} * var(--c))`; d.style.top = `calc(${p.y} * var(--c))`;
         if(p.n){ const s = document.createElement('span'); s.className='num'; s.innerText=p.n; d.appendChild(s); }
@@ -58,13 +74,17 @@
         i.onfocus = () => { curr=i; document.getElementById('definition-display').innerText = defs[p.n] || document.getElementById('definition-display').innerText; };
         d.appendChild(i); board.appendChild(d);
     });
+
     "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
         const k = document.createElement('div'); k.className='key'; k.innerText=l;
-        k.onclick = () => { if(curr) curr.value=l; }; document.getElementById('keyboard').appendChild(k);
+        k.onclick = () => { if(curr) { curr.value=l; checkSingle(curr); } }; document.getElementById('keyboard').appendChild(k);
     });
-    const del = document.createElement('div'); del.className='key'; del.innerText="⌫"; del.style.width="40px";
-    del.onclick = () => { if(curr) curr.value=""; }; document.getElementById('keyboard').appendChild(del);
-    function checkCrossword() { document.querySelectorAll('input').forEach(i => { if(i.value===i.dataset.a) i.classList.add('correct'); else i.classList.remove('correct'); }); }
+
+    const del = document.createElement('div'); del.className='key'; del.innerText="⌫"; del.style.width="45px";
+    del.onclick = () => { if(curr) { curr.value=""; curr.classList.remove('correct'); } }; document.getElementById('keyboard').appendChild(del);
+
+    function checkSingle(input) { if(input.value === input.dataset.a) input.classList.add('correct'); else input.classList.remove('correct'); }
+    function checkCrossword() { document.querySelectorAll('input').forEach(i => checkSingle(i)); }
 </script>
 </body>
 </html>
