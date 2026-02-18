@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
     <style>
-        :root { --c: 6.2vw; --primary: #2c5282; --correct: #48bb78 !important; --wrong: #fc8181 !important; }
+        :root { --c: 6.2vw; --primary: #2c5282; }
         @media (min-width: 600px) { :root { --c: 38px; } }
         body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         #definition-display { width: 92%; max-width: 500px; min-height: 80px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 0.95rem; line-height: 1.4; }
@@ -13,14 +13,14 @@
         .board { position: relative; width: calc(15 * var(--c)); height: calc(16 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
         .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
+        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; caret-color: transparent; }
         
-        /* תיקון צבעים אגרסיבי */
         input.correct-fill { background-color: #48bb78 !important; color: white !important; }
         input.wrong-fill { background-color: #fc8181 !important; color: white !important; }
 
         .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
-        .key { width: 32px; height: 38px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; }
+        .key { width: 32px; height: 38px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; touch-action: manipulation; }
+        .key:active { background: #e2e8f0; }
     </style>
 </head>
 <body>
@@ -48,7 +48,7 @@
     
     const cellData = [
         {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
-        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"מ"},
+        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
         {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"},
         {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"},
         {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"},
@@ -74,9 +74,9 @@
         div.style.top = `calc(${p.y} * var(--c))`;
         if(p.n){ div.innerHTML += `<span class="num">${p.n}</span>`; }
         const input = document.createElement('input');
+        input.setAttribute('inputmode', 'none'); // ביטול מקלדת מקורית
         input.dataset.answer = p.a;
         input.onfocus = () => { currInput = input; if(p.n) document.getElementById('definition-display').innerText = defs[p.n]; };
-        input.oninput = () => check(input);
         div.appendChild(input);
         document.getElementById('board').appendChild(div);
     });
@@ -94,12 +94,18 @@
 
     "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
         const k = document.createElement('div'); k.className = 'key'; k.innerText = l;
-        k.onclick = () => { if (currInput) { currInput.value = l; check(currInput); } };
+        k.onclick = (e) => { 
+            e.preventDefault();
+            if (currInput) { currInput.value = l; check(currInput); } 
+        };
         document.getElementById('keyboard').appendChild(k);
     });
 
     const del = document.createElement('div'); del.className = 'key'; del.innerText = "⌫"; del.style.width = "45px";
-    del.onclick = () => { if (currInput) { currInput.value = ""; check(currInput); } };
+    del.onclick = (e) => { 
+        e.preventDefault();
+        if (currInput) { currInput.value = ""; check(currInput); } 
+    };
     document.getElementById('keyboard').appendChild(del);
 </script>
 </body>
