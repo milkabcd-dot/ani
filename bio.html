@@ -13,13 +13,13 @@
         .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
         .board { position: relative; width: calc(15 * var(--c)); height: calc(15 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
-        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
-        .correct { background-color: var(--correct) !important; color: white !important; }
-        .wrong { background-color: var(--wrong) !important; color: white !important; }
+        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
+        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; cursor: pointer; }
+        /* עיצוב הצבעים - חשוב מאוד */
+        .is-correct { background-color: var(--correct) !important; color: white !important; }
+        .is-wrong { background-color: var(--wrong) !important; color: white !important; }
         .keyboard { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; gap: 4px; background: #edf2f7; padding: 10px; border-radius: 12px; }
         .key { width: 32px; height: 38px; background: white; border: 1px solid #cbd5e0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; user-select: none; }
-        .key:active { background: #cbd5e0; }
     </style>
 </head>
 <body>
@@ -34,17 +34,18 @@
         "2":"2 מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
         "3":"3 מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
         "4":"4 מאונך: פירוש המילה: מימטיקה.",
-        "5":"5 מאוזן: פירוש המילה: ביוס. | מאונך: השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
-        "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
-        "7":"7 מאונך: סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
-        "8":"8 מאוזן: בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.",
-        "9":"9 מאוזן: קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
-        "10":"10 מאוזן: שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
-        "11":"11 מאוזן: יצור המפיק קורים גמישים וחזקים. | מאונך: יונקים מעופפים, מתקשרים באמצעות סונאר.",
-        "12":"12 מאוזן: סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן.",
-        "13":"13 מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
+        "5":"5 מאוזן: ביוס. | מאונך: עצמות וקונכיות כמודל לחומרים...",
+        "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לרובוט אחיזה.",
+        "7":"7 מאונך: יונק שקוציו השראה למחטים ודבקים.",
+        "8":"8 מאוזן: זוחל, השראה לדבקים וטיפוס.",
+        "9":"9 מאוזן: קבוצת חרקים, השראה לצבעים פיזיקליים.",
+        "10":"10 מאוזן: מוצר (בעברית) בהשראת זרעים שנצמדו לפרוות כלב.",
+        "11":"11 מאוזן: קורים גמישים. | מאונך: יונקים מעופפים וסונאר.",
+        "12":"12 מאוזן: ציפור, השראה לשיפור הרכבת המהירה.",
+        "13":"13 מאוזן: מבנה עורו השראה למשטחים דוחי חיידקים."
     };
     
+    // רשימה מאוחדת וסופית - כל משבצת מופיעה פעם אחת בלבד
     const cellData = [
         {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
         {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
@@ -66,50 +67,58 @@
     let currInput = null;
     const board = document.getElementById('board');
 
+    // יצירת הלוח
     cellData.forEach(p => {
         const div = document.createElement('div');
         div.className = 'cell';
         div.style.left = `calc(${p.x + 2} * var(--c))`;
         div.style.top = `calc(${p.y} * var(--c))`;
-        if(p.n){ 
-            const s = document.createElement('span'); 
-            s.className='num'; s.innerText=p.n; div.appendChild(s); 
+        
+        if(p.n) {
+            const s = document.createElement('span');
+            s.className = 'num';
+            s.innerText = p.n;
+            div.appendChild(s);
         }
+
         const input = document.createElement('input');
         input.maxLength = 1;
         input.dataset.answer = p.a;
-        input.inputMode = "none";
-        input.onfocus = () => { 
-            currInput = input; 
-            document.getElementById('definition-display').innerText = defs[p.n] || document.getElementById('definition-display').innerText; 
+        input.onfocus = () => {
+            currInput = input;
+            if (p.n && defs[p.n]) document.getElementById('definition-display').innerText = defs[p.n];
         };
+        
         div.appendChild(input);
         board.appendChild(div);
     });
 
-    function checkCell(input) {
-        const val = input.value.trim();
-        if (val === "") {
-            input.classList.remove('correct', 'wrong');
-        } else if (val === input.dataset.answer) {
-            input.classList.remove('wrong');
-            input.classList.add('correct');
+    // פונקציית הבדיקה והצביעה
+    function applyColor(el) {
+        const val = el.value.trim();
+        const ans = el.dataset.answer;
+        
+        el.classList.remove('is-correct', 'is-wrong');
+        
+        if (val === "") return;
+        
+        if (val === ans) {
+            el.classList.add('is-correct');
         } else {
-            input.classList.remove('correct');
-            input.classList.add('wrong');
+            el.classList.add('is-wrong');
         }
     }
 
-    const alphabet = "אבגדהוזחטיכלמנסעפצקרשת".split("");
+    // מקלדת
     const keyboard = document.getElementById('keyboard');
-    alphabet.forEach(l => {
+    "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
         const k = document.createElement('div');
         k.className = 'key';
         k.innerText = l;
-        k.onclick = () => { 
-            if(currInput) {
+        k.onclick = () => {
+            if (currInput) {
                 currInput.value = l;
-                checkCell(currInput);
+                applyColor(currInput);
             }
         };
         keyboard.appendChild(k);
@@ -119,11 +128,11 @@
     del.className = 'key';
     del.innerText = "⌫";
     del.style.width = "45px";
-    del.onclick = () => { 
-        if(currInput) { 
-            currInput.value = ""; 
-            checkCell(currInput);
-        } 
+    del.onclick = () => {
+        if (currInput) {
+            currInput.value = "";
+            applyColor(currInput);
+        }
     };
     keyboard.appendChild(del);
 </script>
