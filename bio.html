@@ -12,7 +12,7 @@
         .board-container { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
         .board { position: relative; width: calc(15 * var(--c)); height: calc(15 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
-        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
+        .num { position: absolute; top: 0; right: 1px; font-size: calc(var(--c) * 0.3); font-weight: bold; color: #3182ce; z-index: 5; }
         input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.55); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
         .is-correct { background-color: var(--correct) !important; color: white !important; }
         .is-wrong { background-color: var(--wrong) !important; color: white !important; }
@@ -43,28 +43,29 @@
         "13":"13 מאוזן: מבנה עורו השראה למשטחים דוחי חיידקים."
     };
     
-    // רשימת כל האותיות כולל הלבנות שהיו חסרות
+    // רשימה מעודכנת לפי התמונה ששלחת
     const cellData = [
-        {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
+        {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"}, // לוטוס
         {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"מ"}, // טרמיטים
         {x:7,y:3,n:8,a:"ש"},{x:5,y:3,a:"מ"},{x:4,y:3,a:"י"},{x:3,y:3,a:"ת"}, // שממית
         {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"מ"}, // פרפרים
         {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"נ"}, // דורבן
         {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"}, // חדק
-        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"}, // צמדן (ה-ן' משותפת לדורבן)
-        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"}, // נחש
+        {x:12,y:8,n:10,a:"צ"},{x:11,y:8,a:"מ"},{x:10,y:8,a:"ד"},{x:9,y:8,a:"נ"}, // צמדן - הוספתי את ה-נ' שוב כדי לוודא זיהוי
+        {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"}, // נחש - ה-ש' עודכנה ל-0,1
         {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"}, // חיקוי
-        {x:2,y:5,n:5,a:"ח"},{x:1,y:5,a:"ז"},{x:0,y:5,a:"י"},{x:-1,y:5,a:"מ"}, // חיים + חזקים
+        {x:2,y:5,n:5,a:"ח"},{x:1,y:5,a:"י"},{x:0,y:5,a:"מ"}, // חיים
         {x:2,y:6,a:"ז"},{x:2,y:7,a:"ק"},{x:2,y:8,a:"י"},{x:2,y:9,a:"מ"}, // חזקים
         {x:5,y:8,n:11,a:"ע"},{x:4,y:8,a:"כ"},{x:3,y:8,a:"ב"},{x:2,y:8,a:"י"},{x:1,y:8,a:"ש"}, // עכביש
         {x:5,y:9,a:"ט"},{x:5,y:10,a:"ל"},{x:5,y:11,a:"פ"},{x:5,y:12,a:"י"},{x:5,y:13,a:"מ"}, // עטלפים
-        {x:6,y:10,n:12,a:"ש"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"}, // שלדג
-        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:4,y:12,a:"ש"} // כריש
+        {x:6,y:10,n:12,a:"ש"},{x:5,y:10,a:"ל"},{x:4,y:10,a:"ד"},{x:3,y:10,a:"ג"}, // שלדג
+        {x:7,y:12,n:13,a:"כ"},{x:6,y:12,a:"ר"},{x:5,y:12,a:"י"},{x:4,y:12,a:"ש"} // כריש
     ];
 
     let currInput = null;
     const board = document.getElementById('board');
-    const finalMap = { "מ":"ם", "ם":"מ", "נ":"ן", "ן":"נ", "פ":"ף", "ף":"פ", "כ":"ך", "ך":"כ", "צ":"ץ", "ץ":"צ" };
+    // מפה להשוואה בין אותיות רגילות לסופיות
+    const softToRegular = {"ם":"מ","ן":"נ","ף":"פ","ץ":"צ","ך":"כ"};
 
     cellData.forEach(p => {
         const div = document.createElement('div');
@@ -80,27 +81,27 @@
         board.appendChild(div);
     });
 
-    function applyColor(el) {
-        const val = el.value.trim();
-        const ans = el.dataset.answer;
+    function check(el) {
+        let val = el.value.trim();
+        let ans = el.dataset.answer;
+        // המרת שניהם לאות רגילה כדי למנוע אדום בטעות
+        let normalizedVal = softToRegular[val] || val;
+        let normalizedAns = softToRegular[ans] || ans;
+
         el.classList.remove('is-correct', 'is-wrong');
         if (!val) return;
-        // בדיקה אם האות זהה או הגרסה הסופית שלה זהה
-        if (val === ans || finalMap[val] === ans) {
-            el.classList.add('is-correct');
-        } else {
-            el.classList.add('is-wrong');
-        }
+        if (normalizedVal === normalizedAns) el.classList.add('is-correct');
+        else el.classList.add('is-wrong');
     }
 
     "אבגדהוזחטיכלמנסעפצקרשת".split("").forEach(l => {
         const k = document.createElement('div'); k.className = 'key'; k.innerText = l;
-        k.onclick = () => { if (currInput) { currInput.value = l; applyColor(currInput); } };
+        k.onclick = () => { if (currInput) { currInput.value = l; check(currInput); } };
         document.getElementById('keyboard').appendChild(k);
     });
 
     const del = document.createElement('div'); del.className = 'key'; del.innerText = "⌫"; del.style.width = "45px";
-    del.onclick = () => { if (currInput) { currInput.value = ""; applyColor(currInput); } };
+    del.onclick = () => { if (currInput) { currInput.value = ""; check(currInput); } };
     document.getElementById('keyboard').appendChild(del);
 </script>
 </body>
