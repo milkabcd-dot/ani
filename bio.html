@@ -7,26 +7,104 @@
     <style>
         :root { --c: 6.5vw; --primary: #2c5282; }
         @media (min-width: 600px) { :root { --c: 40px; } }
-        body { font-family: system-ui, sans-serif; background: #f7fafc; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        #definition-display { width: 92%; max-width: 500px; min-height: 90px; background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 12px; margin-bottom: 20px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1rem; line-height: 1.4; color: #2d3748; }
-        .board-container { width: 100%; display: flex; justify-content: center; padding-bottom: 50px; }
-        .board { position: relative; width: calc(15 * var(--c)); height: calc(16 * var(--c)); background: #cbd5e0; border: 2px solid #2d3748; }
-        .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
-        .num { position: absolute; top: 0; right: 2px; font-size: calc(var(--c) * 0.35); font-weight: bold; color: #3182ce; z-index: 5; pointer-events: none; }
-        input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.6); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; }
         
-        /* צבעים */
+        body { 
+            font-family: system-ui, sans-serif; 
+            background: #f7fafc; 
+            margin: 0; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        .header-section { 
+            text-align: center; 
+            margin-bottom: 25px; /* הגדלת המרחק בין הקרדיט למה שלמטה */
+        }
+
+        h2 { margin: 0; color: #2c5282; font-size: 1.5rem; }
+        .credit { margin: 8px 0 0 0; font-size: 1rem; color: #4a5568; }
+
+        #definition-display { 
+            width: 92%; 
+            max-width: 500px; 
+            min-height: 90px; 
+            background: white; 
+            border: 2px solid var(--primary); 
+            border-radius: 12px; 
+            padding: 12px; 
+            margin-bottom: 25px; /* רווח נוסף לפני התשבץ */
+            text-align: center; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            color: #2d3748; 
+        }
+
+        .board-container { 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            padding-bottom: 40px; 
+        }
+
+        .board { 
+            position: relative; 
+            width: calc(15 * var(--c)); 
+            height: calc(16 * var(--c)); 
+            background: #cbd5e0; 
+            border: 2px solid #2d3748; 
+        }
+
+        .cell { 
+            position: absolute; 
+            width: var(--c); 
+            height: var(--c); 
+            background: white; 
+            border: 0.5px solid #2d3748; 
+            box-sizing: border-box; 
+        }
+
+        .num { 
+            position: absolute; 
+            top: 0; 
+            right: 2px; 
+            font-size: calc(var(--c) * 0.35); 
+            font-weight: bold; 
+            color: #3182ce; 
+            z-index: 5; 
+            pointer-events: none; 
+        }
+
+        input { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            text-align: center; 
+            font-size: calc(var(--c) * 0.6); 
+            font-weight: bold; 
+            background: transparent; 
+            outline: none; 
+            padding: 0; 
+            color: #2d3748; 
+        }
+        
         input.is-correct { background-color: #48bb78 !important; color: white !important; }
         input.is-wrong { background-color: #fc8181 !important; color: white !important; }
     </style>
 </head>
 <body>
-    <div style="text-align: center; margin-bottom: 10px;">
-        <h2 style="margin: 0; color: #2c5282;">תשבץ ביומימיקרי</h2>
-        <p style="margin: 5px 0; font-size: 0.9rem;">עריכה: מילכה ברקו גרש</p>
+    <div class="header-section">
+        <h2>תשבץ ביומימיקרי</h2>
+        <p class="credit">עריכה: מילכה ברקו גרש</p>
     </div>
 
-    <div id="definition-display">לחצו על משבצת כדי לראות את ההגדרה</div>
+    <div id="definition-display">לחצו על משבצת עם מספר כדי לראות את ההגדרה המתאימה.</div>
 
     <div class="board-container">
         <div class="board" id="board"></div>
@@ -89,6 +167,7 @@
         
         input.onfocus = () => {
             if(p.n) document.getElementById('definition-display').innerText = defs[p.n];
+            else document.getElementById('definition-display').innerText = "לחצו על משבצת עם מספר כדי לראות את ההגדרה המתאימה.";
         };
 
         input.oninput = () => {
