@@ -8,10 +8,9 @@
         :root { 
             --c: 6.8vw; 
             --primary: #2c5282; 
-            /* הצבעים החדשים שלך */
-            --bg-page: #e0f7fa;    /* תכלת בהיר לרקע הדף */
-            --bg-defs: #fff9c4;    /* צהוב בננה להגדרות */
-            --bg-board: #dcedc8;   /* ירוק פיסטוק עדין ללוח */
+            --bg-page: #e0f7fa;    
+            --bg-defs: #fff9c4;    
+            --bg-board: #dcedc8;   
         }
         @media (min-width: 600px) { :root { --c: 38px; } }
         
@@ -44,7 +43,7 @@
             width: calc(14 * var(--c)); 
             height: calc(16 * var(--c)); 
             background: var(--bg-board); 
-            border: 1.5px solid #2d3748; /* קו עדין כפי שביקשת */
+            border: 1.5px solid #2d3748;
         }
 
         .cell { position: absolute; width: var(--c); height: var(--c); background: white; border: 0.5px solid #2d3748; box-sizing: border-box; }
@@ -53,6 +52,29 @@
         input { width: 100%; height: 100%; border: none; text-align: center; font-size: calc(var(--c) * 0.6); font-weight: bold; background: transparent; outline: none; padding: 0; color: #2d3748; -webkit-appearance: none; border-radius: 0; }
         input.is-correct { background-color: #48bb78 !important; color: white !important; }
         input.is-wrong { background-color: #fc8181 !important; color: white !important; }
+
+        /* סגנון להודעת הסיום */
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #48bb78;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 100;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -61,9 +83,12 @@
         <p class="credit">עריכה: מילכה ברקו גרש</p>
     </div>
     <div id="definition-display">לחצו על משבצת עם מספר כדי לראות את ההגדרה המתאימה.</div>
+    
     <div class="board-container">
         <div class="board" id="board"></div>
     </div>
+
+    <div id="success-msg" class="success-message">כל הכבוד! 🎉</div>
 
 <script>
     const defs = { 
@@ -103,6 +128,19 @@
     const norm = {"ם":"מ","ן":"נ","ף":"פ","ץ":"צ","ך":"כ"};
     const board = document.getElementById('board');
     const usedPos = new Set();
+    const allInputs = [];
+
+    function checkCompletion() {
+        const isComplete = allInputs.every(input => {
+            const val = input.value.trim();
+            const ans = input.dataset.answer;
+            return (norm[val] || val) === (norm[ans] || ans);
+        });
+        
+        if (isComplete) {
+            document.getElementById('success-msg').style.display = 'block';
+        }
+    }
 
     cellData.forEach(p => {
         const key = `${p.x},${p.y}`;
@@ -124,14 +162,21 @@
         const input = document.createElement('input');
         input.maxLength = 1;
         input.dataset.answer = p.a;
+        allInputs.push(input);
+
         input.onfocus = () => { if(p.n) document.getElementById('definition-display').innerText = defs[p.n]; };
+        
         input.oninput = () => {
             let val = input.value.trim();
             let ans = input.dataset.answer;
             input.classList.remove('is-correct', 'is-wrong');
             if (!val) return;
-            if ((norm[val] || val) === (norm[ans] || ans)) input.classList.add('is-correct');
-            else input.classList.add('is-wrong');
+            if ((norm[val] || val) === (norm[ans] || ans)) {
+                input.classList.add('is-correct');
+                checkCompletion();
+            } else {
+                input.classList.add('is-wrong');
+            }
         };
         div.appendChild(input);
         board.appendChild(div);
