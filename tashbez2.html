@@ -24,8 +24,8 @@
         }
 
         .header-section { text-align: center; margin-bottom: 20px; }
-        h2 { margin: 0; color: #1a365d; font-size: 1.6rem; }
-        .credit { margin: 5px 0 0 0; font-size: 1rem; color: #2d3748; }
+        h2 { margin: 0; color: #1a365d; font-size: 1.4rem; }
+        .credit { margin: 5px 0 0 0; font-size: 0.95rem; color: #2d3748; }
 
         #definition-display { 
             width: 90%; 
@@ -33,8 +33,8 @@
             min-height: 80px; 
             background: var(--bg-defs); 
             border: 2px solid #fbc02d; 
-            border-radius: 15px; 
-            padding: 15px; 
+            border-radius: 12px; 
+            padding: 12px; 
             margin-bottom: 25px; 
             text-align: center; 
             font-weight: bold; 
@@ -42,7 +42,7 @@
             align-items: center; 
             justify-content: center; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            font-size: 1.1rem; 
+            font-size: 1rem; 
             color: #424242; 
         }
 
@@ -53,9 +53,8 @@
             width: calc(14 * var(--c)); 
             height: calc(16 * var(--c)); 
             background: var(--bg-board); 
-            border: 4px solid #2e7d32; 
+            border: 3px solid #2e7d32; 
             border-radius: 8px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
 
         .cell { 
@@ -63,7 +62,7 @@
             width: var(--c); 
             height: var(--c); 
             background: white; 
-            border: 1px solid #2e7d32; 
+            border: 0.5px solid #2e7d32; 
             box-sizing: border-box; 
         }
 
@@ -71,7 +70,7 @@
             position: absolute; 
             top: 1px; 
             right: 2px; 
-            font-size: calc(var(--c) * 0.35); 
+            font-size: calc(var(--c) * 0.32); 
             font-weight: bold; 
             color: #1565c0; 
             z-index: 5; 
@@ -80,8 +79,9 @@
 
         input { 
             width: 100%; height: 100%; border: none; text-align: center; 
-            font-size: calc(var(--c) * 0.65); font-weight: bold; 
+            font-size: calc(var(--c) * 0.6); font-weight: bold; 
             background: transparent; outline: none; color: #1b5e20; 
+            padding: 0; -webkit-appearance: none; border-radius: 0;
         }
         
         input:focus { background-color: #fff9c4; }
@@ -95,7 +95,7 @@
         <p class="credit">עריכה: מילכה ברקו גרש</p>
     </div>
     
-    <div id="definition-display">לחצו על משבצת עם מספר כדי להתחיל!</div>
+    <div id="definition-display">לחצו על משבצת עם מספר כדי לראות את ההגדרה.</div>
     
     <div class="board-container">
         <div class="board" id="board"></div>
@@ -125,7 +125,7 @@
         {x:10,y:6,n:9,a:"פ"},{x:9,y:6,a:"ר"},{x:8,y:6,a:"פ"},{x:7,y:6,a:"ר"},{x:5,y:6,a:"ם"},
         {x:9,y:4,n:7,a:"ד"},{x:9,y:5,a:"ו"},{x:9,y:7,a:"ב"},{x:9,y:8,a:"ן"},
         {x:10,y:4,n:6,a:"ח"},{x:8,y:4,a:"ק"},
-        {x:11,y:8,n:10,a:"צ"},{x:10,y:8,a:"מ"},{x:9,y:8,a:"ד"},{x:8,y:8,a:"ן"}, // תיקון מיקום מילה 10
+        {x:10,y:8,n:10,a:"צ"},{x:9,y:8,a:"מ"},{x:8,y:8,a:"ד"},{x:7,y:8,a:"ן"}, // הזזה שמאלה מפורשת למילה 10
         {x:2,y:1,n:3,a:"נ"},{x:1,y:1,n:4,a:"ח"},{x:0,y:1,a:"ש"},
         {x:1,y:2,a:"י"},{x:1,y:3,a:"ק"},{x:1,y:4,a:"ו"},{x:1,y:5,a:"י"},
         {x:2,y:5,n:5,a:"ב"},{x:1,y:5,a:"י"},{x:0,y:5,a:"ו"},{x:-1,y:5,a:"ס"},
@@ -147,7 +147,7 @@
 
         const div = document.createElement('div');
         div.className = 'cell';
-        div.style.left = `calc(${p.x + 1} * var(--c))`;
+        div.style.left = `calc(${p.x + 1.5} * var(--c))`; // הוספתי עוד מרווח מהשוליים
         div.style.top = `calc(${p.y} * var(--c))`;
         if(p.n) div.innerHTML = `<span class="num">${p.n}</span>`;
 
