@@ -2,82 +2,80 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>תשבץ ביומימיקרי - מילכה ברקו גרש</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תשבץ ביומימיקרי</title>
     <style>
-        :root { 
-            --c: 6.5vw; 
-            --bg-page: #cff4ff; 
-            --bg-defs: #fff59d; 
-            --bg-board: #b9f6ca; 
-        }
-        @media (min-width: 600px) { :root { --c: 38px; } }
-        
         body { 
-            font-family: system-ui, sans-serif; 
-            background: var(--bg-page); 
-            margin: 0; padding: 10px; 
-            display: flex; flex-direction: column; align-items: center; 
+            font-family: sans-serif; 
+            background-color: #cff4ff; 
+            margin: 0; 
+            padding: 10px; 
+            text-align: center;
         }
-
-        .header-section { text-align: center; margin-bottom: 15px; }
-        h2 { margin: 0; color: #1a365d; font-size: 1.4rem; }
-        .credit { margin: 5px 0 0 0; font-size: 0.9rem; color: #2d3748; }
-
+        .header { margin-bottom: 15px; }
+        h2 { color: #1a365d; margin: 5px; }
+        
         #definition-display { 
-            width: 92%; max-width: 500px; min-height: 80px; 
-            background: var(--bg-defs); border: 2px solid #fbc02d; 
-            border-radius: 12px; padding: 12px; margin-bottom: 20px; 
-            text-align: center; font-weight: bold; display: flex; 
-            align-items: center; justify-content: center; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-size: 1rem; color: #424242; 
+            background: #fff59d; 
+            border: 2px solid #fbc02d; 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin: 10px auto 20px auto; 
+            width: 90%; 
+            max-width: 400px; 
+            min-height: 60px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .board-container { 
-            width: 100%; display: flex; justify-content: center; 
-            padding-bottom: 50px; overflow: visible;
-        }
-
+        /* הלוח עצמו */
         .board { 
             position: relative; 
-            width: calc(14 * var(--c)); 
-            height: calc(15 * var(--c)); 
-            background: var(--bg-board); 
-            border: 3px solid #2e7d32; border-radius: 8px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            width: 320px; /* גודל קבוע ובטוח לכל טלפון */
+            height: 400px; 
+            background-color: #b9f6ca; 
+            border: 3px solid #2e7d32; 
+            margin: 0 auto; /* מרכוז מושלם של הלוח */
+            border-radius: 8px;
         }
 
         .cell { 
-            position: absolute; width: var(--c); height: var(--c); 
-            background: white; border: 0.5px solid #2e7d32; box-sizing: border-box; 
+            position: absolute; 
+            width: 22px; 
+            height: 22px; 
+            background: white; 
+            border: 1px solid #2e7d32; 
+            box-sizing: border-box; 
         }
 
         .num { 
-            position: absolute; top: 1px; right: 2px; 
-            font-size: calc(var(--c) * 0.32); font-weight: bold; 
-            color: #1565c0; z-index: 5; pointer-events: none; 
+            position: absolute; 
+            top: 0; right: 1px; 
+            font-size: 8px; 
+            color: blue; 
+            pointer-events: none; 
         }
 
         input { 
-            width: 100%; height: 100%; border: none; text-align: center; 
-            font-size: calc(var(--c) * 0.6); font-weight: bold; 
-            background: transparent; outline: none; color: #1b5e20; padding: 0;
+            width: 100%; height: 100%; border: none; 
+            text-align: center; font-size: 14px; font-weight: bold; 
+            background: transparent; outline: none; padding: 0;
         }
-        
-        input:focus { background-color: #fff9c4; }
-        input.is-correct { background-color: #4caf50 !important; color: white !important; }
-        input.is-wrong { background-color: #ef5350 !important; color: white !important; }
+
+        input.is-correct { background-color: #4caf50 !important; color: white; }
+        input.is-wrong { background-color: #ef5350 !important; color: white; }
     </style>
 </head>
 <body>
-    <div class="header-section">
-        <h2>תשבץ ביומימיקרי</h2>
-        <p class="credit">עריכה: מילכה ברקו גרש</p>
-    </div>
-    <div id="definition-display">לחצו על משבצת עם מספר כדי לראות את ההגדרה.</div>
-    <div class="board-container">
-        <div class="board" id="board"></div>
-    </div>
+
+<div class="header">
+    <h2>תשבץ ביומימיקרי</h2>
+    <small>עריכה: מילכה ברקו גרש</small>
+</div>
+
+<div id="definition-display">לחצו על משבצת עם מספר</div>
+
+<div class="board" id="board"></div>
 
 <script>
     const defs = { 
@@ -85,18 +83,17 @@
         "2":"2 מאונך: תליהם שמשו השראה לבנייה ממוזגת באופן טבעי.",
         "3":"3 מאוזן: כינוי לסוג רובוט דק וארוך, בעל כושר תנועה וצילום.",
         "4":"4 מאונך: פירוש המילה: מימטיקה.",
-        "5":"5 מאוזן: פירוש המילה: ביוס. | מאונך: השלימו: עצמות וקונכיות מהוות מודל חיקוי לפתוח חומרים ומבנים...",
-        "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לבניית רובוט לאחיזה ותנועה.",
-        "7":"7 מאונך: סוג בעל חיים יונק, בהשראת קוציו מפתחים מחטים, חוטים ודבקים כירוגיים.",
-        "8":"8 מאוזן: בעל חיים זוחל, בהשראתו מנסים לפתח דבקים ואמצעים לטיפוס לגובה.",
-        "9":"9 מאוזן: קבוצה של חרקים, מהווים השראה לפיתוח מוצרים בעלי צבעים פיזיקליים.",
-        "10":"10 מאוזן: שם מוצר (בעברית) שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
-        "11":"11 מאוזן: יצור המפיק קורים גמישים וחזקים. | מאונך: יונקים מעופפים, מתקשרים באמצעות סונאר.",
-        "12":"12 מאוזן: סוג ציפור, בהשראתו שופרה חזות הרכבת המהירה ביפן.",
-        "13":"13 מאוזן: בהשראת מבנה עורו פותחו משטחים דוחי תפוצת חיידקים ומקטיני חיכוך."
+        "5":"5 מאוזן: פירוש המילה: ביוס. | מאונך: עצמות וקונכיות הן מודל לחיקוי...",
+        "6":"6 מאוזן: איבר בגוף הפיל, שימש השראה לרובוט אחיזה.",
+        "7":"7 מאונך: יונק שבהשראת קוציו מפתחים מחטים ודבקים.",
+        "8":"8 מאוזן: זוחל שבהשראתו מפתחים אמצעי טיפוס.",
+        "9":"9 מאוזן: חרקים המהווים השראה לצבעים פיזיקליים.",
+        "10":"10 מאוזן: מוצר שהומצא בהשראת זרעים שנצמדו לפרוות כלב.",
+        "11":"11 מאוזן: יצור המפיק קורים חזקים. | מאונך: יונקים מעופפים עם סונאר.",
+        "12":"12 מאוזן: ציפור שבהשראתה שופרה הרכבת המהירה.",
+        "13":"13 מאוזן: בהשראת עורו פותחו משטחים דוחי חיידקים."
     };
-    
+
     const cellData = [
         {x:8,y:1,n:1,a:"ל"},{x:7,y:1,a:"ו"},{x:6,y:1,n:2,a:"ט"},{x:5,y:1,a:"ו"},{x:4,y:1,a:"ס"},
-        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,y:6,a:"י"},{x:6,y:7,a:"ם"},
-        {x:7,y:3,n:8,a:"ש"},{x:
+        {x:6,y:2,a:"ר"},{x:6,y:3,a:"מ"},{x:6,y:4,a:"י"},{x:6,y:5,a:"ט"},{x:6,
