@@ -6,7 +6,7 @@
     <title>רמות ארגון - מילכה ברקו גרש</title>
     <style>
         :root { 
-            --bg: #fdfcf0; --primary: #ff6b6b; --secondary: #4ecdc4; 
+            --bg: #fdfcf0; --primary: #ff6b6b; --secondary: #5f27cd; /* סגול חזק לקונטרסט */
             --accent: #ffe66d; --text: #2f2f2f; --found: #1dd1a1;
         }
         * { box-sizing: border-box; }
@@ -18,15 +18,27 @@
         .header { text-align: center; margin-bottom: 10px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); }
         h1 { color: var(--primary); margin: 0; font-size: 1.6rem; }
         .credit { font-weight: bold; color: #555; font-size: 0.9rem; margin-top: 5px; }
-        .instructions { background: var(--secondary); color: white; padding: 8px; border-radius: 12px; margin-top: 10px; font-size: 0.8rem; line-height: 1.4; }
+        
+        /* בועת הנחיות בסגול עם קונטרסט גבוה */
+        .instructions { 
+            background: var(--secondary); 
+            color: white; 
+            padding: 12px; 
+            border-radius: 12px; 
+            margin-top: 12px; 
+            font-size: 0.9rem; 
+            line-height: 1.5; 
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            width: 100%;
+        }
 
-        /* לוח צר יותר (10 עמודות) כדי לאפשר גלילה בצדדים */
         .grid { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
             background: #fff; border: 5px solid var(--accent); padding: 5px; 
             border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
             user-select: none; width: 90%; max-width: 360px;
-            touch-action: none; margin-bottom: 20px;
+            touch-action: none; margin-bottom: 20px; margin-top: 10px;
         }
         .cell { 
             aspect-ratio: 1/1; background: #f8f9fa; display: flex; 
@@ -45,12 +57,12 @@
             list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
         }
         .word-item { 
-            padding: 6px 8px; border-radius: 5px; background: #f1f2f6; 
-            font-weight: 600; color: #57606f; border-right: 4px solid #ccc; font-size: 0.85rem;
+            padding: 8px; border-radius: 5px; background: #f1f2f6; 
+            font-weight: bold; color: #333; border-right: 4px solid #ccc; font-size: 0.9rem;
         }
         .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
 
-        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; margin-bottom: 30px; }
+        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; margin-bottom: 40px; box-shadow: 0 4px #e66767; }
     </style>
 </head>
 <body>
@@ -59,8 +71,8 @@
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
-            החליקו אצבע על האותיות (אופקי, אנכי ואלכסוני).<br>
-            בפלאפון: ניתן לגלול למטה דרך צידי הלוח.
+            זהו את רמות הארגון בלוח.<br>
+            החליקו אצבע על האותיות בכל הכיוונים: אופקי, אנכי, אלכסוני וגם הפוך!
         </div>
     </div>
     
@@ -81,7 +93,7 @@
         let selectedCells = [];
 
         function initGame() {
-            // "מערכתאקולוגית" חייבת להיות אנכית כי הרווח הוא רק 10
+            // "מערכתאקולוגית" - תמיד אנכית (12 אותיות בלוח של 15 שורות)
             let placedEco = false;
             while(!placedEco) {
                 let r = Math.floor(Math.random() * (rows - 12));
@@ -94,7 +106,7 @@
             remaining.forEach(word => {
                 let placed = false;
                 let attempts = 0;
-                while (!placed && attempts < 800) {
+                while (!placed && attempts < 1000) {
                     const directions = [[0,1], [0,-1], [1,0], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
                     const [dr, dc] = directions[Math.floor(Math.random() * directions.length)];
                     const r = Math.floor(Math.random() * rows);
