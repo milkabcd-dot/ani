@@ -12,44 +12,45 @@
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); 
-            display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0; color: var(--text);
-            overflow-y: auto; /* מאפשר גלילה חופשית */
+            display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; color: var(--text);
+            overflow-y: auto; min-height: 100vh;
         }
-        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border-bottom: 5px solid var(--accent); }
-        h1 { color: var(--primary); margin: 0; font-size: 1.8rem; }
-        .credit { font-weight: bold; color: #555; font-size: 0.95rem; margin-top: 5px; }
-        .instructions { background: var(--secondary); color: white; padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 0.85rem; line-height: 1.4; }
+        .header { text-align: center; margin-bottom: 10px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); }
+        h1 { color: var(--primary); margin: 0; font-size: 1.6rem; }
+        .credit { font-weight: bold; color: #555; font-size: 0.9rem; margin-top: 5px; }
+        .instructions { background: var(--secondary); color: white; padding: 8px; border-radius: 12px; margin-top: 10px; font-size: 0.8rem; line-height: 1.4; }
 
+        /* לוח צר יותר (10 עמודות) כדי לאפשר גלילה בצדדים */
         .grid { 
-            display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
             background: #fff; border: 5px solid var(--accent); padding: 5px; 
             border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            user-select: none; width: 100%; max-width: 450px;
-            touch-action: none; /* מונע גלילה רק כשנוגעים בלוח עצמו */
+            user-select: none; width: 90%; max-width: 360px;
+            touch-action: none; margin-bottom: 20px;
         }
         .cell { 
             aspect-ratio: 1/1; background: #f8f9fa; display: flex; 
             align-items: center; justify-content: center; font-weight: 800; 
-            cursor: pointer; border-radius: 4px; font-size: 1.1rem; color: #444;
+            cursor: pointer; border-radius: 4px; font-size: 1.2rem; color: #444;
         }
         .cell.selected { background: var(--accent); transform: scale(1.05); }
         .cell.found { background: var(--found); color: white; }
 
         .word-bank { 
-            background: white; padding: 15px; border-radius: 15px; margin-top: 20px;
-            width: 100%; max-width: 450px; border-top: 5px solid var(--secondary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background: white; padding: 15px; border-radius: 15px; 
+            width: 95%; max-width: 400px; border-top: 5px solid var(--secondary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
         }
         .word-list { 
             list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
         }
         .word-item { 
-            padding: 6px 10px; border-radius: 5px; background: #f1f2f6; 
-            font-weight: 600; color: #57606f; border-right: 4px solid #ccc; font-size: 0.9rem;
+            padding: 6px 8px; border-radius: 5px; background: #f1f2f6; 
+            font-weight: 600; color: #57606f; border-right: 4px solid #ccc; font-size: 0.85rem;
         }
         .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
 
-        .reset-btn { margin: 20px 0; width: 100%; max-width: 450px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; }
+        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; margin-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -58,7 +59,8 @@
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
-            זהו את רמות הארגון בלוח. החליקו אצבע על המילים (אופקי, אנכי ואלכסוני).
+            החליקו אצבע על האותיות (אופקי, אנכי ואלכסוני).<br>
+            בפלאפון: ניתן לגלול למטה דרך צידי הלוח.
         </div>
     </div>
     
@@ -72,31 +74,31 @@
 
     <script>
         const baseWords = ["אטום", "מולקולה", "אברון", "תא", "רקמה", "איבר", "מערכת", "אורגניזם", "אוכלוסייה", "חברה", "מערכתאקולוגית", "ביוספרה"];
-        const size = 13;
-        let grid = Array(size).fill().map(() => Array(size).fill(''));
+        const cols = 10;
+        const rows = 15;
+        let grid = Array(rows).fill().map(() => Array(cols).fill(''));
         let isSelecting = false;
         let selectedCells = [];
 
         function initGame() {
-            // טיפול מיוחד במילה הארוכה - רק אנכי (מלמעלה למטה)
-            let ecoPlaced = false;
-            while(!ecoPlaced) {
-                let r = Math.floor(Math.random() * (size - 12));
-                let c = Math.floor(Math.random() * size);
+            // "מערכתאקולוגית" חייבת להיות אנכית כי הרווח הוא רק 10
+            let placedEco = false;
+            while(!placedEco) {
+                let r = Math.floor(Math.random() * (rows - 12));
+                let c = Math.floor(Math.random() * cols);
                 placeWord("מערכתאקולוגית", r, c, 1, 0);
-                ecoPlaced = true;
+                placedEco = true;
             }
 
-            // שאר המילים - כרגיל
             const remaining = baseWords.filter(w => w !== "מערכתאקולוגית").sort((a,b) => b.length - a.length);
             remaining.forEach(word => {
                 let placed = false;
                 let attempts = 0;
-                while (!placed && attempts < 500) {
+                while (!placed && attempts < 800) {
                     const directions = [[0,1], [0,-1], [1,0], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
                     const [dr, dc] = directions[Math.floor(Math.random() * directions.length)];
-                    const r = Math.floor(Math.random() * size);
-                    const c = Math.floor(Math.random() * size);
+                    const r = Math.floor(Math.random() * rows);
+                    const c = Math.floor(Math.random() * cols);
                     if (canPlace(word, r, c, dr, dc)) {
                         placeWord(word, r, c, dr, dc);
                         placed = true;
@@ -107,8 +109,8 @@
 
             const chars = "אבגדהוזחטיכלמנסעפצקרשת";
             const gridDiv = document.getElementById('grid');
-            for (let r = 0; r < size; r++) {
-                for (let c = 0; c < size; c++) {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
                     if (!grid[r][c]) grid[r][c] = chars[Math.floor(Math.random() * chars.length)];
                     const cell = document.createElement('div');
                     cell.className = 'cell';
@@ -142,7 +144,7 @@
         function canPlace(word, r, c, dr, dc) {
             const endR = r + (word.length - 1) * dr;
             const endC = c + (word.length - 1) * dc;
-            if (endR < 0 || endR >= size || endC < 0 || endC >= size) return false;
+            if (endR < 0 || endR >= rows || endC < 0 || endC >= cols) return false;
             for (let i = 0; i < word.length; i++) {
                 let curr = grid[r + i * dr][c + i * dc];
                 if (curr !== '' && curr !== word[i]) return false;
@@ -162,7 +164,6 @@
             const s = selectedCells.map(c => c.textContent).join('');
             const rev = s.split('').reverse().join('');
             const match = baseWords.find(w => w === s || w === rev);
-            
             if (match) {
                 selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
                 document.getElementById('word-' + match).classList.add('found');
