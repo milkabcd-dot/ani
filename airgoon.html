@@ -2,55 +2,54 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>רמות ארגון - מילכה ברקו גרש</title>
     <style>
         :root { 
             --bg: #fdfcf0; --primary: #ff6b6b; --secondary: #4ecdc4; 
             --accent: #ffe66d; --text: #2f2f2f; --found: #1dd1a1;
         }
-        * { box-sizing: border-box; touch-action: none; }
+        * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); 
-            display: flex; flex-direction: column; align-items: center; padding: 5px; margin: 0; color: var(--text);
+            display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0; color: var(--text);
+            overflow-y: auto; /* מאפשר גלילה חופשית */
         }
-        .header { text-align: center; background: white; padding: 10px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); width: 95%; margin-bottom: 10px; border-bottom: 4px solid var(--accent); }
-        h1 { color: var(--primary); margin: 0; font-size: 1.4rem; }
-        .credit { font-weight: bold; color: #555; font-size: 0.8rem; }
-        
-        .instructions { font-size: 0.75rem; background: var(--secondary); color: white; padding: 5px 10px; border-radius: 10px; margin-top: 5px; display: inline-block; }
-
-        /* רשימת מילים דביקה למובייל */
-        .word-bank { 
-            position: sticky; top: 0; z-index: 100; background: white; padding: 10px; 
-            border-radius: 0 0 15px 15px; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 15px; border-bottom: 3px solid var(--secondary);
-            max-height: 120px; overflow-y: auto;
-        }
-        .word-list { 
-            list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; 
-        }
-        .word-item { 
-            padding: 3px 5px; border-radius: 4px; background: #f1f2f6; 
-            font-weight: 600; color: #57606f; border-right: 2px solid #ccc; font-size: 0.7rem; text-align: center;
-        }
-        .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
+        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border-bottom: 5px solid var(--accent); }
+        h1 { color: var(--primary); margin: 0; font-size: 1.8rem; }
+        .credit { font-weight: bold; color: #555; font-size: 0.95rem; margin-top: 5px; }
+        .instructions { background: var(--secondary); color: white; padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 0.85rem; line-height: 1.4; }
 
         .grid { 
-            display: grid; grid-template-columns: repeat(14, 1fr); gap: 2px; 
-            background: #fff; border: 4px solid var(--accent); padding: 4px; 
-            border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-            user-select: none; width: 98vw; max-width: 450px;
+            display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; 
+            background: #fff; border: 5px solid var(--accent); padding: 5px; 
+            border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            user-select: none; width: 100%; max-width: 450px;
+            touch-action: none; /* מונע גלילה רק כשנוגעים בלוח עצמו */
         }
         .cell { 
             aspect-ratio: 1/1; background: #f8f9fa; display: flex; 
             align-items: center; justify-content: center; font-weight: 800; 
-            cursor: pointer; border-radius: 2px; font-size: 0.9rem; color: #444;
+            cursor: pointer; border-radius: 4px; font-size: 1.1rem; color: #444;
         }
-        .cell.selected { background: var(--accent); }
+        .cell.selected { background: var(--accent); transform: scale(1.05); }
         .cell.found { background: var(--found); color: white; }
 
-        .reset-btn { margin: 15px 0; width: 90%; cursor: pointer; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 0.9rem; }
+        .word-bank { 
+            background: white; padding: 15px; border-radius: 15px; margin-top: 20px;
+            width: 100%; max-width: 450px; border-top: 5px solid var(--secondary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .word-list { 
+            list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
+        }
+        .word-item { 
+            padding: 6px 10px; border-radius: 5px; background: #f1f2f6; 
+            font-weight: 600; color: #57606f; border-right: 4px solid #ccc; font-size: 0.9rem;
+        }
+        .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
+
+        .reset-btn { margin: 20px 0; width: 100%; max-width: 450px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -58,34 +57,50 @@
     <div class="header">
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
-        <div class="instructions">החליקו אצבע על האותיות (גם באלכסון)</div>
-    </div>
-
-    <div class="word-bank">
-        <ul class="word-list" id="wordList"></ul>
+        <div class="instructions">
+            זהו את רמות הארגון בלוח. החליקו אצבע על המילים (אופקי, אנכי ואלכסוני).
+        </div>
     </div>
     
     <div class="grid" id="grid"></div>
     
+    <div class="word-bank">
+        <ul class="word-list" id="wordList"></ul>
+    </div>
+
     <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש</button>
 
     <script>
         const baseWords = ["אטום", "מולקולה", "אברון", "תא", "רקמה", "איבר", "מערכת", "אורגניזם", "אוכלוסייה", "חברה", "מערכתאקולוגית", "ביוספרה"];
-        const size = 14;
+        const size = 13;
         let grid = Array(size).fill().map(() => Array(size).fill(''));
         let isSelecting = false;
         let selectedCells = [];
 
         function initGame() {
-            const sortedWords = [...baseWords].sort((a, b) => b.length - a.length);
-            sortedWords.forEach(word => {
+            // טיפול מיוחד במילה הארוכה - רק אנכי (מלמעלה למטה)
+            let ecoPlaced = false;
+            while(!ecoPlaced) {
+                let r = Math.floor(Math.random() * (size - 12));
+                let c = Math.floor(Math.random() * size);
+                placeWord("מערכתאקולוגית", r, c, 1, 0);
+                ecoPlaced = true;
+            }
+
+            // שאר המילים - כרגיל
+            const remaining = baseWords.filter(w => w !== "מערכתאקולוגית").sort((a,b) => b.length - a.length);
+            remaining.forEach(word => {
                 let placed = false;
                 let attempts = 0;
-                while (!placed && attempts < 1000) {
-                    const directions = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+                while (!placed && attempts < 500) {
+                    const directions = [[0,1], [0,-1], [1,0], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
                     const [dr, dc] = directions[Math.floor(Math.random() * directions.length)];
-                    const r = Math.floor(Math.random() * size), c = Math.floor(Math.random() * size);
-                    if (canPlace(word, r, c, dr, dc)) { placeWord(word, r, c, dr, dc); placed = true; }
+                    const r = Math.floor(Math.random() * size);
+                    const c = Math.floor(Math.random() * size);
+                    if (canPlace(word, r, c, dr, dc)) {
+                        placeWord(word, r, c, dr, dc);
+                        placed = true;
+                    }
                     attempts++;
                 }
             });
@@ -96,9 +111,20 @@
                 for (let c = 0; c < size; c++) {
                     if (!grid[r][c]) grid[r][c] = chars[Math.floor(Math.random() * chars.length)];
                     const cell = document.createElement('div');
-                    cell.className = 'cell'; cell.textContent = grid[r][c];
-                    cell.addEventListener('pointerdown', (e) => { isSelecting = true; selectedCells = [cell]; cell.classList.add('selected'); cell.releasePointerCapture(e.pointerId); });
-                    cell.addEventListener('pointerenter', () => { if (isSelecting && !selectedCells.includes(cell)) { selectedCells.push(cell); cell.classList.add('selected'); } });
+                    cell.className = 'cell';
+                    cell.textContent = grid[r][c];
+                    cell.addEventListener('pointerdown', (e) => {
+                        isSelecting = true;
+                        selectedCells = [cell];
+                        cell.classList.add('selected');
+                        cell.releasePointerCapture(e.pointerId);
+                    });
+                    cell.addEventListener('pointerenter', () => {
+                        if (isSelecting && !selectedCells.includes(cell)) {
+                            selectedCells.push(cell);
+                            cell.classList.add('selected');
+                        }
+                    });
                     gridDiv.appendChild(cell);
                 }
             }
@@ -106,13 +132,16 @@
             const listUl = document.getElementById('wordList');
             baseWords.forEach(w => {
                 const li = document.createElement('li');
-                li.className = 'word-item'; li.id = 'word-' + w; li.textContent = w;
+                li.className = 'word-item';
+                li.id = 'word-' + w;
+                li.textContent = (w === "מערכתאקולוגית") ? "מערכת אקולוגית" : w;
                 listUl.appendChild(li);
             });
         }
 
         function canPlace(word, r, c, dr, dc) {
-            const endR = r + (word.length - 1) * dr, endC = c + (word.length - 1) * dc;
+            const endR = r + (word.length - 1) * dr;
+            const endC = c + (word.length - 1) * dc;
             if (endR < 0 || endR >= size || endC < 0 || endC >= size) return false;
             for (let i = 0; i < word.length; i++) {
                 let curr = grid[r + i * dr][c + i * dc];
@@ -122,20 +151,27 @@
         }
 
         function placeWord(word, r, c, dr, dc) {
-            for (let i = 0; i < word.length; i++) grid[r + i * dr][c + i * dc] = word[i];
+            for (let i = 0; i < word.length; i++) {
+                grid[r + i * dr][c + i * dc] = word[i];
+            }
         }
 
         window.addEventListener('pointerup', () => {
             if (!isSelecting) return;
             isSelecting = false;
-            const s = selectedCells.map(c => c.textContent).join(''), rev = s.split('').reverse().join('');
+            const s = selectedCells.map(c => c.textContent).join('');
+            const rev = s.split('').reverse().join('');
             const match = baseWords.find(w => w === s || w === rev);
+            
             if (match) {
                 selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
                 document.getElementById('word-' + match).classList.add('found');
-            } else { selectedCells.forEach(c => c.classList.remove('selected')); }
+            } else {
+                selectedCells.forEach(c => c.classList.remove('selected'));
+            }
             selectedCells = [];
         });
+
         initGame();
     </script>
 </body>
