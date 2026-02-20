@@ -9,48 +9,47 @@
             --bg: #fdfcf0; --primary: #ff6b6b; --secondary: #4ecdc4; 
             --accent: #ffe66d; --text: #2f2f2f; --found: #1dd1a1;
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: none; }
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); 
             display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; color: var(--text);
         }
-        .header { text-align: center; margin-bottom: 15px; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 100%; max-width: 500px; }
+        .header { text-align: center; margin-bottom: 15px; background: white; padding: 15px 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 100%; max-width: 500px; border-bottom: 5px solid var(--accent); }
         h1 { color: var(--primary); margin: 0; font-size: 1.8rem; }
-        .credit { font-weight: bold; color: #555; font-size: 0.9rem; }
-        .instructions { background: var(--secondary); color: white; padding: 4px 12px; border-radius: 50px; margin-top: 8px; font-size: 0.85rem; display: inline-block; }
+        .credit { font-weight: bold; color: #555; font-size: 0.95rem; margin-top: 5px; }
+        .instructions { background: var(--secondary); color: white; padding: 10px 15px; border-radius: 15px; margin-top: 10px; font-size: 0.9rem; display: inline-block; line-height: 1.5; font-weight: 500; }
 
-        .container { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+        .container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
         
-        /* התאמת הלוח למובייל */
         .grid { 
-            display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; 
+            display: grid; grid-template-columns: repeat(14, 1fr); gap: 2px; 
             background: #fff; border: 5px solid var(--accent); padding: 5px; 
             border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            user-select: none; touch-action: none; width: 100%; max-width: 400px;
+            user-select: none; width: 100%; max-width: 450px;
         }
         .cell { 
             aspect-ratio: 1/1; background: #f8f9fa; display: flex; 
             align-items: center; justify-content: center; font-weight: 800; 
-            cursor: pointer; border-radius: 3px; font-size: 1.1rem; color: #444;
+            cursor: pointer; border-radius: 2px; font-size: 1rem; color: #444;
+            -webkit-user-select: none;
         }
         .cell.selected { background: var(--accent); transform: scale(1.05); }
         .cell.found { background: var(--found); color: white; }
 
         .word-bank { 
             background: white; padding: 15px; border-radius: 15px; 
-            width: 100%; max-width: 400px; border-top: 5px solid var(--secondary);
+            width: 100%; max-width: 450px; border-top: 5px solid var(--secondary);
         }
-        .word-bank h3 { margin-top: 0; font-size: 1.1rem; text-align: center; }
         .word-list { 
-            list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; 
+            list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
         }
         .word-item { 
-            padding: 4px 8px; border-radius: 5px; background: #f1f2f6; 
-            font-weight: 600; color: #57606f; border-right: 3px solid #ccc; font-size: 0.85rem;
+            padding: 6px 10px; border-radius: 5px; background: #f1f2f6; 
+            font-weight: 600; color: #57606f; border-right: 4px solid #ccc; font-size: 0.85rem;
         }
         .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
 
-        button { margin-top: 15px; width: 100%; cursor: pointer; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; }
+        .reset-btn { margin-top: 15px; width: 100%; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -58,33 +57,39 @@
     <div class="header">
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
-        <div class="instructions">הנחיות: זהו את רמות הארגון על גבי הלוח.</div>
+        <div class="instructions">
+            <strong>הנחיות:</strong> זהו את רמות הארגון על גבי הלוח.<br>
+            החליקו את הסמן או האצבע על גבי האותיות.<br>
+            המילים מופיעות בכל הכיוונים: אופקי, אנכי ואלכסוני!
+        </div>
     </div>
     
     <div class="container">
         <div class="grid" id="grid"></div>
-        
         <div class="word-bank">
-            <h3>מילים למציאה (לפי סדר):</h3>
             <ul class="word-list" id="wordList"></ul>
-            <button onclick="location.reload()">ערבב לוח מחדש</button>
+            <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש</button>
         </div>
     </div>
 
     <script>
-        // רשימה מסודרת מהקטן לגדול
-        const words = ["אטום", "מולקולה", "אברון", "תא", "רקמה", "איבר", "מערכת", "אורגניזם", "אוכלוסייה", "חברה", "מערכתאקולוגית", "ביוספרה"];
-        const size = 13;
+        const baseWords = ["אטום", "מולקולה", "אברון", "תא", "רקמה", "איבר", "מערכת", "אורגניזם", "אוכלוסייה", "חברה", "מערכתאקולוגית", "ביוספרה"];
+        const size = 14;
         let grid = Array(size).fill().map(() => Array(size).fill(''));
         let isSelecting = false;
         let selectedCells = [];
 
         function initGame() {
-            words.forEach(word => {
+            const sortedWords = [...baseWords].sort((a, b) => b.length - a.length);
+            
+            sortedWords.forEach(word => {
                 let placed = false;
                 let attempts = 0;
-                while (!placed && attempts < 150) {
-                    const directions = [[0,1], [1,0], [1,1]]; // אופקי, אנכי, אלכסון
+                while (!placed && attempts < 1000) {
+                    const directions = [
+                        [0, 1], [0, -1], [1, 0], [-1, 0], 
+                        [1, 1], [1, -1], [-1, 1], [-1, -1]
+                    ];
                     const [dr, dc] = directions[Math.floor(Math.random() * directions.length)];
                     const r = Math.floor(Math.random() * size);
                     const c = Math.floor(Math.random() * size);
@@ -105,7 +110,6 @@
                     cell.className = 'cell';
                     cell.textContent = grid[r][c];
                     
-                    // תמיכה במגע (טאץ')
                     cell.addEventListener('pointerdown', (e) => {
                         isSelecting = true;
                         selectedCells = [cell];
@@ -123,7 +127,7 @@
             }
 
             const listUl = document.getElementById('wordList');
-            words.forEach(w => {
+            baseWords.forEach(w => {
                 const li = document.createElement('li');
                 li.className = 'word-item';
                 li.id = 'word-' + w;
@@ -154,7 +158,7 @@
             isSelecting = false;
             const selectedStr = selectedCells.map(c => c.textContent).join('');
             const reversedStr = selectedStr.split('').reverse().join('');
-            const match = words.find(w => w === selectedStr || w === reversedStr);
+            const match = baseWords.find(w => w === selectedStr || w === reversedStr);
             
             if (match) {
                 selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
