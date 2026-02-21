@@ -10,7 +10,6 @@
         h1 { color: #ff4757; margin: 0; font-size: 1.6rem; }
         .instructions { background: #fff3cd; color: #856404; padding: 8px; border-radius: 10px; font-size: 0.9rem; margin: 10px auto; border: 1px solid #ffeeba; max-width: 380px; font-weight: bold; }
 
-        /* בנק המילים */
         .word-bank-container { 
             background: white; padding: 12px; border-radius: 15px; 
             max-width: 450px; margin: 10px auto; 
@@ -27,7 +26,6 @@
         .word-item { padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        /* הלוח - מורחב ל-12 עמודות ליציבות מקסימלית */
         .grid { 
             display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; 
             max-width: 450px; margin: 20px auto; background: #ffe66d; 
@@ -67,18 +65,18 @@
 
 <div class="word-bank-container">
     <div class="word-bank" id="wordBank"></div>
-    <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})" title="ללוח התפזורת">👇</button>
+    <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})">👇</button>
 </div>
 
 <div class="grid" id="grid"></div>
 
 <div class="bottom-area">
-    <button class="nav-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="חזרה למעלה">☝️</button>
+    <button class="nav-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">☝️</button>
     <button class="reset-btn" onclick="location.reload()">עירבוב מחדש 🪇</button>
 </div>
 
 <script>
-    const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן", "עדלאידע"];
+    const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
     const rows = 16, cols = 12;
     let gridData = [];
@@ -96,7 +94,7 @@
 
             for (let word of sorted) {
                 let placed = false;
-                for (let i = 0; i < 3000; i++) { // ניסיונות רבים כדי לוודא שכולן נכנסות
+                for (let i = 0; i < 3000; i++) {
                     const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
                     const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
                     const r = Math.floor(Math.random() * rows);
