@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>תפזורת פורים - מילכה ברקו גרש</title>
+    <title>תפזורת פורים חגיגית</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow: hidden; }
         
@@ -11,7 +12,6 @@
         h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
         .sub-header { font-weight: bold; color: #555; font-size: 0.9rem; }
 
-        /* מילים גדולות וברורות ב-2 שורות */
         .word-bank { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
             max-width: 360px; margin: 10px auto; padding: 10px;
@@ -20,7 +20,6 @@
         .word-item { padding: 6px 0; border-radius: 6px; font-weight: bold; font-size: 0.8rem; background: #f8f9fa; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        /* לוח עם משבצות גדולות (8 עמודות במקום 10) */
         .grid { 
             display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; 
             max-width: 360px; margin: 15px auto; background: #ffe66d; 
@@ -34,19 +33,26 @@
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
         .cell.found { background: #1dd1a1; color: white; }
 
+        /* מסך סיום משופר */
         #win-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255, 71, 87, 0.98); color: white; 
-            flex-direction: column; align-items: center; justify-content: center; z-index: 9999; 
+            background: rgba(255, 255, 255, 0.9); flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 9999; 
         }
+        .win-box { background: white; padding: 30px; border-radius: 30px; border: 5px solid #ff6b81; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .emoji-float { font-size: 3rem; margin-bottom: 10px; }
+        .win-btn { padding: 15px 30px; border-radius: 15px; border: none; background: #ff6b81; color: white; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 0 #d63031; }
     </style>
 </head>
 <body>
 
 <div id="win-overlay">
-    <h1>פורים שמח! 🎭</h1>
-    <p>כל הכבוד! מצאת הכל!</p>
-    <button onclick="location.reload()" style="padding: 12px 25px; border-radius: 10px; border: none; background: white; color: #ff4757; font-weight: bold; font-size: 1.1rem;">שחק שוב</button>
+    <div class="win-box">
+        <div class="emoji-float">🎭 🥳 🪇</div>
+        <h1 style="color: #ff4757; font-size: 2.5rem;">פורים שמח!</h1>
+        <p style="font-size: 1.5rem; font-weight: bold; color: #2d3436;">כל הכבוד! מצאת את הכל!</p>
+        <button class="win-btn" onclick="location.reload()">לשחק שוב? ✨</button>
+    </div>
 </div>
 
 <div class="header">
@@ -61,8 +67,6 @@
     const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3", "#eccc68", "#b2bec3"];
     
-    // לוח קבוע שבניתי ידנית - קוביות גדולות, מילים ברורות
-    // גודל הלוח: 10 שורות על 8 עמודות (מבטיח קוביות גדולות בטלפון)
     const finalGrid = [
         ['מ','ר','ד','כ','י','א','ב','ג'],
         ['א','ס','ת','ר','ד','ה','ו','ז'],
@@ -81,13 +85,11 @@
 
     function init() {
         const gridElement = document.getElementById('grid');
-        gridElement.innerHTML = '';
         for (let r = 0; r < 10; r++) {
             for (let c = 0; c < 8; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.textContent = finalGrid[r][c];
-                
                 cell.addEventListener('pointerdown', (e) => {
                     isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
                     cell.setPointerCapture(e.pointerId);
@@ -102,7 +104,6 @@
                 gridElement.appendChild(cell);
             }
         }
-
         const bank = document.getElementById('wordBank');
         wordsList.forEach((w, i) => {
             const span = document.createElement('span');
@@ -112,6 +113,25 @@
             span.textContent = w === "אוזןהמן" ? "אוזן המן" : w;
             bank.appendChild(span);
         });
+    }
+
+    function celebrate() {
+        document.getElementById('win-overlay').style.display = 'flex';
+        
+        // ירי של קונפטי מכל הכיוונים
+        var duration = 5 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
     }
 
     window.addEventListener('pointerup', () => {
@@ -125,7 +145,7 @@
             selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
             document.getElementById('wb-' + match).classList.add('found');
             foundWords.add(match);
-            if (foundWords.size === wordsList.length) document.getElementById('win-overlay').style.display = 'flex';
+            if (foundWords.size === wordsList.length) celebrate();
         } else {
             selectedCells.forEach(c => c.classList.remove('selected'));
         }
