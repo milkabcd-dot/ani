@@ -10,6 +10,9 @@
         .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 10px; border-bottom: 5px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; font-size: 1.6rem; }
         
+        .sub-header { font-weight: bold; color: #555; margin-bottom: 5px; font-size: 1.1rem; }
+        .instructions-box { background: #fff3cd; color: #856404; padding: 8px; border-radius: 10px; font-size: 0.9rem; margin-bottom: 15px; border: 1px solid #ffeeba; display: inline-block; padding: 8px 20px; }
+
         /* בנק המילים עם כפתורי הניווט */
         .word-bank-container { 
             background: white; padding: 10px; border-radius: 15px; 
@@ -35,7 +38,6 @@
         .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: white; }
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
 
-        /* אזור כפתור הערבוב והיד שלידו */
         .bottom-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 80px; }
         .reset-btn { padding: 15px 25px; background: #45aaf2; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
         .bottom-nav-btn { background: white; border: 2px solid #45aaf2; border-radius: 12px; width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -55,7 +57,10 @@
 
 <div class="header" id="top">
     <h1>תפזורת פורים 🎭</h1>
-    <div style="font-weight: bold; color: #555;">עריכה: מילכה ברקו גרש</div>
+    <div class="sub-header">עריכה: מילכה ברקו גרש</div>
+    <div class="instructions-box">
+        <strong>כל הכיוונים אפשריים: גם באלכסון וגם הפוך!</strong>
+    </div>
 </div>
 
 <div class="word-bank-container">
@@ -128,68 +133,3 @@
             span.style.backgroundColor = colors[i % colors.length];
             span.textContent = w === "אוזןהמן" ? "אוזן המן" : w;
             bank.appendChild(span);
-        });
-    }
-
-    function renderGrid() {
-        const gridDiv = document.getElementById('grid');
-        gridDiv.innerHTML = '';
-        const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.textContent = gridData[r][c];
-                
-                const onMove = (e) => {
-                    if (!isSelecting) return;
-                    const point = e.touches ? e.touches[0] : e;
-                    const target = document.elementFromPoint(point.clientX, point.clientY);
-                    if (target && target.classList.contains('cell') && !selectedCells.includes(target)) {
-                        selectedCells.push(target);
-                        target.classList.add('selected');
-                    }
-                };
-                cell.addEventListener('pointerdown', (e) => {
-                    isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
-                    cell.setPointerCapture(e.pointerId);
-                });
-                cell.addEventListener('pointermove', onMove);
-                gridDiv.appendChild(cell);
-            }
-        }
-    }
-
-    function createConfetti() {
-        for (let i = 0; i < 70; i++) {
-            const c = document.createElement('div');
-            c.className = 'confetti';
-            c.style.left = Math.random() * 100 + 'vw';
-            c.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-            c.style.animationDuration = (Math.random()*2+2)+'s';
-            document.body.appendChild(c);
-        }
-    }
-
-    window.addEventListener('pointerup', () => {
-        if (!isSelecting) return;
-        isSelecting = false;
-        const str = selectedCells.map(c => c.textContent).join('');
-        const rev = str.split('').reverse().join('');
-        const match = words.find(w => (w === str || w === rev) && !foundWords.has(w));
-        if (match) {
-            selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
-            document.getElementById('w-' + match).classList.add('found');
-            foundWords.add(match);
-            if (foundWords.size === words.length) { createConfetti(); setTimeout(() => document.getElementById('win').style.display='flex', 500); }
-        } else {
-            selectedCells.forEach(c => c.classList.remove('selected'));
-        }
-        selectedCells = [];
-    });
-
-    initGame();
-</script>
-</body>
-</html>
