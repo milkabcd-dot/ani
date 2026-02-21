@@ -11,8 +11,7 @@
             --scroll-blue: #2e86de;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        ::-webkit-scrollbar { width: 20px; }
+        ::-webkit-scrollbar { width: 22px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--scroll-blue); border-radius: 10px; border: 3px solid #f1f1f1; }
 
@@ -28,19 +27,16 @@
         
         .instructions { 
             background: var(--pink-header); color: white; padding: 12px; border-radius: 12px; 
-            margin-top: 10px; font-size: 0.95rem; line-height: 1.5; width: 100%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 10px; font-size: 0.95rem; line-height: 1.5; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .highlight-text { 
-            display: block; background: rgba(255,255,255,0.2); padding: 4px; border-radius: 5px; margin-top: 5px;
-            font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            border: 1px dashed white;
+            display: block; background: rgba(255,255,255,0.25); padding: 5px; border-radius: 6px; margin: 5px 0;
+            font-weight: 900; color: #fff; border: 2px dashed white; text-align: center;
         }
 
         .word-bank { 
-            background: white; padding: 12px; border-radius: 15px; 
-            width: 95%; max-width: 400px; border-bottom: 5px solid var(--pink-header);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-top: 10px; margin-bottom: 15px;
+            background: white; padding: 12px; border-radius: 15px; width: 95%; max-width: 400px; 
+            border-bottom: 5px solid var(--pink-header); box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px;
         }
         .word-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; }
         .word-item { padding: 8px; border-radius: 8px; font-weight: bold; color: #333; font-size: 0.85rem; text-align: center; border: 1px solid rgba(0,0,0,0.1); }
@@ -51,26 +47,20 @@
         @keyframes point-right { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-8px); } }
 
         .grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
-            background: #fff; border: 5px solid var(--accent); padding: 5px; 
-            border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            user-select: none; width: 90%; max-width: 360px;
-            touch-action: none; margin-bottom: 20px;
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #fff; 
+            border: 5px solid var(--accent); padding: 5px; border-radius: 10px; 
+            user-select: none; width: 90%; max-width: 360px; touch-action: none; margin-bottom: 20px;
         }
-        
-        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; border-radius: 4px; font-size: 1.1rem; color: #444; }
+        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; border-radius: 4px; font-size: 1.1rem; }
         .cell.selected { background: var(--accent); }
         .cell.found { background: var(--found); color: white; }
 
-        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 40px; box-shadow: 0 4px #2d98da; font-size: 1.1rem; }
+        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 40px; }
 
         #winMessage {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 71, 87, 0.96); z-index: 100;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: white; text-align: center; padding: 20px;
+            background: rgba(255, 71, 87, 0.97); z-index: 100; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
         }
-
         .confetti { position: fixed; width: 10px; height: 10px; animation: fall 3s linear infinite; z-index: 101; pointer-events: none; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
     </style>
@@ -79,7 +69,7 @@
 
     <div id="winMessage">
         <h2 style="font-size: 3rem;">פורים שמח! 🤡🎭</h2>
-        <p style="font-size: 1.6rem;">כל הכבוד! 🏆<br>מצאת את כל המילים! 🍭</p>
+        <p style="font-size: 1.6rem;">כל הכבוד! מצאת את כל המילים! 🍭</p>
         <button class="reset-btn" style="background: white; color: var(--primary);" onclick="location.reload()">למשחק חדש ✨</button>
     </div>
 
@@ -87,22 +77,15 @@
         <h1>תפזורת פורים 🎭</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
-            מצאו את מילות החג בלוח. 🔎<br>
+            מצאו את מילות החג בלוח. 🔎
             <span class="highlight-text">לכל הכיוונים: גם באלכסון וגם הפוך! 👑</span>
             תנועה מעלה מטה: באמצעות סרגל גלילה ימני. ↕️
         </div>
     </div>
 
-    <div class="word-bank">
-        <ul class="word-list" id="wordList"></ul>
-    </div>
-
-    <div class="scroll-hint">
-        סרגל גלילה מימין <span class="hand-icon">👉</span>
-    </div>
-    
+    <div class="word-bank"><ul class="word-list" id="wordList"></ul></div>
+    <div class="scroll-hint">סרגל גלילה מימין <span class="hand-icon">👉</span></div>
     <div class="grid" id="grid"></div>
-
     <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
 
     <script>
@@ -110,4 +93,72 @@
         const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
         const cols = 10, rows = 15;
         let grid = Array(rows).fill().map(() => Array(cols).fill(''));
-        let isSelecting = false, selected
+        let isSelecting = false, selectedCells = [], foundWords = new Set();
+
+        function initGame() {
+            const sortedWords = [...baseWords].sort((a,b) => b.length - a.length);
+            sortedWords.forEach(word => {
+                let placed = false, attempts = 0;
+                while (!placed && attempts < 2500) {
+                    let directions = [[0,1], [0,-1], [1,0], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
+                    const [dr, dc] = directions[Math.floor(Math.random() * directions.length)];
+                    const r = Math.floor(Math.random() * rows), c = Math.floor(Math.random() * cols);
+                    if (canPlace(word, r, c, dr, dc)) { placeWord(word, r, c, dr, dc); placed = true; }
+                    attempts++;
+                }
+            });
+
+            const gridDiv = document.getElementById('grid');
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (!grid[r][c]) grid[r][c] = "אבגדהוזחטיכלמנסעפצקרשת"[Math.floor(Math.random() * 22)];
+                    const cell = document.createElement('div');
+                    cell.className = 'cell'; cell.textContent = grid[r][c];
+                    
+                    const handleSelect = (e) => {
+                        if (!isSelecting) return;
+                        const x = e.clientX || (e.touches && e.touches[0].clientX);
+                        const y = e.clientY || (e.touches && e.touches[0].clientY);
+                        const el = document.elementFromPoint(x, y);
+                        if (el && el.classList.contains('cell') && !selectedCells.includes(el)) {
+                            selectedCells.push(el); el.classList.add('selected');
+                        }
+                    };
+
+                    cell.addEventListener('pointerdown', (e) => { isSelecting = true; selectedCells = [cell]; cell.classList.add('selected'); cell.setPointerCapture(e.pointerId); });
+                    cell.addEventListener('pointermove', handleSelect);
+                    gridDiv.appendChild(cell);
+                }
+            }
+
+            const listUl = document.getElementById('wordList');
+            baseWords.forEach((w, i) => {
+                const li = document.createElement('li'); li.className = 'word-item'; li.id = 'word-' + w;
+                li.style.backgroundColor = colors[i % colors.length];
+                li.textContent = w === "משלוחמנות" ? "משלוח מנות" : (w === "אוזןהמן" ? "אוזן המן" : w);
+                listUl.appendChild(li);
+            });
+        }
+
+        function canPlace(word, r, c, dr, dc) {
+            const endR = r + (word.length - 1) * dr, endC = c + (word.length - 1) * dc;
+            if (endR < 0 || endR >= rows || endC < 0 || endC >= cols) return false;
+            for (let i = 0; i < word.length; i++) {
+                let curr = grid[r + i * dr][c + i * dc];
+                if (curr !== '' && curr !== word[i]) return false;
+            }
+            return true;
+        }
+
+        function placeWord(word, r, c, dr, dc) { for (let i = 0; i < word.length; i++) grid[r + i * dr][c + i * dc] = word[i]; }
+
+        window.addEventListener('pointerup', () => {
+            if (!isSelecting) return;
+            isSelecting = false;
+            const s = selectedCells.map(c => c.textContent).join(''), rev = s.split('').reverse().join('');
+            const match = baseWords.filter(w => !foundWords.has(w)).find(w => w === s || w === rev);
+            if (match) {
+                selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
+                document.getElementById('word-' + match).classList.add('found');
+                foundWords.add(match);
+                if (foundWords.size
