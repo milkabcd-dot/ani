@@ -5,47 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 15px; scroll-behavior: smooth; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; scroll-behavior: smooth; }
         
-        .header { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto 15px; border-bottom: 6px solid #ffe66d; }
-        h1 { color: #ff4757; margin: 0; font-size: 2rem; }
-        .sub-header { font-weight: bold; color: #555; margin-top: 5px; }
-        .instructions { color: #856404; font-size: 1.1rem; margin: 15px 0; font-weight: bold; }
+        .header { background: white; padding: 12px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 380px; margin: 0 auto 10px; border-bottom: 4px solid #ffe66d; }
+        h1 { color: #ff4757; margin: 0; font-size: 1.4rem; }
+        .sub-header { font-weight: bold; color: #555; font-size: 0.9rem; }
+        .instructions { color: #856404; font-size: 0.85rem; margin: 8px 0; font-weight: bold; background: #fff3cd; display: inline-block; padding: 4px 12px; border-radius: 8px; }
 
-        /* בנק מילים נקי */
+        /* בנק מילים קומפקטי */
         .word-bank-container { 
-            background: white; padding: 15px; border-radius: 20px; 
-            max-width: 500px; margin: 10px auto; 
-            display: flex; align-items: center; gap: 20px;
-            border: 3px solid #ff6b81;
+            background: white; padding: 10px; border-radius: 12px; 
+            max-width: 380px; margin: 5px auto; 
+            display: flex; align-items: center; gap: 10px;
+            border: 2px solid #ff6b81;
         }
         .nav-btn { 
-            background: #ffffff; border: 3px solid #ff6b81; border-radius: 15px; 
-            min-width: 60px; height: 60px; font-size: 2.5rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #ff6b81;
+            background: #f8f9fa; border: 2px solid #ff6b81; border-radius: 10px; 
+            min-width: 45px; height: 45px; font-size: 1.8rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-        .nav-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; flex-grow: 1; }
-        .word-item { padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; background: #f0f0f0; border: 1px solid #ddd; }
+        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; flex-grow: 1; }
+        .word-item { padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        /* לוח גדול וקריא */
+        /* לוח מותאם לרוחב טלפון */
         .grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; 
-            max-width: 500px; margin: 25px auto; background: #ffe66d; 
-            padding: 12px; border-radius: 15px; touch-action: none;
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
+            max-width: 360px; margin: 15px auto; background: #ffe66d; 
+            padding: 6px; border-radius: 10px; touch-action: none;
         }
         .cell { 
             aspect-ratio: 1/1; background: #ffffff; display: flex; 
-            align-items: center; justify-content: center; font-weight: 800; 
-            font-size: 1.5rem; border-radius: 8px; user-select: none;
-            color: #2f3542; transition: 0.2s; border: 1px solid #eee;
+            align-items: center; justify-content: center; font-weight: bold; 
+            font-size: 1.1rem; border-radius: 4px; user-select: none;
+            color: #2f3542;
         }
-        .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; transform: scale(1.1); z-index: 10; }
-        .cell.found { background: #1dd1a1; color: white; border: none; }
+        .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
+        .cell.found { background: #1dd1a1; color: white; }
 
-        .bottom-area { margin: 30px 0 100px; }
+        .bottom-area { margin: 20px 0 60px; }
 
         #win-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -57,9 +56,9 @@
 <body>
 
 <div id="win-overlay">
-    <h1 style="font-size: 4rem;">פורים שמח! 🎭</h1>
-    <p style="font-size: 2rem;">כל הכבוד, מצאת את כל המילים!</p>
-    <button onclick="location.reload()" style="padding: 15px 40px; font-size: 1.5rem; border-radius: 15px; border: none; cursor: pointer; background: white; color: #ff4757; font-weight: bold;">שחק שוב ✨</button>
+    <h1>פורים שמח! 🎭</h1>
+    <p>מצאת את כל המילים!</p>
+    <button onclick="location.reload()" style="padding: 10px 25px; border-radius: 10px; border: none; background: white; color: #ff4757; font-weight: bold;">למשחק חדש</button>
 </div>
 
 <div class="header">
@@ -82,55 +81,69 @@
 <script>
     const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3", "#eccc68", "#747d8c"];
-    
-    // לוח קבוע שבו המילים בטוח נמצאות
-    const fixedGrid = [
-        ['מ','ר','ד','כ','י','א','ס','ת','ר','ש'],
-        ['א','ח','ש','ו','ר','ו','ש','ב','ג','ו'],
-        ['ה','מ','ג','י','ל','ה','ד','ו','ז','ש'],
-        ['ת','ח','פ','ו','ש','ת','ח','ט','י','ן'],
-        ['כ','ל','מ','נ','ס','מ','ס','כ','ה','פ'],
-        ['צ','ק','ר','ע','ש','ן','ר','ש','ת','א'],
-        ['א','ו','ז','ן','ה','מ','ן','א','ב','ג'],
-        ['ד','ה','ו','ז','ח','ט','י','ו','ש','ת'],
-        ['כ','ל','מ','נ','ס','ע','פ','צ','ק','ר'],
-        ['ש','ת','א','ב','ג','ד','ה','ו','ז','ח']
-    ];
-
+    const rows = 12, cols = 10;
+    let gridData = [];
     let foundWords = new Set();
     let isSelecting = false, selectedCells = [];
 
-    function init() {
+    function generateSingleGame() {
         const gridElement = document.getElementById('grid');
-        const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
+        let success = false;
+        
+        while (!success) {
+            gridData = Array(rows).fill().map(() => Array(cols).fill(''));
+            success = true;
+            const sorted = [...wordsList].sort((a,b) => b.length - a.length);
 
-        for (let r = 0; r < 10; r++) {
-            for (let c = 0; c < 10; c++) {
+            for (let word of sorted) {
+                let placed = false;
+                for (let i = 0; i < 2000; i++) {
+                    const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
+                    const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
+                    const r = Math.floor(Math.random() * rows);
+                    const c = Math.floor(Math.random() * cols);
+                    if (canPlace(word, r, c, dr, dc)) {
+                        for (let j = 0; j < word.length; j++) gridData[r + j*dr][c + j*dc] = word[j];
+                        placed = true; break;
+                    }
+                }
+                if (!placed) { success = false; break; }
+            }
+        }
+
+        const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
+        gridElement.innerHTML = '';
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                // אם המשבצת בלוח הקבוע ריקה (במקרה של לוח אחר), נשים אות אקראית
-                cell.textContent = fixedGrid[r][c] || alphabet[Math.floor(Math.random()*alphabet.length)];
+                cell.textContent = gridData[r][c];
                 
                 cell.addEventListener('pointerdown', (e) => {
-                    isSelecting = true;
-                    selectedCells = [cell];
-                    cell.classList.add('selected');
+                    isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
                     cell.setPointerCapture(e.pointerId);
                 });
-
                 cell.addEventListener('pointermove', (e) => {
                     if (!isSelecting) return;
                     const target = document.elementFromPoint(e.clientX, e.clientY);
                     if (target && target.classList.contains('cell') && !selectedCells.includes(target)) {
-                        selectedCells.push(target);
-                        target.classList.add('selected');
+                        selectedCells.push(target); target.classList.add('selected');
                     }
                 });
-
                 gridElement.appendChild(cell);
             }
         }
         renderBank();
+    }
+
+    function canPlace(word, r, c, dr, dc) {
+        if (r + dr*(word.length-1) < 0 || r + dr*(word.length-1) >= rows || c + dc*(word.length-1) < 0 || c + dc*(word.length-1) >= cols) return false;
+        for (let i = 0; i < word.length; i++) {
+            let ex = gridData[r + i*dr][c + i*dc];
+            if (ex !== '' && ex !== word[i]) return false;
+        }
+        return true;
     }
 
     function renderBank() {
@@ -151,21 +164,18 @@
         const word = selectedCells.map(c => c.textContent).join('');
         const rev = word.split('').reverse().join('');
         const match = wordsList.find(w => (w === word || w === rev) && !foundWords.has(w));
-
         if (match) {
             selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
             document.getElementById('wb-' + match).classList.add('found');
             foundWords.add(match);
-            if (foundWords.size === wordsList.length) {
-                document.getElementById('win-overlay').style.display = 'flex';
-            }
+            if (foundWords.size === wordsList.length) document.getElementById('win-overlay').style.display = 'flex';
         } else {
             selectedCells.forEach(c => c.classList.remove('selected'));
         }
         selectedCells = [];
     });
 
-    init();
+    generateSingleGame();
 </script>
 </body>
 </html>
