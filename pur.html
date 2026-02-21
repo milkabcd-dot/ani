@@ -5,29 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <style>
-        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 5px; overflow: hidden; }
-        .header { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 5px auto; border-bottom: 3px solid #ffe66d; }
-        h1 { color: #ff4757; margin: 0; font-size: 1.3rem; }
-        .sub-header { font-weight: bold; color: #555; font-size: 0.85rem; }
-        .instructions { color: #856404; font-size: 0.8rem; margin: 5px 0; font-weight: bold; background: #fff3cd; display: inline-block; padding: 3px 12px; border-radius: 6px; }
+        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow: hidden; }
+        
+        .header { background: white; padding: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 0 auto 10px; border-bottom: 4px solid #ffe66d; }
+        h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
+        .sub-header { font-weight: bold; color: #555; font-size: 0.9rem; }
 
+        /* מילים גדולות וברורות ב-2 שורות */
         .word-bank { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
-            max-width: 360px; margin: 5px auto; padding: 8px;
-            background: white; border-radius: 10px; border: 2px solid #ff6b81;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
+            max-width: 360px; margin: 10px auto; padding: 10px;
+            background: white; border-radius: 12px; border: 2px solid #ff6b81;
         }
-        .word-item { padding: 4px 0; border-radius: 4px; font-weight: bold; font-size: 0.75rem; background: #f8f9fa; border: 1px solid #eee; }
+        .word-item { padding: 6px 0; border-radius: 6px; font-weight: bold; font-size: 0.8rem; background: #f8f9fa; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
+        /* לוח עם משבצות גדולות (8 עמודות במקום 10) */
         .grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; 
-            max-width: 350px; margin: 10px auto; background: #ffe66d; 
-            padding: 6px; border-radius: 8px; touch-action: none;
+            display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; 
+            max-width: 360px; margin: 15px auto; background: #ffe66d; 
+            padding: 8px; border-radius: 12px; touch-action: none;
         }
         .cell { 
             aspect-ratio: 1/1; background: #ffffff; display: flex; 
-            align-items: center; justify-content: center; font-weight: bold; 
-            font-size: 1.15rem; border-radius: 3px; user-select: none; color: #2d3436;
+            align-items: center; justify-content: center; font-weight: 900; 
+            font-size: 1.5rem; border-radius: 6px; user-select: none; color: #2d3436;
         }
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
         .cell.found { background: #1dd1a1; color: white; }
@@ -43,14 +45,13 @@
 
 <div id="win-overlay">
     <h1>פורים שמח! 🎭</h1>
-    <p>מצאת את כל המילים!</p>
-    <button onclick="location.reload()" style="padding: 10px 20px; border-radius: 8px; border: none; background: white; color: #ff4757; font-weight: bold;">משחק חדש</button>
+    <p>כל הכבוד! מצאת הכל!</p>
+    <button onclick="location.reload()" style="padding: 12px 25px; border-radius: 10px; border: none; background: white; color: #ff4757; font-weight: bold; font-size: 1.1rem;">שחק שוב</button>
 </div>
 
 <div class="header">
     <h1>תפזורת פורים 🎭</h1>
     <div class="sub-header">עריכה: מילכה ברקו גרש</div>
-    <div class="instructions">המילים נמצאות ישר (שורה) או למטה (טור)</div>
 </div>
 
 <div class="word-bank" id="wordBank"></div>
@@ -60,20 +61,19 @@
     const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3", "#eccc68", "#b2bec3"];
     
-    // לוח קבוע לחלוטין - לא משתנה לעולם
-    const staticGrid = [
-        ['מ','ר','ד','כ','י','א','ב','ג','ד','ה'],
-        ['א','ס','ת','ר','ו','ז','ח','ט','י','כ'],
-        ['א','ח','ש','ו','ר','ו','ש','ל','מ','נ'],
-        ['מ','ג','י','ל','ה','ס','ע','פ','צ','ק'],
-        ['ת','ח','פ','ו','ש','ת','ר','ש','ת','א'],
-        ['מ','ב','ר','ג','א','ד','ו','ה','ש','ז'],
-        ['ס','ח','ע','ט','ו','י','ש','כ','ו','ל'],
-        ['כ','מ','ש','נ','ז','ס','ת','ע','ש','פ'],
-        ['ה','צ','ן','ק','נ','ר','י','ש','ן','ת'],
-        ['א','ב','ג','ד','ה','מ','ז','ח','ט','י'],
-        ['כ','ל','מ','נ','ס','ן','פ','צ','ק','ר'],
-        ['ש','ת','א','ב','ג','ד','ה','ו','ז','ח']
+    // לוח קבוע שבניתי ידנית - קוביות גדולות, מילים ברורות
+    // גודל הלוח: 10 שורות על 8 עמודות (מבטיח קוביות גדולות בטלפון)
+    const finalGrid = [
+        ['מ','ר','ד','כ','י','א','ב','ג'],
+        ['א','ס','ת','ר','ד','ה','ו','ז'],
+        ['א','ח','ש','ו','ר','ו','ש','ח'],
+        ['מ','ג','י','ל','ה','ט','י','כ'],
+        ['ת','ח','פ','ו','ש','ת','ל','מ'],
+        ['נ','ס','מ','ס','כ','ה','ע','פ'],
+        ['א','ו','ז','ן','ה','מ','ן','צ'],
+        ['ק','ר','ע','ש','ן','ש','ת','א'],
+        ['ב','ג','ו','ש','ת','י','ד','ה'],
+        ['ו','ז','ח','ש','ו','ש','ן','ט']
     ];
 
     let foundWords = new Set();
@@ -82,13 +82,11 @@
     function init() {
         const gridElement = document.getElementById('grid');
         gridElement.innerHTML = '';
-        
-        for (let r = 0; r < 12; r++) {
-            for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            for (let c = 0; c < 8; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.textContent = staticGrid[r][c];
-                cell.dataset.r = r; cell.dataset.c = c;
+                cell.textContent = finalGrid[r][c];
                 
                 cell.addEventListener('pointerdown', (e) => {
                     isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
