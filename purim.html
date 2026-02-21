@@ -5,65 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <style>
-        /* הכרחת סרגל הגלילה להופיע בולט בכחול */
         html { overflow-y: scroll; }
-        
-        ::-webkit-scrollbar { width: 18px; display: block; }
+        ::-webkit-scrollbar { width: 22px; display: block; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { 
-            background: #2e86de; 
-            border-radius: 10px; 
-            border: 3px solid #f1f1f1;
-        }
+        ::-webkit-scrollbar-thumb { background: #2e86de; border-radius: 10px; border: 3px solid #f1f1f1; }
 
-        body { 
-            font-family: sans-serif; background: #fdfcf0; text-align: center; 
-            margin: 0; padding: 10px; min-height: 120vh; /* מוודא שיש לאן לגלול */
-        }
+        body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; min-height: 130vh; }
         
-        /* יד מצביעה צפה מצד ימין */
         .scroll-pointer {
-            position: fixed;
-            right: 5px;
-            top: 50px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #2e86de;
-            font-weight: bold;
-            font-size: 0.8rem;
-            pointer-events: none;
+            position: fixed; right: 5px; top: 60px; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center;
+            color: #2e86de; font-weight: bold; pointer-events: none;
         }
-        
-        .pointing-hand {
-            font-size: 2rem;
-            animation: bounce-down 1.2s infinite;
-        }
-        
-        @keyframes bounce-down {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(15px); }
-        }
+        .pointing-hand { font-size: 2.5rem; animation: bounce-down 1s infinite; }
+        @keyframes bounce-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
 
-        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; }
+        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; border-bottom: 5px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; }
         .credit { font-weight: bold; color: #555; margin-bottom: 10px; }
         
-        .instructions { background: #ff6b81; color: white; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; line-height: 1.5; }
+        .instructions { background: #ff6b81; color: white; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; }
         .highlight { display: block; background: rgba(255,255,255,0.2); border: 2px dashed white; margin: 5px; padding: 5px; border-radius: 5px; }
 
-        .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
-        .word-item { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; border: 1px solid #ddd; }
-        .word-item.found { background: #eee !important; color: #aaa !important; text-decoration: line-through; border-color: #ccc; }
+        .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; border-bottom: 5px solid #ff6b81; }
+        .word-item { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.85rem; border: 1px solid #ddd; }
+        .word-item.found { background: #eee !important; color: #aaa !important; text-decoration: line-through; }
 
-        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 350px; margin: 15px auto; background: #ffe66d; padding: 8px; border-radius: 10px; touch-action: none; }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; margin: 15px auto; background: #ffe66d; padding: 10px; border-radius: 10px; touch-action: none; }
         .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; cursor: pointer; border-radius: 4px; user-select: none; border: 2px solid transparent; }
-        
         .cell.found { border: 2px solid #1dd1a1; background: transparent; color: #1dd1a1; }
         .cell.selected { background: #ffe66d; border-color: #ff6b81; }
 
-        .reset-btn { padding: 12px 25px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 50px; }
+        .reset-btn { padding: 15px 30px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 60px; font-size: 1.1rem; }
         
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
     </style>
@@ -71,14 +44,14 @@
 <body>
 
 <div class="scroll-pointer">
-    <span>סרגל גלילה</span>
     <span class="pointing-hand">👇</span>
+    <span style="background: white; padding: 2px 5px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">גללו למטה</span>
 </div>
 
 <div id="win">
-    <h1>פורים שמח! 🎭</h1>
-    <p>כל הכבוד! מצאת את כל המילים! 🍭</p>
-    <button class="reset-btn" onclick="location.reload()">למשחק חדש ✨</button>
+    <h1 style="font-size: 3.5rem;">פורים שמח! 🎭🤡</h1>
+    <p style="font-size: 1.5rem;">כל הכבוד! מצאת הכל! 🍭🥨</p>
+    <button class="reset-btn" style="background: white; color: #ff4757;" onclick="location.reload()">למשחק חדש ✨</button>
 </div>
 
 <div class="header">
@@ -95,15 +68,14 @@
 <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
 
 <script>
-    // הגדרות המשחק
     const words = ["מרדכי", "אסתר", "המן", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "משלוחמנות", "אוזןהמן", "סעודה", "פורים", "שושן", "עדלאידע"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
-    const rows = 14, cols = 10;
+    const rows = 15, cols = 10;
     let gridData = Array(rows).fill().map(() => Array(cols).fill(''));
     let foundWords = new Set();
     let isSelecting = false, selectedCells = [];
 
-    // בנק מילים
+    // יצירת בנק המילים
     const bank = document.getElementById('wordBank');
     words.forEach((w, i) => {
         const span = document.createElement('span');
@@ -114,18 +86,21 @@
         bank.appendChild(span);
     });
 
-    // שתילת מילים בלוח
+    // שתילת מילים - מנגנון בטוח
     words.sort((a,b) => b.length - a.length).forEach(word => {
-        let placed = false, attempts = 0;
-        while (!placed && attempts < 1000) {
+        let placed = false;
+        let attempts = 0;
+        while (!placed && attempts < 5000) {
             const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
             const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
             const r = Math.floor(Math.random() * rows);
             const c = Math.floor(Math.random() * cols);
+            
             if (r + dr*(word.length-1) >= 0 && r + dr*(word.length-1) < rows && c + dc*(word.length-1) >= 0 && c + dc*(word.length-1) < cols) {
                 let ok = true;
                 for (let i = 0; i < word.length; i++) {
-                    if (gridData[r + i*dr][c + i*dc] !== '' && gridData[r + i*dr][c + i*dc] !== word[i]) ok = false;
+                    let target = gridData[r + i*dr][c + i*dc];
+                    if (target !== '' && target !== word[i]) ok = false;
                 }
                 if (ok) {
                     for (let i = 0; i < word.length; i++) gridData[r + i*dr][c + i*dc] = word[i];
@@ -136,7 +111,7 @@
         }
     });
 
-    // יצירת הלוח הויזואלי
+    // מילוי אותיות אקראיות ויצירת הלוח
     const gridDiv = document.getElementById('grid');
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -166,7 +141,6 @@
         }
     }
 
-    // בדיקת מילה שנבחרה
     window.addEventListener('pointerup', () => {
         if (!isSelecting) return;
         isSelecting = false;
@@ -178,7 +152,9 @@
             selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
             document.getElementById('w-' + match).classList.add('found');
             foundWords.add(match);
-            if (foundWords.size === words.length) document.getElementById('win').style.display = 'flex';
+            if (foundWords.size === words.length) {
+                document.getElementById('win').style.display = 'flex';
+            }
         } else {
             selectedCells.forEach(c => c.classList.remove('selected'));
         }
