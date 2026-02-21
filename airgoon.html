@@ -12,64 +12,53 @@
         }
         * { box-sizing: border-box; }
         
-        /* סרגל גלילה בולט מאוד */
-        ::-webkit-scrollbar { width: 16px; }
+        /* סרגל גלילה בולט */
+        ::-webkit-scrollbar { width: 14px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { 
             background: var(--scroll-blue); 
             border-radius: 10px; 
-            border: 3px solid #f1f1f1;
+            border: 2px solid #f1f1f1;
         }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); 
             display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; color: var(--text);
-            overflow-y: scroll; min-height: 100vh;
         }
 
-        .header { text-align: center; margin-bottom: 10px; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); }
+        .header { text-align: center; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); margin-bottom: 15px; }
         h1 { color: var(--primary); margin: 0; font-size: 1.6rem; }
-        .credit { font-weight: bold; color: #555; font-size: 0.9rem; margin-top: 5px; }
+        .credit { font-weight: bold; color: #555; font-size: 0.9rem; }
         
         .instructions { 
-            background: var(--secondary); color: white; padding: 12px; border-radius: 12px; 
-            margin-top: 12px; font-size: 0.9rem; line-height: 1.5; font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2); width: 100%; position: relative;
+            background: var(--secondary); color: white; padding: 10px; border-radius: 12px; 
+            margin-top: 10px; font-size: 0.85rem; line-height: 1.4; font-weight: bold; width: 100%;
         }
 
-        /* אייקון היד שזז */
-        .scroll-hint {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            color: var(--scroll-blue);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin: 10px 0;
-            border: 2px solid var(--scroll-blue);
-            animation: bounce 2s infinite;
+        /* רשימת מילים - עכשיו למעלה */
+        .word-bank { 
+            background: white; padding: 12px; border-radius: 15px; 
+            width: 95%; max-width: 400px; border-bottom: 5px solid var(--secondary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px;
         }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-5px);}
-            60% {transform: translateY(-3px);}
+        .word-list { 
+            list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0;
         }
+        .word-item { 
+            padding: 6px; border-radius: 5px; background: #f1f2f6; 
+            font-weight: bold; color: #333; border-right: 4px solid #ccc; font-size: 0.85rem; text-align: center;
+        }
+        .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
 
-        .grid-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            width: 100%;
-            justify-content: center;
-        }
+        .scroll-indicator { color: var(--scroll-blue); font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(5px);} }
 
+        /* לוח תפזורת - למטה */
         .grid { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
             background: #fff; border: 5px solid var(--accent); padding: 5px; 
             border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            user-select: none; width: 85%; max-width: 360px;
+            user-select: none; width: 92%; max-width: 360px;
             touch-action: none; margin-bottom: 20px;
         }
         
@@ -78,24 +67,10 @@
             align-items: center; justify-content: center; font-weight: 800; 
             cursor: pointer; border-radius: 4px; font-size: 1.2rem; color: #444;
         }
-        .cell.selected { background: var(--accent); transform: scale(1.05); }
+        .cell.selected { background: var(--accent); }
         .cell.found { background: var(--found); color: white; }
 
-        .word-bank { 
-            background: white; padding: 15px; border-radius: 15px; 
-            width: 95%; max-width: 400px; border-top: 5px solid var(--secondary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
-        }
-        .word-list { 
-            list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; 
-        }
-        .word-item { 
-            padding: 8px; border-radius: 5px; background: #f1f2f6; 
-            font-weight: bold; color: #333; border-right: 4px solid #ccc; font-size: 0.9rem;
-        }
-        .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
-
-        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; margin-bottom: 60px; }
+        .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 40px; }
     </style>
 </head>
 <body>
@@ -104,22 +79,18 @@
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
-            זהו את רמות הארגון בלוח - רשימה למטה.<br>
-            החליקו אצבע על האותיות בכל הכיוונים: אופקי, אנכי, אלכסוני וגם הפוך!
+            חפשו את המילים מהרשימה בלוח שלמטה.<br>
+            ניתן לסמן בכל הכיוונים, כולל באלכסון וגם הפוך!
         </div>
     </div>
 
-    <div class="scroll-hint">
-        👇 החליקו למטה לרשימת המילים 🖐️
-    </div>
-    
-    <div class="grid-container">
-        <div class="grid" id="grid"></div>
-    </div>
-    
     <div class="word-bank">
         <ul class="word-list" id="wordList"></ul>
     </div>
+
+    <div class="scroll-indicator">👇 גללו מטה ללוח התפזורת 🖐️</div>
+    
+    <div class="grid" id="grid"></div>
 
     <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש</button>
 
@@ -142,11 +113,10 @@
                     attempts++;
                 }
             });
-            const chars = "אבגדהוזחטיכלמנסעפצקרשת";
             const gridDiv = document.getElementById('grid');
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
-                    if (!grid[r][c]) grid[r][c] = chars[Math.floor(Math.random() * chars.length)];
+                    if (!grid[r][c]) grid[r][c] = "אבגדהוזחטיכלמנסעפצקרשת"[Math.floor(Math.random() * 22)];
                     const cell = document.createElement('div');
                     cell.className = 'cell'; cell.textContent = grid[r][c];
                     cell.addEventListener('pointerdown', (e) => { isSelecting = true; selectedCells = [cell]; cell.classList.add('selected'); cell.releasePointerCapture(e.pointerId); });
