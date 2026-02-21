@@ -10,7 +10,7 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #2e86de; border-radius: 10px; border: 3px solid #f1f1f1; }
 
-        body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; min-height: 130vh; }
+        body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; min-height: 120vh; overflow-x: hidden; }
         
         .scroll-pointer {
             position: fixed; right: 5px; top: 60px; z-index: 1000;
@@ -39,128 +39,14 @@
         .reset-btn { padding: 15px 30px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 60px; font-size: 1.1rem; }
         
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
+        
+        /* עיצוב הקונפטי */
+        .confetti { position: fixed; width: 10px; height: 10px; top: -10px; z-index: 10001; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="scroll-pointer">
     <span class="pointing-hand">👇</span>
-    <span style="background: white; padding: 2px 5px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">גללו למטה</span>
-</div>
-
-<div id="win">
-    <h1 style="font-size: 3.5rem;">פורים שמח! 🎭🤡</h1>
-    <p style="font-size: 1.5rem;">כל הכבוד! מצאת הכל! 🍭🥨</p>
-    <button class="reset-btn" style="background: white; color: #ff4757;" onclick="location.reload()">למשחק חדש ✨</button>
-</div>
-
-<div class="header">
-    <h1>תפזורת פורים 🎭</h1>
-    <div class="credit">עריכה: מילכה ברקו גרש</div>
-    <div class="instructions">
-        מצאו את מילות החג בלוח. 🔎
-        <span class="highlight">לכל הכיוונים: גם באלכסון וגם הפוך! 👑</span>
-    </div>
-</div>
-
-<div class="word-bank" id="wordBank"></div>
-<div class="grid" id="grid"></div>
-<button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
-
-<script>
-    const words = ["מרדכי", "אסתר", "המן", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "משלוחמנות", "אוזןהמן", "סעודה", "פורים", "שושן", "עדלאידע"];
-    const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
-    const rows = 15, cols = 10;
-    let gridData = Array(rows).fill().map(() => Array(cols).fill(''));
-    let foundWords = new Set();
-    let isSelecting = false, selectedCells = [];
-
-    // יצירת בנק המילים
-    const bank = document.getElementById('wordBank');
-    words.forEach((w, i) => {
-        const span = document.createElement('span');
-        span.className = 'word-item';
-        span.id = 'w-' + w;
-        span.style.backgroundColor = colors[i % colors.length];
-        span.textContent = w.replace("משלוחמנות", "משלוח מנות").replace("אוזןהמן", "אוזן המן");
-        bank.appendChild(span);
-    });
-
-    // שתילת מילים - מנגנון בטוח
-    words.sort((a,b) => b.length - a.length).forEach(word => {
-        let placed = false;
-        let attempts = 0;
-        while (!placed && attempts < 5000) {
-            const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
-            const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
-            const r = Math.floor(Math.random() * rows);
-            const c = Math.floor(Math.random() * cols);
-            
-            if (r + dr*(word.length-1) >= 0 && r + dr*(word.length-1) < rows && c + dc*(word.length-1) >= 0 && c + dc*(word.length-1) < cols) {
-                let ok = true;
-                for (let i = 0; i < word.length; i++) {
-                    let target = gridData[r + i*dr][c + i*dc];
-                    if (target !== '' && target !== word[i]) ok = false;
-                }
-                if (ok) {
-                    for (let i = 0; i < word.length; i++) gridData[r + i*dr][c + i*dc] = word[i];
-                    placed = true;
-                }
-            }
-            attempts++;
-        }
-    });
-
-    // מילוי אותיות אקראיות ויצירת הלוח
-    const gridDiv = document.getElementById('grid');
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            if (gridData[r][c] === '') gridData[r][c] = "אבגדהוזחטיכלמנסעפצקרשת"[Math.floor(Math.random()*22)];
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.textContent = gridData[r][c];
-            
-            const handleSelect = (e) => {
-                if (!isSelecting) return;
-                const point = e.touches ? e.touches[0] : e;
-                const target = document.elementFromPoint(point.clientX, point.clientY);
-                if (target && target.classList.contains('cell') && !selectedCells.includes(target)) {
-                    selectedCells.push(target);
-                    target.classList.add('selected');
-                }
-            };
-
-            cell.addEventListener('pointerdown', (e) => {
-                isSelecting = true;
-                selectedCells = [cell];
-                cell.classList.add('selected');
-                cell.setPointerCapture(e.pointerId);
-            });
-            cell.addEventListener('pointermove', handleSelect);
-            gridDiv.appendChild(cell);
-        }
-    }
-
-    window.addEventListener('pointerup', () => {
-        if (!isSelecting) return;
-        isSelecting = false;
-        const str = selectedCells.map(c => c.textContent).join('');
-        const rev = str.split('').reverse().join('');
-        const match = words.find(w => (w === str || w === rev) && !foundWords.has(w));
-        
-        if (match) {
-            selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
-            document.getElementById('w-' + match).classList.add('found');
-            foundWords.add(match);
-            if (foundWords.size === words.length) {
-                document.getElementById('win').style.display = 'flex';
-            }
-        } else {
-            selectedCells.forEach(c => c.classList.remove('selected'));
-        }
-        selectedCells = [];
-    });
-</script>
-
-</body>
-</html>
+    <span style
