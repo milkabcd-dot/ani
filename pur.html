@@ -7,13 +7,15 @@
     <style>
         body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; scroll-behavior: smooth; }
         
+        /* כותרת */
         .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 10px; border-bottom: 5px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; font-size: 1.6rem; }
+        .sub-header { font-weight: bold; color: #555; margin-bottom: 5px; }
         
-        .sub-header { font-weight: bold; color: #555; margin-bottom: 5px; font-size: 1.1rem; }
-        .instructions-box { background: #fff3cd; color: #856404; padding: 8px; border-radius: 10px; font-size: 0.9rem; margin-bottom: 15px; border: 1px solid #ffeeba; display: inline-block; padding: 8px 20px; }
+        /* תיבת הנחיות */
+        .instructions-box { background: #fff3cd; color: #856404; padding: 8px 15px; border-radius: 10px; font-size: 0.9rem; margin-bottom: 15px; border: 1px solid #ffeeba; display: inline-block; font-weight: bold; }
 
-        /* בנק המילים עם כפתורי הניווט */
+        /* בנק המילים עם ידיים בצד ימין (בתוך הקונטיינר) */
         .word-bank-container { 
             background: white; padding: 10px; border-radius: 15px; 
             max-width: 420px; margin: 10px auto; 
@@ -21,27 +23,29 @@
             border: 2px solid #ff6b81; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         
-        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; flex-grow: 1; }
-        
-        .nav-controls { display: flex; flex-direction: column; gap: 8px; border-right: 2px solid #eee; padding-right: 10px; }
+        .nav-controls { display: flex; flex-direction: column; gap: 8px; border-left: 2px solid #eee; padding-left: 10px; order: 2; }
         .nav-btn { 
             background: #f0f0f0; border: 1px solid #ccc; border-radius: 8px; 
             width: 45px; height: 45px; font-size: 1.4rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
 
+        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; flex-grow: 1; order: 1; }
         .word-item { padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
+        /* הלוח */
         .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; margin: 20px auto; background: #ffe66d; padding: 10px; border-radius: 12px; touch-action: none; }
         .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border-radius: 5px; user-select: none; border: 2px solid transparent; }
         .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: white; }
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
 
-        .bottom-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 80px; }
+        /* כפתורי למטה */
+        .bottom-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0 80px; }
         .reset-btn { padding: 15px 25px; background: #45aaf2; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
         .bottom-nav-btn { background: white; border: 2px solid #45aaf2; border-radius: 12px; width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+        /* מסך ניצחון */
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
         .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 3001; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -58,9 +62,7 @@
 <div class="header" id="top">
     <h1>תפזורת פורים 🎭</h1>
     <div class="sub-header">עריכה: מילכה ברקו גרש</div>
-    <div class="instructions-box">
-        <strong>כל הכיוונים אפשריים: גם באלכסון וגם הפוך!</strong>
-    </div>
+    <div class="instructions-box">כל הכיוונים אפשריים: גם באלכסון וגם הפוך!</div>
 </div>
 
 <div class="word-bank-container">
@@ -80,56 +82,4 @@
 
 <script>
     const words = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן", "עדלאידע"];
-    const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
-    const rows = 16, cols = 10;
-    let gridData = [];
-    let foundWords = new Set();
-    let isSelecting = false, selectedCells = [];
-
-    function initGame() {
-        let allPlaced = false;
-        while (!allPlaced) {
-            gridData = Array(rows).fill().map(() => Array(cols).fill(''));
-            allPlaced = true;
-            const sortedWords = [...words].sort((a,b) => b.length - a.length);
-
-            for (let word of sortedWords) {
-                let placed = false;
-                for (let attempts = 0; attempts < 1000; attempts++) {
-                    const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
-                    const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
-                    const r = Math.floor(Math.random() * rows);
-                    const c = Math.floor(Math.random() * cols);
-                    if (canPlace(word, r, c, dr, dc)) {
-                        for (let i = 0; i < word.length; i++) gridData[r + i*dr][c + i*dc] = word[i];
-                        placed = true;
-                        break;
-                    }
-                }
-                if (!placed) { allPlaced = false; break; }
-            }
-        }
-        renderBank();
-        renderGrid();
-    }
-
-    function canPlace(word, r, c, dr, dc) {
-        if (r + dr*(word.length-1) < 0 || r + dr*(word.length-1) >= rows || 
-            c + dc*(word.length-1) < 0 || c + dc*(word.length-1) >= cols) return false;
-        for (let i = 0; i < word.length; i++) {
-            let existing = gridData[r + i*dr][c + i*dc];
-            if (existing !== '' && existing !== word[i]) return false;
-        }
-        return true;
-    }
-
-    function renderBank() {
-        const bank = document.getElementById('wordBank');
-        bank.innerHTML = '';
-        words.forEach((w, i) => {
-            const span = document.createElement('span');
-            span.className = 'word-item';
-            span.id = 'w-' + w;
-            span.style.backgroundColor = colors[i % colors.length];
-            span.textContent = w === "אוזןהמן" ? "אוזן המן" : w;
-            bank.appendChild(span);
+    const colors = ["#
