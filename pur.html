@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תפזורת פורים - מילכה ברקו גרש</title>
+    <style>
+        body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; }
+        html { overflow-y: scroll; }
+        ::-webkit-scrollbar { width: 15px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #2e86de; border-radius: 10px; }
+
+        .scroll-pointer { position: fixed; right: 5px; top: 100px; z-index: 2000; display: flex; flex-direction: column; align-items: center; color: #2e86de; pointer-events: none; }
+        .pointing-hand { font-size: 2rem; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+
+        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; border-bottom: 5px solid #ffe66d; }
+        h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
+        
+        .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; border: 2px solid #ff6b81; }
+        .word-item { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
+        .word-item.found { background: #eee !important; color: #aaa !important; text-decoration: line-through; border: 1px solid #ccc; }
+
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; max-width: 350px; margin: 15px auto; background: #ffe66d; padding: 8px; border-radius: 10px; touch-action: none; }
+        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; border-radius: 3px; user-select: none; border: 2px solid transparent; }
+        .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: transparent; }
+        .cell.selected { background: #ff6b81; color: white; border-radius: 50%; }
+
+        #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
+        .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 3001; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        
+        .reset-btn { padding: 12px 25px; background: #45aaf2; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 50px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="scroll-pointer">
+    <span class="pointing-hand">👇</span>
+    <span style="font-size: 0.7rem; background: white; padding: 2px; border-radius: 4px;">גללו למטה</span>
+</div>
+
+<div id="win">
+    <h1 style="font-size: 3rem;">פורים שמח! 🎭</h1>
+    <p style="font-size: 1.5rem;">כל הכבוד! מצאת את כל המילים! 🍭</p>
+    <button class="reset-btn" style="background: white; color: #ff4757;" onclick="location.reload()">למשחק חדש ✨</button>
+</div>
+
+<div class="header">
+    <h1>תפזורת פורים 🎭</h1>
+    <div style="font-weight: bold; color: #555; margin-bottom: 5px;">עריכה: מילכה ברקו גרש</div>
+    <div style="font-size: 0.85rem; color: #777;">מצאו את המילים (גם באלכסון וגם הפוך!)</div>
+</div>
+
+<div class="word-bank" id="wordBank"></div>
+<div class="grid" id="grid"></div>
+<button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
+
+<script>
+    // רשימת המילים המעודכנת - עם ושתי במקום סעודה
+    const words = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "פורים", "שושן", "עדלאידע"];
+    const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
+    const rows = 16, cols = 10;
+    let gridData = [];
+    let foundWords = new Set();
+    let isSelecting = false, selectedCells = [];
+
+    function initGame() {
+        let allPlaced = false;
+        while (!allPlaced) {
+            gridData = Array(rows).fill().map(() => Array(cols).fill(''));
+            allPlaced = true;
+            
+            const sortedWords = [...words].sort((a,b) => b.length - a.length);
+            
+            for (let word of sortedWords) {
+                let placed = false;
+                for (let attempts = 0; attempts < 500; attempts++) {
+                    const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
+                    const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
+                    const r = Math.floor(Math.random() * rows);
+                    const c = Math.floor(Math.random() * cols);
+                    
+                    if (canPlace(word, r, c, dr, dc)) {
+                        for (let i = 0; i < word.length; i++) {
+                            gridData[r + i*dr][c + i*dc] = word[i];
+                        }
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    allPlaced = false;
+                    break;
+                }
+            }
+        }
+        renderBank();
+        renderGrid();
+    }
+
+    function canPlace(word, r, c, dr, dc) {
+        if (r + dr*(word.length-1) < 0 || r + dr*(word.length-1) >= rows || 
+            c + dc*(word.length-1) < 0 || c + dc*(word.length-1) >= cols) return false;
+        for (let i = 0; i < word.length; i++) {
+            let existing = gridData[r + i*dr][c + i*dc];
+            if (existing !== '' && existing !== word[i]) return false;
+        }
+        return true;
+    }
+
+    function renderBank() {
+        const bank = document.getElementById('wordBank');
+        bank.innerHTML = '';
+        words.forEach((w, i) => {
+            const span = document.createElement('span');
+            span.className = 'word-item';
+            span.id = 'w-' + w;
+            span.style.backgroundColor = colors[i % colors.length];
+            span.textContent = w.replace("אוזןהמן", "אוזן המן");
+            bank.appendChild(span);
+        });
+    }
+
+    function renderGrid() {
+        const gridDiv = document.getElementById('grid');
+        gridDiv.innerHTML = '';
+        const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.textContent = gridData[r][c];
+                
+                const onMove = (e) => {
+                    if (!isSelecting) return;
+                    const point = e.touches ? e.touches[0] : e;
+                    const target = document.elementFromPoint(point.clientX, point.clientY);
+                    if (target && target.classList.contains('cell') && !selectedCells.includes(target)) {
+                        selectedCells.push(target);
+                        target.classList.add('selected');
+                    }
+                };
+                cell.addEventListener('pointerdown', (e) => {
+                    isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
+                    cell.setPointerCapture(e.pointerId);
+                });
+                cell.addEventListener('pointermove', onMove);
+                gridDiv.appendChild(cell);
+            }
+        }
+    }
+
+    function createConfetti() {
+        for (let i = 0; i < 70; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw';
+            c.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+            c.style.animationDuration = (Math.random()*2+2)+'s';
+            document.body.appendChild(c);
+        }
+    }
+
+    window.addEventListener('pointerup', () => {
+        if (!isSelecting) return;
+        isSelecting = false;
+        const str = selectedCells.map(c => c.textContent).join('');
+        const rev = str.split('').reverse().join('');
+        const match = words.find(w => (w === str || w === rev) && !foundWords.has(w));
+        if (match) {
+            selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
+            document.getElementById('w-' + match).classList.add('found');
+            foundWords.add(match);
+            if (foundWords.size === words.length) { createConfetti(); setTimeout(() => document.getElementById('win').style.display='flex', 500); }
+        } else {
+            selectedCells.forEach(c => c.classList.remove('selected'));
+        }
+        selectedCells = [];
+    });
+
+    initGame();
+</script>
+</body>
+</html>
