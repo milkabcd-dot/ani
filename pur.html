@@ -10,47 +10,47 @@
         /* כפתורי ניווט צפים */
         .nav-buttons {
             position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 20px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 15px; z-index: 2000;
         }
         .nav-btn {
-            background: white; border: 2px solid #2e86de; border-radius: 50%;
-            width: 50px; height: 50px; font-size: 1.5rem; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+            background: white; border: 3px solid #ff6b81; border-radius: 50%;
+            width: 55px; height: 55px; font-size: 1.8rem; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
         }
 
         .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; border-bottom: 5px solid #ffe66d; }
-        h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
+        h1 { color: #ff4757; margin: 0; font-size: 1.6rem; }
         
         .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; border: 2px solid #ff6b81; }
-        .word-item { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
-        .word-item.found { background: #eee !important; color: #aaa !important; text-decoration: line-through; }
+        .word-item { padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; transition: 0.3s; border: 1px solid rgba(0,0,0,0.1); }
+        .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; max-width: 350px; margin: 20px auto; background: #ffe66d; padding: 8px; border-radius: 10px; touch-action: none; }
-        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; border-radius: 3px; user-select: none; border: 2px solid transparent; }
-        .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: transparent; }
-        .cell.selected { background: #ff6b81; color: white; border-radius: 50%; }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; margin: 20px auto; background: #ffe66d; padding: 10px; border-radius: 12px; touch-action: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border-radius: 5px; user-select: none; border: 2px solid transparent; transition: 0.2s; }
+        .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: white; }
+        .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; transform: scale(0.9); }
 
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
         .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 3001; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
         
-        .reset-btn { padding: 12px 25px; background: #45aaf2; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 80px; font-weight: bold; }
+        .reset-btn { padding: 15px 30px; background: #45aaf2; color: white; border: none; border-radius: 12px; cursor: pointer; margin-bottom: 100px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(69, 170, 242, 0.3); }
     </style>
 </head>
 <body>
 
 <div class="nav-buttons">
-    <button class="nav-btn" onclick="window.scrollTo(0,0)" title="למעלה">☝️</button>
-    <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView()" title="למטה">👇</button>
+    <button class="nav-btn" onclick="window.scrollTo(0,0)">☝️</button>
+    <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView()">👇</button>
 </div>
 
 <div id="win">
-    <h1>פורים שמח! 🎭</h1>
-    <p>מצאת הכל! 🍭🥨</p>
+    <h1 style="font-size: 3rem;">פורים שמח! 🎭</h1>
+    <p style="font-size: 1.5rem;">כל הכבוד! מצאת את כל המילים! 🍭</p>
     <button class="reset-btn" style="background: white; color: #ff4757;" onclick="location.reload()">למשחק חדש ✨</button>
 </div>
 
-<div class="header" id="top">
+<div class="header">
     <h1>תפזורת פורים 🎭</h1>
     <div style="font-weight: bold; color: #555;">עריכה: מילכה ברקו גרש</div>
 </div>
@@ -73,15 +73,20 @@
             gridData = Array(rows).fill().map(() => Array(cols).fill(''));
             allPlaced = true;
             const sortedWords = [...words].sort((a,b) => b.length - a.length);
+
             for (let word of sortedWords) {
                 let placed = false;
-                for (let attempts = 0; attempts < 500; attempts++) {
+                // ניסיונות מרובים לכל מילה בנפרד
+                for (let attempts = 0; attempts < 1000; attempts++) {
                     const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
                     const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
                     const r = Math.floor(Math.random() * rows);
                     const c = Math.floor(Math.random() * cols);
+
                     if (canPlace(word, r, c, dr, dc)) {
-                        for (let i = 0; i < word.length; i++) gridData[r + i*dr][c + i*dc] = word[i];
+                        for (let i = 0; i < word.length; i++) {
+                            gridData[r + i*dr][c + i*dc] = word[i];
+                        }
                         placed = true;
                         break;
                     }
@@ -111,7 +116,7 @@
             span.className = 'word-item';
             span.id = 'w-' + w;
             span.style.backgroundColor = colors[i % colors.length];
-            span.textContent = w.replace("אוזןהמן", "אוזן המן");
+            span.textContent = w === "אוזןהמן" ? "אוזן המן" : w;
             bank.appendChild(span);
         });
     }
@@ -122,7 +127,10 @@
         const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
+                // רק אם המשבצת ריקה, ממלאים באות אקראית
+                if (gridData[r][c] === '') {
+                    gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
+                }
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.textContent = gridData[r][c];
