@@ -5,13 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <style>
+        :root {
+            --blue-scroll: #2e86de;
+        }
+        
+        /* עיצוב סרגל הגלילה שיהיה בולט מאוד */
+        ::-webkit-scrollbar { width: 20px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--blue-scroll); 
+            border-radius: 10px; 
+            border: 3px solid #f1f1f1;
+        }
+
         body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; }
+        
         .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; }
         h1 { color: #ff4757; margin: 0; }
         .credit { font-weight: bold; color: #555; margin-bottom: 10px; }
+        
         .instructions { background: #ff6b81; color: white; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; line-height: 1.5; }
         .highlight { display: block; background: rgba(255,255,255,0.2); border: 2px dashed white; margin: 5px; padding: 5px; border-radius: 5px; }
         
+        /* הנחיית הגלילה */
+        .scroll-instruction {
+            color: var(--blue-scroll);
+            font-weight: 800;
+            font-size: 1rem;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .pointing-hand {
+            font-size: 1.5rem;
+            animation: point-right 1s infinite alternate;
+        }
+        
+        @keyframes point-right {
+            from { transform: translateX(0); }
+            to { transform: translateX(8px); }
+        }
+
         .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
         .word-item { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; border: 1px solid #ddd; }
         .word-item.found { background: #eee !important; color: #aaa !important; text-decoration: line-through; border-color: #ccc; }
@@ -19,12 +56,11 @@
         .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 350px; margin: 15px auto; background: #ffe66d; padding: 8px; border-radius: 10px; touch-action: none; }
         .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; cursor: pointer; border-radius: 4px; user-select: none; border: 2px solid transparent; transition: all 0.2s; }
         
-        /* המילים שנמצאו - רק מסגרת ללא רקע */
         .cell.found { border: 2px solid #1dd1a1; background: transparent; color: #1dd1a1; }
-        
         .cell.selected { background: #ffe66d; border-color: #ff6b81; }
 
-        .reset-btn { padding: 12px 25px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+        .reset-btn { padding: 12px 25px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 30px; }
+        
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
     </style>
 </head>
@@ -45,6 +81,11 @@
     </div>
 </div>
 
+<div class="scroll-instruction">
+    לגלילה מעלה/מטה: השתמשו בסרגל מימין
+    <span class="pointing-hand">👉</span>
+</div>
+
 <div class="word-bank" id="wordBank"></div>
 <div class="grid" id="grid"></div>
 <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
@@ -57,7 +98,6 @@
     let foundWords = new Set();
     let isSelecting = false, selectedCells = [];
 
-    // יצירת בנק המילים
     const bank = document.getElementById('wordBank');
     words.forEach((w, i) => {
         const span = document.createElement('span');
@@ -68,7 +108,6 @@
         bank.appendChild(span);
     });
 
-    // שתילת מילים
     words.sort((a,b) => b.length - a.length).forEach(word => {
         let placed = false;
         let attempts = 0;
@@ -93,7 +132,6 @@
         }
     });
 
-    // יצירת הלוח
     const gridDiv = document.getElementById('grid');
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -101,7 +139,6 @@
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.textContent = gridData[r][c];
-            cell.dataset.r = r; cell.dataset.c = c;
             
             const handleSelect = (e) => {
                 if (!isSelecting) return;
