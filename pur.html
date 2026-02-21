@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <style>
-        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 5px; overflow-x: hidden; }
+        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 5px; overflow: hidden; }
         .header { background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 5px auto; border-bottom: 3px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; font-size: 1.3rem; }
         .sub-header { font-weight: bold; color: #555; font-size: 0.85rem; }
         .instructions { color: #856404; font-size: 0.8rem; margin: 5px 0; font-weight: bold; background: #fff3cd; display: inline-block; padding: 3px 12px; border-radius: 6px; }
 
-        /* בנק המילים - 2 שורות, ללא ידיים */
         .word-bank { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
             max-width: 360px; margin: 5px auto; padding: 8px;
@@ -20,7 +19,6 @@
         .word-item { padding: 4px 0; border-radius: 4px; font-weight: bold; font-size: 0.75rem; background: #f8f9fa; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        /* הלוח */
         .grid { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; 
             max-width: 350px; margin: 10px auto; background: #ffe66d; 
@@ -46,13 +44,13 @@
 <div id="win-overlay">
     <h1>פורים שמח! 🎭</h1>
     <p>מצאת את כל המילים!</p>
-    <button onclick="location.reload()" style="padding: 10px 20px; border-radius: 8px; border: none; background: white; color: #ff4757; font-weight: bold; cursor: pointer;">משחק חדש</button>
+    <button onclick="location.reload()" style="padding: 10px 20px; border-radius: 8px; border: none; background: white; color: #ff4757; font-weight: bold;">משחק חדש</button>
 </div>
 
 <div class="header">
     <h1>תפזורת פורים 🎭</h1>
     <div class="sub-header">עריכה: מילכה ברקו גרש</div>
-    <div class="instructions">כל הכיוונים אפשריים!</div>
+    <div class="instructions">המילים נמצאות ישר (שורה) או למטה (טור)</div>
 </div>
 
 <div class="word-bank" id="wordBank"></div>
@@ -61,62 +59,36 @@
 <script>
     const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3", "#eccc68", "#b2bec3"];
-    const rows = 12, cols = 10;
-    let gridData = [];
+    
+    // לוח קבוע לחלוטין - לא משתנה לעולם
+    const staticGrid = [
+        ['מ','ר','ד','כ','י','א','ב','ג','ד','ה'],
+        ['א','ס','ת','ר','ו','ז','ח','ט','י','כ'],
+        ['א','ח','ש','ו','ר','ו','ש','ל','מ','נ'],
+        ['מ','ג','י','ל','ה','ס','ע','פ','צ','ק'],
+        ['ת','ח','פ','ו','ש','ת','ר','ש','ת','א'],
+        ['מ','ב','ר','ג','א','ד','ו','ה','ש','ז'],
+        ['ס','ח','ע','ט','ו','י','ש','כ','ו','ל'],
+        ['כ','מ','ש','נ','ז','ס','ת','ע','ש','פ'],
+        ['ה','צ','ן','ק','נ','ר','י','ש','ן','ת'],
+        ['א','ב','ג','ד','ה','מ','ז','ח','ט','י'],
+        ['כ','ל','מ','נ','ס','ן','פ','צ','ק','ר'],
+        ['ש','ת','א','ב','ג','ד','ה','ו','ז','ח']
+    ];
+
     let foundWords = new Set();
     let isSelecting = false, selectedCells = [];
 
-    function generateGame() {
-        let success = false;
-        while (!success) {
-            gridData = Array(rows).fill().map(() => Array(cols).fill(''));
-            const sorted = [...wordsList].sort((a,b) => b.length - a.length);
-            let allPlaced = true;
-
-            for (let word of sorted) {
-                let placed = false;
-                for (let attempts = 0; attempts < 1000; attempts++) {
-                    const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
-                    const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
-                    const r = Math.floor(Math.random() * rows);
-                    const c = Math.floor(Math.random() * cols);
-                    
-                    if (canPlace(word, r, c, dr, dc)) {
-                        for (let j = 0; j < word.length; j++) {
-                            gridData[r + j*dr][c + j*dc] = word[j];
-                        }
-                        placed = true;
-                        break;
-                    }
-                }
-                if (!placed) { allPlaced = false; break; }
-            }
-            if (allPlaced) success = true;
-        }
-        renderEverything();
-    }
-
-    function canPlace(word, r, c, dr, dc) {
-        if (r + dr*(word.length-1) < 0 || r + dr*(word.length-1) >= rows || 
-            c + dc*(word.length-1) < 0 || c + dc*(word.length-1) >= cols) return false;
-        for (let i = 0; i < word.length; i++) {
-            let existing = gridData[r + i*dr][c + i*dc];
-            if (existing !== '' && existing !== word[i]) return false;
-        }
-        return true;
-    }
-
-    function renderEverything() {
+    function init() {
         const gridElement = document.getElementById('grid');
-        const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
         gridElement.innerHTML = '';
         
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
+        for (let r = 0; r < 12; r++) {
+            for (let c = 0; c < 10; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.textContent = gridData[r][c];
+                cell.textContent = staticGrid[r][c];
+                cell.dataset.r = r; cell.dataset.c = c;
                 
                 cell.addEventListener('pointerdown', (e) => {
                     isSelecting = true; selectedCells = [cell]; cell.classList.add('selected');
@@ -134,7 +106,6 @@
         }
 
         const bank = document.getElementById('wordBank');
-        bank.innerHTML = '';
         wordsList.forEach((w, i) => {
             const span = document.createElement('span');
             span.className = 'word-item';
@@ -163,7 +134,7 @@
         selectedCells = [];
     });
 
-    generateGame();
+    init();
 </script>
 </body>
 </html>
