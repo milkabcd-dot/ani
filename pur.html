@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>תפזורת פורים חגיגית</title>
+    <title>תפזורת פורים - מילכה ברקו גרש</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow: hidden; }
-        
         .header { background: white; padding: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 0 auto 10px; border-bottom: 4px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
         .sub-header { font-weight: bold; color: #555; font-size: 0.9rem; }
@@ -17,7 +16,7 @@
             max-width: 360px; margin: 10px auto; padding: 10px;
             background: white; border-radius: 12px; border: 2px solid #ff6b81;
         }
-        .word-item { padding: 6px 0; border-radius: 6px; font-weight: bold; font-size: 0.8rem; background: #f8f9fa; border: 1px solid #eee; }
+        .word-item { padding: 6px 0; border-radius: 6px; font-weight: bold; font-size: 0.75rem; background: #f8f9fa; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
         .grid { 
@@ -33,24 +32,22 @@
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
         .cell.found { background: #1dd1a1; color: white; }
 
-        /* מסך סיום משופר */
         #win-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(255, 255, 255, 0.9); flex-direction: column; 
             align-items: center; justify-content: center; z-index: 9999; 
         }
         .win-box { background: white; padding: 30px; border-radius: 30px; border: 5px solid #ff6b81; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .emoji-float { font-size: 3rem; margin-bottom: 10px; }
-        .win-btn { padding: 15px 30px; border-radius: 15px; border: none; background: #ff6b81; color: white; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 0 #d63031; }
+        .win-btn { padding: 15px 30px; border-radius: 15px; border: none; background: #ff6b81; color: white; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div id="win-overlay">
     <div class="win-box">
-        <div class="emoji-float">🎭 🥳 🪇</div>
+        <div style="font-size: 3rem; margin-bottom: 10px;">🎭 🥳 🪇</div>
         <h1 style="color: #ff4757; font-size: 2.5rem;">פורים שמח!</h1>
-        <p style="font-size: 1.5rem; font-weight: bold; color: #2d3436;">כל הכבוד! מצאת את הכל!</p>
+        <p style="font-size: 1.5rem; font-weight: bold; color: #2d3436;">כל הכבוד, מילכה!</p>
         <button class="win-btn" onclick="location.reload()">לשחק שוב? ✨</button>
     </div>
 </div>
@@ -64,20 +61,22 @@
 <div class="grid" id="grid"></div>
 
 <script>
-    const wordsList = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן"];
-    const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3", "#eccc68", "#b2bec3"];
+    // סדר מבולבל בבנק המילים בכוונה
+    const wordsList = ["רעשן", "מרדכי", "ושתי", "אחשורוש", "מגילה", "אוזןהמן", "תחפושת", "שושן", "אסתר", "מסכה"];
+    const colors = ["#70a1ff", "#fffa65", "#cd84f1", "#ffaf40", "#7bed9f", "#ff9ff3", "#ffcccc", "#eccc68", "#18dcff", "#b2bec3"];
     
+    // לוח עם אחשורוש בעמודה השמאלית (טור 8)
     const finalGrid = [
-        ['מ','ר','ד','כ','י','א','ב','ג'],
-        ['א','ס','ת','ר','ד','ה','ו','ז'],
-        ['א','ח','ש','ו','ר','ו','ש','ח'],
-        ['מ','ג','י','ל','ה','ט','י','כ'],
-        ['ת','ח','פ','ו','ש','ת','ל','מ'],
-        ['נ','ס','מ','ס','כ','ה','ע','פ'],
-        ['א','ו','ז','ן','ה','מ','ן','צ'],
-        ['ק','ר','ע','ש','ן','ש','ת','א'],
-        ['ב','ג','ו','ש','ת','י','ד','ה'],
-        ['ו','ז','ח','ש','ו','ש','ן','ט']
+        ['מ','ר','ד','כ','י','ג','ד','א'],
+        ['א','ס','ת','ר','ו','ז','ח','ח'],
+        ['ל','מ','נ','ס','ע','פ','צ','ש'],
+        ['מ','ג','י','ל','ה','ט','י','ו'],
+        ['ת','ח','פ','ו','ש','ת','ל','ר'],
+        ['נ','ס','מ','ס','כ','ה','ע','ו'],
+        ['א','ו','ז','ן','ה','מ','ן','ש'],
+        ['ק','ר','ע','ש','ן','ב','ג','ת'],
+        ['ב','ג','ו','ש','ת','י','ד','י'],
+        ['ו','ז','ח','ש','ו','ש','ן','ה']
     ];
 
     let foundWords = new Set();
@@ -117,21 +116,13 @@
 
     function celebrate() {
         document.getElementById('win-overlay').style.display = 'flex';
-        
-        // ירי של קונפטי מכל הכיוונים
-        var duration = 5 * 1000;
+        var duration = 4 * 1000;
         var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
-
-        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-
         var interval = setInterval(function() {
             var timeLeft = animationEnd - Date.now();
             if (timeLeft <= 0) return clearInterval(interval);
-            var particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
+            confetti({ particleCount: 40, spread: 70, origin: { x: Math.random(), y: Math.random() - 0.2 }, zIndex: 10000 });
+        }, 200);
     }
 
     window.addEventListener('pointerup', () => {
