@@ -12,7 +12,7 @@
         }
         * { box-sizing: border-box; }
         
-        /* סרגל גלילה בולט מאוד בצד ימין */
+        /* סרגל גלילה כחול ובולט */
         ::-webkit-scrollbar { width: 18px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { 
@@ -77,9 +77,25 @@
         .cell.found { background: var(--found); color: white; }
 
         .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 40px; }
+
+        /* מסך הודעת ניצחון */
+        #winMessage {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(95, 39, 205, 0.9); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; text-align: center; padding: 20px;
+        }
+        #winMessage h2 { font-size: 3rem; margin-bottom: 10px; }
+        #winMessage p { font-size: 1.5rem; margin-bottom: 20px; }
     </style>
 </head>
 <body>
+
+    <div id="winMessage">
+        <h2>כל הכבוד! 🏆</h2>
+        <p>מצאת את כל רמות הארגון בהצלחה!</p>
+        <button class="reset-btn" onclick="location.reload()">למשחק חדש</button>
+    </div>
 
     <div class="header">
         <h1>רמות ארגון</h1>
@@ -151,15 +167,20 @@
             return true;
         }
         function placeWord(word, r, c, dr, dc) { for (let i = 0; i < word.length; i++) grid[r + i * dr][c + i * dc] = word[i]; }
+        
         window.addEventListener('pointerup', () => {
             if (!isSelecting) return;
             isSelecting = false;
             const s = selectedCells.map(c => c.textContent).join(''), rev = s.split('').reverse().join('');
             const match = baseWords.filter(w => !foundWords.has(w)).sort((a,b) => b.length - a.length).find(w => w === s || w === rev);
+            
             if (match) {
                 selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
                 document.getElementById('word-' + match).classList.add('found');
                 foundWords.add(match);
+                if (foundWords.size === baseWords.length) {
+                    setTimeout(() => { document.getElementById('winMessage').style.display = 'flex'; }, 500);
+                }
             } else { selectedCells.forEach(c => c.classList.remove('selected')); }
             selectedCells = [];
         });
