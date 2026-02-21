@@ -12,18 +12,19 @@
         }
         * { box-sizing: border-box; }
         
-        /* סרגל גלילה בולט */
-        ::-webkit-scrollbar { width: 14px; }
+        /* סרגל גלילה בולט מאוד בצד ימין */
+        ::-webkit-scrollbar { width: 18px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { 
             background: var(--scroll-blue); 
             border-radius: 10px; 
-            border: 2px solid #f1f1f1;
+            border: 3px solid #f1f1f1;
         }
 
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); 
             display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; color: var(--text);
+            overflow-y: scroll; min-height: 100vh;
         }
 
         .header { text-align: center; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); margin-bottom: 15px; }
@@ -31,11 +32,10 @@
         .credit { font-weight: bold; color: #555; font-size: 0.9rem; }
         
         .instructions { 
-            background: var(--secondary); color: white; padding: 10px; border-radius: 12px; 
-            margin-top: 10px; font-size: 0.85rem; line-height: 1.4; font-weight: bold; width: 100%;
+            background: var(--secondary); color: white; padding: 12px; border-radius: 12px; 
+            margin-top: 10px; font-size: 0.9rem; line-height: 1.5; font-weight: bold; width: 100%;
         }
 
-        /* רשימת מילים - עכשיו למעלה */
         .word-bank { 
             background: white; padding: 12px; border-radius: 15px; 
             width: 95%; max-width: 400px; border-bottom: 5px solid var(--secondary);
@@ -45,20 +45,26 @@
             list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0;
         }
         .word-item { 
-            padding: 6px; border-radius: 5px; background: #f1f2f6; 
+            padding: 8px; border-radius: 5px; background: #f1f2f6; 
             font-weight: bold; color: #333; border-right: 4px solid #ccc; font-size: 0.85rem; text-align: center;
         }
         .word-item.found { background: #dff9fb; color: #2ecc71; text-decoration: line-through; border-right-color: #2ecc71; }
 
-        .scroll-indicator { color: var(--scroll-blue); font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(5px);} }
+        .scroll-hint { 
+            color: var(--scroll-blue); font-weight: 800; font-size: 0.95rem; 
+            margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .hand-icon { font-size: 1.4rem; animation: point-right 1.5s infinite; }
+        @keyframes point-right {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-8px); }
+        }
 
-        /* לוח תפזורת - למטה */
         .grid { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; 
             background: #fff; border: 5px solid var(--accent); padding: 5px; 
             border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            user-select: none; width: 92%; max-width: 360px;
+            user-select: none; width: 90%; max-width: 360px;
             touch-action: none; margin-bottom: 20px;
         }
         
@@ -79,8 +85,9 @@
         <h1>רמות ארגון</h1>
         <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
-            חפשו את המילים מהרשימה בלוח שלמטה.<br>
-            ניתן לסמן בכל הכיוונים, כולל באלכסון וגם הפוך!
+            זהו את רמות הארגון בלוח.<br>
+            תנועה מעלה מטה: באמצעות סרגל גלילה בשוליים ימיניים.<br>
+            ניתן לסמן בכל הכיוונים: אופקי, אנכי, אלכסוני וגם הפוך!
         </div>
     </div>
 
@@ -88,7 +95,9 @@
         <ul class="word-list" id="wordList"></ul>
     </div>
 
-    <div class="scroll-indicator">👇 גללו מטה ללוח התפזורת 🖐️</div>
+    <div class="scroll-hint">
+        סרגל גלילה מימין <span class="hand-icon">👉</span>
+    </div>
     
     <div class="grid" id="grid"></div>
 
