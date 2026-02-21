@@ -12,6 +12,7 @@
         }
         * { box-sizing: border-box; }
         
+        /* סרגל גלילה כחול */
         ::-webkit-scrollbar { width: 18px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--scroll-blue); border-radius: 10px; border: 3px solid #f1f1f1; }
@@ -24,11 +25,11 @@
 
         .header { text-align: center; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: 95%; max-width: 400px; border-bottom: 5px solid var(--accent); margin-bottom: 15px; }
         h1 { color: var(--primary); margin: 0; font-size: 1.6rem; }
+        .credit { font-weight: bold; color: #555; font-size: 0.95rem; margin-top: 5px; }
         
         .instructions { 
             background: var(--pink-header); color: white; padding: 12px; border-radius: 12px; 
             margin-top: 10px; font-size: 0.9rem; line-height: 1.5; font-weight: bold; width: 100%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .word-bank { 
@@ -40,10 +41,7 @@
             list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0;
         }
         
-        .word-item { 
-            padding: 8px; border-radius: 8px; font-weight: bold; color: #333; font-size: 0.9rem; text-align: center;
-            border: 2px solid rgba(0,0,0,0.05);
-        }
+        .word-item { padding: 8px; border-radius: 8px; font-weight: bold; color: #333; font-size: 0.9rem; text-align: center; border: 2px solid rgba(0,0,0,0.05); }
         .word-item.found { background: #d1d8e0 !important; color: #777 !important; text-decoration: line-through; opacity: 0.6; }
 
         .scroll-hint { color: var(--scroll-blue); font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
@@ -64,12 +62,17 @@
 
         .reset-btn { width: 95%; max-width: 400px; cursor: pointer; padding: 12px; background: #45aaf2; color: white; border: none; border-radius: 10px; font-weight: bold; margin-bottom: 40px; box-shadow: 0 4px #2d98da; }
 
+        /* מסך ניצחון */
         #winMessage {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 71, 87, 0.95); z-index: 100;
             flex-direction: column; align-items: center; justify-content: center;
             color: white; text-align: center; padding: 20px;
         }
+
+        /* קונפטי */
+        .confetti { position: fixed; width: 10px; height: 10px; background-color: #f2d74e; animation: fall 3s linear infinite; z-index: 101; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -81,7 +84,8 @@
     </div>
 
     <div class="header">
-        <h1>תפזורת פורים צבעונית 🎭</h1>
+        <h1>תפזורת פורים 🎭</h1>
+        <div class="credit">עריכה: מילכה ברקו גרש</div>
         <div class="instructions">
             זהו את מילות החג בלוח. 🔎<br>
             תנועה מעלה מטה: באמצעות סרגל גלילה ימני. ↕️<br>
@@ -137,8 +141,7 @@
             const listUl = document.getElementById('wordList');
             baseWords.forEach((w, index) => {
                 const li = document.createElement('li');
-                li.className = 'word-item';
-                li.id = 'word-' + w;
+                li.className = 'word-item'; li.id = 'word-' + w;
                 li.style.backgroundColor = colors[index % colors.length];
                 let displayWord = w;
                 if (w === "משלוחמנות") displayWord = "משלוח מנות";
@@ -161,20 +164,19 @@
 
         function placeWord(word, r, c, dr, dc) { for (let i = 0; i < word.length; i++) grid[r + i * dr][c + i * dc] = word[i]; }
         
+        function createConfetti() {
+            for(let i=0; i<50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                confetti.style.opacity = Math.random();
+                document.body.appendChild(confetti);
+            }
+        }
+
         window.addEventListener('pointerup', () => {
             if (!isSelecting) return;
             isSelecting = false;
-            const s = selectedCells.map(c => c.textContent).join(''), rev = s.split('').reverse().join('');
-            const match = baseWords.filter(w => !foundWords.has(w)).sort((a,b) => b.length - a.length).find(w => w === s || w === rev);
-            if (match) {
-                selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
-                document.getElementById('word-' + match).classList.add('found');
-                foundWords.add(match);
-                if (foundWords.size === baseWords.length) setTimeout(() => { document.getElementById('winMessage').style.display = 'flex'; }, 500);
-            } else { selectedCells.forEach(c => c.classList.remove('selected')); }
-            selectedCells = [];
-        });
-        initGame();
-    </script>
-</body>
-</html>
+            const s = selectedCells.map(c => c.textContent).join(''), rev =
