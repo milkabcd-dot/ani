@@ -7,60 +7,69 @@
     <style>
         body { font-family: sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* כפתורי ניווט צפים */
-        .nav-buttons {
-            position: fixed; right: 10px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 15px; z-index: 2000;
-        }
-        .nav-btn {
-            background: white; border: 3px solid #ff6b81; border-radius: 50%;
-            width: 55px; height: 55px; font-size: 1.8rem; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
-        }
-
-        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 15px; border-bottom: 5px solid #ffe66d; }
+        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto 10px; border-bottom: 5px solid #ffe66d; }
         h1 { color: #ff4757; margin: 0; font-size: 1.6rem; }
         
-        .word-bank { background: white; padding: 10px; border-radius: 15px; max-width: 400px; margin: 10px auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; border: 2px solid #ff6b81; }
-        .word-item { padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; transition: 0.3s; border: 1px solid rgba(0,0,0,0.1); }
+        /* בנק המילים עם כפתורי הניווט משולבים */
+        .word-bank-container { 
+            background: white; padding: 10px; border-radius: 15px; 
+            max-width: 420px; margin: 10px auto; 
+            display: flex; align-items: center; gap: 10px;
+            border: 2px solid #ff6b81; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; flex-grow: 1; }
+        
+        .nav-controls { display: flex; flex-direction: column; gap: 8px; border-right: 2px solid #eee; padding-right: 10px; }
+        .nav-btn { 
+            background: #f0f0f0; border: 1px solid #ccc; border-radius: 8px; 
+            width: 45px; height: 45px; font-size: 1.4rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .nav-btn:active { background: #ffe66d; transform: scale(0.9); }
+
+        .word-item { padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
-        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; margin: 20px auto; background: #ffe66d; padding: 10px; border-radius: 12px; touch-action: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border-radius: 5px; user-select: none; border: 2px solid transparent; transition: 0.2s; }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; margin: 20px auto; background: #ffe66d; padding: 10px; border-radius: 12px; touch-action: none; }
+        .cell { aspect-ratio: 1/1; background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border-radius: 5px; user-select: none; border: 2px solid transparent; }
         .cell.found { border: 2px solid #1dd1a1; color: #1dd1a1; background: white; }
-        .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; transform: scale(0.9); }
+        .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
 
         #win { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.98); color: white; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
         .confetti { position: fixed; width: 8px; height: 8px; top: -10px; z-index: 3001; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
         
-        .reset-btn { padding: 15px 30px; background: #45aaf2; color: white; border: none; border-radius: 12px; cursor: pointer; margin-bottom: 100px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(69, 170, 242, 0.3); }
+        .reset-btn { padding: 15px 30px; background: #45aaf2; color: white; border: none; border-radius: 12px; cursor: pointer; margin-bottom: 100px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="nav-buttons">
-    <button class="nav-btn" onclick="window.scrollTo(0,0)">☝️</button>
-    <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView()">👇</button>
-</div>
-
 <div id="win">
-    <h1 style="font-size: 3rem;">פורים שמח! 🎭</h1>
-    <p style="font-size: 1.5rem;">כל הכבוד! מצאת את כל המילים! 🍭</p>
+    <h1>פורים שמח! 🎭</h1>
+    <p>כל הכבוד! מצאת הכל! 🍭</p>
     <button class="reset-btn" style="background: white; color: #ff4757;" onclick="location.reload()">למשחק חדש ✨</button>
 </div>
 
-<div class="header">
+<div class="header" id="top">
     <h1>תפזורת פורים 🎭</h1>
     <div style="font-weight: bold; color: #555;">עריכה: מילכה ברקו גרש</div>
 </div>
 
-<div class="word-bank" id="wordBank"></div>
+<div class="word-bank-container">
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="window.scrollTo(0,0)">☝️</button>
+        <button class="nav-btn" onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})">👇</button>
+    </div>
+    <div class="word-bank" id="wordBank"></div>
+</div>
+
 <div class="grid" id="grid"></div>
 <button class="reset-btn" onclick="location.reload()">ערבב לוח מחדש 🪇</button>
 
 <script>
-    const words = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "פורים", "שושן", "עדלאידע"];
+    // רשימה ללא המילה "פורים"
+    const words = ["מרדכי", "אסתר", "אחשורוש", "מגילה", "תחפושת", "מסכה", "רעשן", "אוזןהמן", "ושתי", "שושן", "עדלאידע"];
     const colors = ["#fffa65", "#7bed9f", "#70a1ff", "#ffaf40", "#ffcccc", "#18dcff", "#cd84f1", "#ff9ff3"];
     const rows = 16, cols = 10;
     let gridData = [];
@@ -76,17 +85,13 @@
 
             for (let word of sortedWords) {
                 let placed = false;
-                // ניסיונות מרובים לכל מילה בנפרד
                 for (let attempts = 0; attempts < 1000; attempts++) {
                     const dr = [0, 0, 1, -1, 1, 1, -1, -1][Math.floor(Math.random()*8)];
                     const dc = [1, -1, 0, 0, 1, -1, 1, -1][Math.floor(Math.random()*8)];
                     const r = Math.floor(Math.random() * rows);
                     const c = Math.floor(Math.random() * cols);
-
                     if (canPlace(word, r, c, dr, dc)) {
-                        for (let i = 0; i < word.length; i++) {
-                            gridData[r + i*dr][c + i*dc] = word[i];
-                        }
+                        for (let i = 0; i < word.length; i++) gridData[r + i*dr][c + i*dc] = word[i];
                         placed = true;
                         break;
                     }
@@ -127,10 +132,7 @@
         const alphabet = "אבגדהוזחטיכלמנסעפצקרשת";
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                // רק אם המשבצת ריקה, ממלאים באות אקראית
-                if (gridData[r][c] === '') {
-                    gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
-                }
+                if (gridData[r][c] === '') gridData[r][c] = alphabet[Math.floor(Math.random()*alphabet.length)];
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.textContent = gridData[r][c];
