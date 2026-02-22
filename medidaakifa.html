@@ -121,7 +121,7 @@
 
 <header>
   <h1>🕵️‍♂️ בלשי המדע – מדידה עקיפה</h1>
-  <div class="scoreBox">ניקוד: <span id="score">0</span></div>
+  <div class="scoreBox">תשובות נכונות: <span id="score">0</span> מתוך 5</div>
 </header>
 
 <div class="container">
@@ -141,7 +141,7 @@
 </footer>
 
 <script>
-let score = 0;
+let correctAnswers = 0;
 let currentLevel = 0;
 let locked = false;
 
@@ -239,14 +239,14 @@ let level=levels[currentLevel];
 let feedback=document.getElementById("feedbackBox");
 feedback.style.display="block";
 if(level.answers[i].correct){
-score+=10;
+correctAnswers++;
 feedback.className="feedback good";
 feedback.innerHTML="✅ תשובה נכונה!<br>"+level.explainGood;
 }else{
 feedback.className="feedback bad";
 feedback.innerHTML="❌ תשובה לא נכונה.<br>"+level.explainBad;
 }
-document.getElementById("score").innerText=score;
+document.getElementById("score").innerText = correctAnswers;
 document.getElementById("nextBtn").style.display="block";
 }
 
@@ -254,7 +254,7 @@ function nextLevel(){
 currentLevel++;
 if(currentLevel>=levels.length){
 document.getElementById("gameCard").innerHTML=
-"<div class='title'>🎉 סיימת!</div><div class='story'>הניקוד שלך: "+score+
+"<div class='title'>🎉 סיימת!</div><div class='story'>הצקבת: "+correctAnswers+" תשובות נכונות מתוך 5"+
 "<br><br>כל הכבוד בלש מדעי!</div><button onclick='restartGame()'>🔄 שחק שוב</button>";
 }else{
 loadLevel();
@@ -262,9 +262,9 @@ loadLevel();
 }
 
 function restartGame(){
-score=0;
+correctAnswers=0;
 currentLevel=0;
-document.getElementById("score").innerText=score;
+document.getElementById("score").innerText=correctAnswers;
 location.reload();
 }
 
