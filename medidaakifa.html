@@ -1,369 +1,97 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>בלשי המדע – מדידה עקיפה</title>
-  <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(120deg,#0b1a2b,#132f4a);
-      color:white;
-      text-align:center;
-    }
-    header{
-      padding:20px;
-      background: rgba(0,0,0,0.35);
-      border-bottom: 2px solid rgba(255,255,255,0.15);
-    }
-    h1{
-      margin:0;
-      font-size:28px;
-    }
-    .container{
-      max-width:900px;
-      margin: 0 auto;
-      padding:20px;
-    }
-    .card{
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius:16px;
-      padding:20px;
-      margin-top:20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.35);
-    }
-    .title{
-      font-size:22px;
-      margin-bottom:10px;
-    }
-    .story{
-      font-size:18px;
-      line-height:1.6;
-      margin-bottom:15px;
-      color: #e8f2ff;
-    }
-    .dataBox{
-      text-align:right;
-      background: rgba(0,0,0,0.35);
-      border-radius:14px;
-      padding:15px;
-      margin: 15px 0;
-      font-size:16px;
-      line-height:1.6;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .question{
-      font-size:18px;
-      margin:15px 0;
-      font-weight:bold;
-    }
-    button{
-      width:100%;
-      max-width:500px;
-      padding:14px;
-      margin:8px auto;
-      display:block;
-      border:none;
-      border-radius:14px;
-      cursor:pointer;
-      font-size:17px;
-      background: rgba(255,255,255,0.15);
-      color:white;
-      transition: 0.2s;
-    }
-    button:hover{
-      background: rgba(255,255,255,0.25);
-      transform: scale(1.02);
-    }
-    .scoreBox{
-      margin-top:10px;
-      font-size:18px;
-      color:#a7ffea;
-    }
-    .feedback{
-      margin-top:15px;
-      padding:15px;
-      border-radius:14px;
-      font-size:17px;
-      line-height:1.6;
-      display:none;
-    }
-    .good{
-      background: rgba(0,255,120,0.15);
-      border: 1px solid rgba(0,255,120,0.4);
-    }
-    .bad{
-      background: rgba(255,0,80,0.15);
-      border: 1px solid rgba(255,0,80,0.4);
-    }
-    .nextBtn{
-      background: rgba(0,180,255,0.25);
-      border: 1px solid rgba(0,180,255,0.4);
-      margin-top:15px;
-      display:none;
-    }
-    .nextBtn:hover{
-      background: rgba(0,180,255,0.4);
-    }
-    footer{
-      margin-top:30px;
-      padding:15px;
-      font-size:14px;
-      opacity:0.8;
-    }
-  </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בלשי המדע – גרסת PRO</title>
 
-<header>
-  <h1>🕵️‍♂️ בלשי המדע – מדידה עקיפה</h1>
-  <div class="scoreBox">ניקוד: <span id="score">0</span></div>
-</header>
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0a192f,#112d4e);
+color:white;
+text-align:center;
+overflow-x:hidden;
+}
 
-<div class="container">
+header{
+padding:15px;
+background:rgba(0,0,0,0.4);
+}
 
-  <div class="card" id="gameCard">
-    <div class="title" id="levelTitle"></div>
-    <div class="story" id="storyText"></div>
+h1{margin:0;}
 
-    <div class="dataBox" id="dataBox"></div>
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
 
-    <div class="question" id="questionText"></div>
+.card{
+background:rgba(255,255,255,0.08);
+border-radius:18px;
+padding:25px;
+margin-top:20px;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
+animation:fadeIn 0.6s ease-in-out;
+}
 
-    <div id="answers"></div>
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
 
-    <div class="feedback" id="feedbackBox"></div>
+button{
+width:100%;
+max-width:500px;
+padding:14px;
+margin:8px auto;
+display:block;
+border:none;
+border-radius:14px;
+cursor:pointer;
+font-size:17px;
+background:rgba(255,255,255,0.15);
+color:white;
+transition:0.2s;
+}
 
-    <button class="nextBtn" id="nextBtn" onclick="nextLevel()">➡️ המשך לשלב הבא</button>
-  </div>
+button:hover{
+background:rgba(255,255,255,0.3);
+transform:scale(1.03);
+}
 
-</div>
+input{
+padding:10px;
+border-radius:10px;
+border:none;
+font-size:16px;
+width:80%;
+max-width:300px;
+text-align:center;
+}
 
-<footer>
-  משחק לימודי לתלמידי חטיבת ביניים | נושא: מדידות עקיפות במדע
-</footer>
+.progressBar{
+height:15px;
+background:#333;
+border-radius:20px;
+overflow:hidden;
+margin:15px 0;
+}
 
-<script>
-  let score = 0;
-  let currentLevel = 0;
-  let locked = false;
+.progress{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#00ffcc,#00bfff);
+transition:0.4s;
+}
 
-  const levels = [
-    {
-      title: "שלב 1: הכוכב שנחלש 🌟",
-      story: "אתה אסטרונום. אתה עוקב אחרי כוכב מרוחק ומגלה שהאור שלו נחלש מעט מדי כמה ימים.",
-      data: [
-        "📉 עוצמת האור יורדת ב-2% למשך כמה שעות",
-        "⏱ הירידה חוזרת בדיוק כל 12 ימים",
-        "🔁 הדפוס יציב וחוזר על עצמו"
-      ],
-      question: "מה ההסבר הסביר ביותר?",
-      answers: [
-        { text: "כוכב לכת חולף מול הכוכב ומסתיר חלק מהאור", correct: true },
-        { text: "הכוכב נכבה ומתחדש באקראי", correct: false },
-        { text: "יש פיצוץ על הכוכב כל 12 ימים", correct: false }
-      ],
-      explainGood: "נכון! זו מדידה עקיפה: לא רואים את כוכב הלכת, אבל רואים ירידה מחזורית באור הכוכב.",
-      explainBad: "לא נכון. אם זה היה אקראי או פיצוץ, זה לא היה חוזר בדיוק באותו זמן ובאותו דפוס."
-    },
-    {
-      title: "שלב 2: מה יש בתוך כדור הארץ 🌍",
-      story: "התרחשה רעידת אדמה חזקה. חוקרים מודדים את הגלים שהגיעו למדינות רחוקות.",
-      data: [
-        "🌊 גלים מסוימים נעצרו באזור מסוים בכדור הארץ",
-        "🔀 חלק מהגלים שינו כיוון",
-        "⏱ מהירות הגלים משתנה לפי עומק"
-      ],
-      question: "מה אפשר להסיק?",
-      answers: [
-        { text: "כדור הארץ בנוי משכבות שונות (מעטפת, גרעין וכו')", correct: true },
-        { text: "כדור הארץ חלול לגמרי", correct: false },
-        { text: "הגלים נעלמים בגלל הרוח", correct: false }
-      ],
-      explainGood: "מצוין! מדידה עקיפה: בעזרת גלי רעידת אדמה אפשר להבין את מבנה פנים כדור הארץ.",
-      explainBad: "לא. גלים לא נעלמים בגלל רוח, והדפוס מתאים לשכבות ולא לחלל ריק."
-    },
-    {
-      title: "שלב 3: הלב שלא נראה ❤️",
-      story: "רופא רוצה לבדוק את הלב של מטופל בלי לפתוח את הגוף.",
-      data: [
-        "📍 חיישנים מוצמדים לעור",
-        "📈 מתקבל גרף עם עליות וירידות",
-        "⚡ הגרף מתאר פעילות חשמלית"
-      ],
-      question: "איזו בדיקה זו ומה נמדד?",
-      answers: [
-        { text: "אק״ג – נמדדים אותות חשמליים של הלב", correct: true },
-        { text: "צילום רגיל – נמדד צבע הלב", correct: false },
-        { text: "מדחום – נמדדת טמפרטורת הלב בלבד", correct: false }
-      ],
-      explainGood: "נכון! מדידה עקיפה: מודדים פעילות חשמלית על פני העור ומסיקים על תפקוד הלב.",
-      explainBad: "לא. צילום רגיל לא מודד חשמל, ומדחום לא יכול להראות את פעילות הלב."
-    },
-    {
-      title: "שלב 4: החלקיק שנעלם ⚛️",
-      story: "במאיץ חלקיקים נוצר חלקיק שחי שבריר שנייה. אי אפשר לראות אותו ישירות.",
-      data: [
-        "🧪 החלקיק נעלם כמעט מיד",
-        "🌀 נראים מסלולים של חלקיקים אחרים",
-        "💥 מופיעים תוצרי התפרקות קבועים"
-      ],
-      question: "איך המדענים יודעים שהחלקיק היה קיים?",
-      answers: [
-        { text: "לפי המסלולים ותוצרי ההתפרקות שלו בגלאים", correct: true },
-        { text: "כי אפשר לראות אותו בעין רגילה", correct: false },
-        { text: "כי הוא משמיע קול חזק", correct: false }
-      ],
-      explainGood: "בדיוק! מדידה עקיפה: לא רואים את החלקיק, אלא את מה שהוא משאיר אחריו.",
-      explainBad: "לא. חלקיקים כאלה קטנים מדי לעין, ואין להם קול. העדות היא עקבות ההתפרקות."
-    },
-    {
-      title: "שלב 5: ה-DNA מספר סיפור 🧬",
-      story: "מדען רוצה לדעת אם יש מוטציה ב-DNA של אדם.",
-      data: [
-        "💡 מוסיפים חומר שמאיר באור מיוחד",
-        "📊 מתקבל דפוס של פסים",
-        "🔍 פס אחד נמצא במקום שונה מהרגיל"
-      ],
-      question: "מה המשמעות של הפס השונה?",
-      answers: [
-        { text: "יש שינוי (מוטציה) בחומר הגנטי", correct: true },
-        { text: "האדם נהיה גבוה יותר", correct: false },
-        { text: "הגוף הפסיק לייצר דם", correct: false }
-      ],
-      explainGood: "נכון! זו מדידה עקיפה: לא רואים את ה-DNA ישירות אלא מסיקים לפי דפוס הבדיקה.",
-      explainBad: "לא. פסים בבדיקה מעידים על הבדלים ב-DNA, לא על גובה או ייצור דם."
-    },
-    {
-      title: "שלב 6: הקרח העתיק 🧊",
-      story: "חוקרים רוצים לדעת איך נראתה האטמוספרה לפני עשרות אלפי שנים.",
-      data: [
-        "⛏ קודחים לעומק שכבות קרח בקטבים",
-        "🫧 בתוך הקרח יש בועות אוויר כלואות",
-        "🌫 הבועות מכילות CO₂ וגזים נוספים"
-      ],
-      question: "מה בעצם החוקרים מודדים?",
-      answers: [
-        { text: "הרכב האוויר הקדום של כדור הארץ", correct: true },
-        { text: "כמה קר היה ביום מסוים לפני 10 שנים", correct: false },
-        { text: "כמה מים יש באוקיינוס כיום", correct: false }
-      ],
-      explainGood: "כל הכבוד! מדידה עקיפה: בועות האוויר הן 'עדות' לעבר ולכן אפשר להסיק מה היה באטמוספרה.",
-      explainBad: "לא. הבועות לא מספרות על היום האחרון, אלא על הרכב האוויר בתקופות קדומות."
-    }
-  ];
+.timer{
+font-size:18px;
+margin-top:10px;
+color:#ffd369;
+}
 
-  function loadLevel() {
-    locked = false;
-    document.getElementById("feedbackBox").style.display = "none";
-    document.getElementById("nextBtn").style.display = "none";
-
-    const level = levels[currentLevel];
-
-    document.getElementById("levelTitle").innerText = level.title;
-    document.getElementById("storyText").innerText = level.story;
-    document.getElementById("questionText").innerText = level.question;
-
-    let dataHtml = "<b>📌 נתונים שנמדדו:</b><br><br>";
-    level.data.forEach(line => {
-      dataHtml += "• " + line + "<br>";
-    });
-    document.getElementById("dataBox").innerHTML = dataHtml;
-
-    const answersDiv = document.getElementById("answers");
-    answersDiv.innerHTML = "";
-
-    level.answers.forEach((ans, index) => {
-      const btn = document.createElement("button");
-      btn.innerText = ans.text;
-      btn.onclick = () => checkAnswer(index);
-      answersDiv.appendChild(btn);
-    });
-  }
-
-  function checkAnswer(index) {
-    if (locked) return;
-    locked = true;
-
-    const level = levels[currentLevel];
-    const chosen = level.answers[index];
-
-    const feedbackBox = document.getElementById("feedbackBox");
-    feedbackBox.style.display = "block";
-
-    if (chosen.correct) {
-      score += 10;
-      feedbackBox.className = "feedback good";
-      feedbackBox.innerHTML = "✅ תשובה נכונה!<br><br>" + level.explainGood;
-    } else {
-      feedbackBox.className = "feedback bad";
-      feedbackBox.innerHTML = "❌ תשובה לא נכונה.<br><br>" + level.explainBad;
-    }
-
-    document.getElementById("score").innerText = score;
-
-    document.getElementById("nextBtn").style.display = "block";
-  }
-
-  function nextLevel() {
-    currentLevel++;
-    if (currentLevel >= levels.length) {
-      showFinalScreen();
-    } else {
-      loadLevel();
-    }
-  }
-
-  function showFinalScreen() {
-    const gameCard = document.getElementById("gameCard");
-    let rank = "";
-
-    if (score <= 30) rank = "🔬 מתלמד מעבדה";
-    else if (score <= 60) rank = "🧪 חוקר צעיר";
-    else if (score <= 90) rank = "👨‍🔬 מדען מומחה";
-    else rank = "🕵️‍♂️ בלש מדעי עליון";
-
-    gameCard.innerHTML = `
-      <div class="title">🎉 סיימת את המשחק!</div>
-      <div class="story">
-        הניקוד הסופי שלך הוא: <b>${score}</b> נקודות
-        <br><br>
-        הדרגה שלך: <b>${rank}</b>
-        <br><br>
-        📌 עכשיו אתה יודע שמדענים מגלים דברים שלא רואים – בעזרת מדידות עקיפות!
-      </div>
-      <button onclick="restartGame()">🔄 שחק שוב</button>
-    `;
-  }
-
-  function restartGame() {
-    score = 0;
-    currentLevel = 0;
-    document.getElementById("score").innerText = score;
-
-    // שחזור הקלף המקורי
-    document.getElementById("gameCard").innerHTML = `
-      <div class="title" id="levelTitle"></div>
-      <div class="story" id="storyText"></div>
-
-      <div class="dataBox" id="dataBox"></div>
-
-      <div class="question" id="questionText"></div>
-
-      <div id="answers"></div>
-
-      <div class="feedback" id="feedbackBox"></div>
-
-      <button class="nextBtn" id="nextBtn" onclick="nextLevel()">➡️ המשך לשלב הבא</button>
-    `;
-
-    loadLevel();
-  }
-
-  loadLevel();
-</script>
-
-</body>
-</html>
+.good{background:rgba(0,255,120,0.15);}
+.
