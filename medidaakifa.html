@@ -254,8 +254,8 @@ function nextLevel(){
 currentLevel++;
 if(currentLevel>=levels.length){
 document.getElementById("gameCard").innerHTML=
-"<div class='title'>🎉 סיימת!</div><div class='story'>הצקבת: "+correctAnswers+" תשובות נכונות מתוך 5"+
-"<br><br>כל הכבוד בלש מדעי!</div><button onclick='restartGame()'>🔄 שחק שוב</button>";
+"<div class='title'>🎉 סיימת!</div><div class='story'>סיכום: ענית נכון על " + correctAnswers + " שאלות מתוך 5" +
+"<br><br>כל הכבוד בלש מדעי!</div><button onclick='restartGame()'>🔄 שחקו שוב</button>";
 }else{
 loadLevel();
 }
