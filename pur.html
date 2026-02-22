@@ -6,31 +6,29 @@
     <title>תפזורת פורים - מילכה ברקו גרש</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 10px; overflow: hidden; }
-        .header { background: white; padding: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 0 auto 5px; border-bottom: 4px solid #ffe66d; }
-        h1 { color: #ff4757; margin: 0; font-size: 1.5rem; }
-        .sub-header { font-weight: bold; color: #555; font-size: 0.9rem; }
-        
-        /* ההנחיה החדשה */
-        .instruction-box { background: #fff3cd; color: #856404; font-weight: bold; padding: 5px 15px; border-radius: 20px; display: inline-block; font-size: 0.9rem; margin-top: 5px; border: 1px solid #ffeeba; }
+        body { font-family: system-ui, sans-serif; background: #fdfcf0; text-align: center; margin: 0; padding: 5px; overflow: hidden; }
+        .header { background: white; padding: 8px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 360px; margin: 0 auto 5px; border-bottom: 3px solid #ffe66d; }
+        h1 { color: #ff4757; margin: 0; font-size: 1.3rem; }
+        .sub-header { font-weight: bold; color: #555; font-size: 0.8rem; }
+        .instruction-box { background: #fff3cd; color: #856404; font-weight: bold; padding: 4px 12px; border-radius: 15px; display: inline-block; font-size: 0.8rem; margin-top: 4px; border: 1px solid #ffeeba; }
 
         .word-bank { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
-            max-width: 360px; margin: 8px auto; padding: 10px;
-            background: white; border-radius: 12px; border: 2px solid #ff6b81;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+            max-width: 360px; margin: 5px auto; padding: 8px;
+            background: white; border-radius: 10px; border: 2px solid #ff6b81;
         }
-        .word-item { padding: 6px 0; border-radius: 6px; font-weight: bold; font-size: 0.75rem; background: #f8f9fa; border: 1px solid #eee; }
+        .word-item { padding: 5px 0; border-radius: 5px; font-weight: bold; font-size: 0.75rem; background: #f8f9fa; border: 1px solid #eee; }
         .word-item.found { background: #d1d8e0 !important; color: #888 !important; text-decoration: line-through; opacity: 0.6; }
 
         .grid { 
-            display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; 
-            max-width: 360px; margin: 10px auto; background: #ffe66d; 
-            padding: 8px; border-radius: 12px; touch-action: none;
+            display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; 
+            max-width: 350px; margin: 8px auto; background: #ffe66d; 
+            padding: 6px; border-radius: 10px; touch-action: none;
         }
         .cell { 
             aspect-ratio: 1/1; background: #ffffff; display: flex; 
             align-items: center; justify-content: center; font-weight: 900; 
-            font-size: 1.5rem; border-radius: 6px; user-select: none; color: #2d3436;
+            font-size: 1.4rem; border-radius: 5px; user-select: none; color: #2d3436;
         }
         .cell.selected { background: #ff6b81 !important; color: white !important; border-radius: 50%; }
         .cell.found { background: #1dd1a1; color: white; }
@@ -40,8 +38,8 @@
             background: rgba(255, 255, 255, 0.95); flex-direction: column; 
             align-items: center; justify-content: center; z-index: 9999; 
         }
-        .win-box { background: white; padding: 30px; border-radius: 30px; border: 5px solid #ff6b81; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .win-btn { padding: 15px 30px; border-radius: 15px; border: none; background: #ff6b81; color: white; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 20px; }
+        .win-box { background: white; padding: 25px; border-radius: 25px; border: 5px solid #ff6b81; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .win-btn { padding: 12px 25px; border-radius: 12px; border: none; background: #ff6b81; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -49,8 +47,8 @@
 <div id="win-overlay">
     <div class="win-box">
         <div style="font-size: 3rem; margin-bottom: 10px;">🎭 🥳 🪇</div>
-        <h1 style="color: #ff4757; font-size: 2.2rem;">פורים שמח!</h1>
-        <p style="font-size: 1.4rem; font-weight: bold; color: #2d3436;">כל הכבוד!<br>מצאת את כל המילים!</p>
+        <h1 style="color: #ff4757; font-size: 2rem;">פורים שמח!</h1>
+        <p style="font-size: 1.3rem; font-weight: bold; color: #2d3436;">כל הכבוד!<br>מצאת את כל המילים!</p>
         <button class="win-btn" onclick="location.reload()">לשחק שוב? ✨</button>
     </div>
 </div>
@@ -68,17 +66,17 @@
     const wordsList = ["רעשן", "מרדכי", "ושתי", "אחשורוש", "מגילה", "אוזןהמן", "תחפושת", "שושן", "אסתר", "מסכה"];
     const colors = ["#70a1ff", "#fffa65", "#cd84f1", "#ffaf40", "#7bed9f", "#ff9ff3", "#ffcccc", "#eccc68", "#18dcff", "#b2bec3"];
     
+    // לוח מתוקן: 9 שורות בלבד (פחות שורה), שושן בטור 7, אחשורוש בטור 8 ללא "ושתי" בסוף
     const finalGrid = [
-        ['מ','ר','ד','כ','י','ג','ד','א'],
-        ['א','ס','ת','ר','ו','ז','ח','ח'],
-        ['ל','מ','נ','ס','ע','פ','צ','ש'],
-        ['מ','ג','י','ל','ה','ט','י','ו'],
+        ['מ','ר','ד','כ','י','ג','ש','א'],
+        ['א','ס','ת','ר','ו','ז','ו','ח'],
+        ['ג','ד','ה','ו','ז','ח','ש','ש'],
+        ['מ','ג','י','ל','ה','ט','ן','ו'],
         ['ת','ח','פ','ו','ש','ת','ל','ר'],
         ['נ','ס','מ','ס','כ','ה','ע','ו'],
         ['א','ו','ז','ן','ה','מ','ן','ש'],
         ['ק','ר','ע','ש','ן','ב','ג','ת'],
-        ['ב','ג','ו','ש','ת','י','ד','י'],
-        ['ו','ז','ח','ש','ו','ש','ן','ה']
+        ['ב','ג','ו','ש','ת','י','ד','ה']
     ];
 
     let foundWords = new Set();
@@ -86,7 +84,7 @@
 
     function init() {
         const gridElement = document.getElementById('grid');
-        for (let r = 0; r < 10; r++) {
+        for (let r = 0; r < 9; r++) {
             for (let c = 0; c < 8; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
@@ -133,7 +131,6 @@
         const word = selectedCells.map(c => c.textContent).join('');
         const rev = word.split('').reverse().join('');
         const match = wordsList.find(w => (w === word || w === rev) && !foundWords.has(w));
-        
         if (match) {
             selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('found'); });
             document.getElementById('wb-' + match).classList.add('found');
@@ -144,7 +141,6 @@
         }
         selectedCells = [];
     });
-
     init();
 </script>
 </body>
