@@ -1,97 +1,275 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>בלשי המדע – גרסת PRO</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>בלשי המדע – מדידה עקיפה</title>
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg,#0b1a2b,#132f4a);
+      color:white;
+      text-align:center;
+    }
+    header{
+      padding:20px;
+      background: rgba(0,0,0,0.35);
+      border-bottom: 2px solid rgba(255,255,255,0.15);
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+    }
+    .container{
+      max-width:900px;
+      margin: 0 auto;
+      padding:20px;
+    }
+    .card{
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius:16px;
+      padding:20px;
+      margin-top:20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.35);
+    }
+    .title{
+      font-size:22px;
+      margin-bottom:10px;
+    }
+    .story{
+      font-size:18px;
+      line-height:1.6;
+      margin-bottom:15px;
+      color: #e8f2ff;
+    }
+    .dataBox{
+      text-align:right;
+      background: rgba(0,0,0,0.35);
+      border-radius:14px;
+      padding:15px;
+      margin: 15px 0;
+      font-size:16px;
+      line-height:1.6;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .question{
+      font-size:18px;
+      margin:15px 0;
+      font-weight:bold;
+    }
+    button{
+      width:100%;
+      max-width:500px;
+      padding:14px;
+      margin:8px auto;
+      display:block;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-size:17px;
+      background: rgba(255,255,255,0.15);
+      color:white;
+      transition: 0.2s;
+    }
+    button:hover{
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.02);
+    }
+    .scoreBox{
+      margin-top:10px;
+      font-size:18px;
+      color:#a7ffea;
+    }
+    .feedback{
+      margin-top:15px;
+      padding:15px;
+      border-radius:14px;
+      font-size:17px;
+      line-height:1.6;
+      display:none;
+    }
+    .good{
+      background: rgba(0,255,120,0.15);
+      border: 1px solid rgba(0,255,120,0.4);
+    }
+    .bad{
+      background: rgba(255,0,80,0.15);
+      border: 1px solid rgba(255,0,80,0.4);
+    }
+    .nextBtn{
+      background: rgba(0,180,255,0.25);
+      border: 1px solid rgba(0,180,255,0.4);
+      margin-top:15px;
+      display:none;
+    }
+    .nextBtn:hover{
+      background: rgba(0,180,255,0.4);
+    }
+    footer{
+      margin-top:30px;
+      padding:20px;
+      font-size:14px;
+      opacity:0.9;
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
 
-<style>
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0a192f,#112d4e);
-color:white;
-text-align:center;
-overflow-x:hidden;
+<header>
+  <h1>🕵️‍♂️ בלשי המדע – מדידה עקיפה</h1>
+  <div class="scoreBox">ניקוד: <span id="score">0</span></div>
+</header>
+
+<div class="container">
+  <div class="card" id="gameCard">
+    <div class="title" id="levelTitle"></div>
+    <div class="story" id="storyText"></div>
+    <div class="dataBox" id="dataBox"></div>
+    <div class="question" id="questionText"></div>
+    <div id="answers"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="nextBtn" id="nextBtn" onclick="nextLevel()">➡️ המשך לשלב הבא</button>
+  </div>
+</div>
+
+<footer>
+  משחק לימודי לתלמידי חטיבת ביניים | נושא: מדידות עקיפות במדע | עריכה: מילכה ברקו גרש
+</footer>
+
+<script>
+let score = 0;
+let currentLevel = 0;
+let locked = false;
+
+const levels = [
+{
+title: "שלב 1: הכוכב שנחלש 🌟",
+story: "אתה אסטרונום. האור של כוכב נחלש מעט כל 12 ימים.",
+data: ["📉 ירידה של 2% באור","⏱ חוזר כל 12 ימים","🔁 דפוס קבוע"],
+question: "מה ההסבר הסביר ביותר?",
+answers: [
+{text:"כוכב לכת חולף מול הכוכב",correct:true},
+{text:"פיצוץ חוזר בכוכב",correct:false},
+{text:"ענן אבק אקראי",correct:false}
+],
+explainGood:"נכון! זו מדידה עקיפה – מזהים כוכב לכת לפי שינוי באור.",
+explainBad:"לא מדויק. הדפוס המחזורי מעיד על גוף שחולף בקביעות."
+},
+{
+title:"שלב 2: פנים כדור הארץ 🌍",
+story:"חוקרים מודדים גלי רעידת אדמה.",
+data:["🌊 חלק מהגלים נעצרים","🔀 חלק משנים כיוון","⏱ מהירות משתנה"],
+question:"מה אפשר להסיק?",
+answers:[
+{text:"לכדור הארץ יש שכבות פנימיות",correct:true},
+{text:"כדור הארץ חלול",correct:false},
+{text:"הגלים נעלמים ברוח",correct:false}
+],
+explainGood:"נכון! משתמשים בגלי רעידה כדי להבין את המבנה הפנימי.",
+explainBad:"לא נכון. הדפוס מתאים לשכבות שונות."
+},
+{
+title:"שלב 3: הלב שלא נראה ❤️",
+story:"רופא מצמיד חיישנים לעור המטופל.",
+data:["📍 חיישנים על העור","📈 מתקבל גרף","⚡ פעילות חשמלית"],
+question:"איזו בדיקה זו?",
+answers:[
+{text:"אק״ג",correct:true},
+{text:"מדחום",correct:false},
+{text:"צילום רגיל",correct:false}
+],
+explainGood:"נכון! מודדים פעילות חשמלית ומסיקים על הלב.",
+explainBad:"לא. זו בדיקה חשמלית."
+},
+{
+title:"שלב 4: חלקיק נסתר ⚛️",
+story:"חלקיק קצר-חיים נוצר במאיץ.",
+data:["🧪 נעלם מיד","🌀 נראים מסלולים אחרים","💥 תוצרי התפרקות"],
+question:"איך יודעים שהיה קיים?",
+answers:[
+{text:"לפי תוצרי ההתפרקות",correct:true},
+{text:"ראו אותו בעין",correct:false},
+{text:"שמעו קול",correct:false}
+],
+explainGood:"נכון! רואים את העקבות ולא את החלקיק עצמו.",
+explainBad:"חלקיקים כאלה אינם נראים לעין."
+},
+{
+title:"שלב 5: הקרח העתיק 🧊",
+story:"קודחים קרח בקטבים.",
+data:["⛏ קידוח עמוק","🫧 בועות אוויר","🌫 גזים כלואים"],
+question:"מה מודדים?",
+answers:[
+{text:"הרכב האטמוספרה הקדומה",correct:true},
+{text:"מזג האוויר של אתמול",correct:false},
+{text:"גובה הקרח בלבד",correct:false}
+],
+explainGood:"נכון! הבועות הן עדות עקיפה לעבר.",
+explainBad:"לא. המידע מתייחס להרכב גזים עתיק."
+}
+];
+
+function loadLevel(){
+locked=false;
+document.getElementById("feedbackBox").style.display="none";
+document.getElementById("nextBtn").style.display="none";
+let level=levels[currentLevel];
+document.getElementById("levelTitle").innerText=level.title;
+document.getElementById("storyText").innerText=level.story;
+document.getElementById("questionText").innerText=level.question;
+document.getElementById("dataBox").innerHTML="<b>📌 נתונים:</b><br>"+level.data.join("<br>");
+let answersDiv=document.getElementById("answers");
+answersDiv.innerHTML="";
+level.answers.forEach((ans,i)=>{
+let btn=document.createElement("button");
+btn.innerText=ans.text;
+btn.onclick=()=>checkAnswer(i);
+answersDiv.appendChild(btn);
+});
 }
 
-header{
-padding:15px;
-background:rgba(0,0,0,0.4);
+function checkAnswer(i){
+if(locked)return;
+locked=true;
+let level=levels[currentLevel];
+let feedback=document.getElementById("feedbackBox");
+feedback.style.display="block";
+if(level.answers[i].correct){
+score+=10;
+feedback.className="feedback good";
+feedback.innerHTML="✅ תשובה נכונה!<br>"+level.explainGood;
+}else{
+feedback.className="feedback bad";
+feedback.innerHTML="❌ תשובה לא נכונה.<br>"+level.explainBad;
+}
+document.getElementById("score").innerText=score;
+document.getElementById("nextBtn").style.display="block";
 }
 
-h1{margin:0;}
-
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
+function nextLevel(){
+currentLevel++;
+if(currentLevel>=levels.length){
+document.getElementById("gameCard").innerHTML=
+"<div class='title'>🎉 סיימת!</div><div class='story'>הניקוד שלך: "+score+
+"<br><br>כל הכבוד בלש מדעי!</div><button onclick='restartGame()'>🔄 שחק שוב</button>";
+}else{
+loadLevel();
+}
 }
 
-.card{
-background:rgba(255,255,255,0.08);
-border-radius:18px;
-padding:25px;
-margin-top:20px;
-box-shadow:0 0 25px rgba(0,0,0,0.5);
-animation:fadeIn 0.6s ease-in-out;
+function restartGame(){
+score=0;
+currentLevel=0;
+document.getElementById("score").innerText=score;
+location.reload();
 }
 
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;transform:translateY(0);}
-}
+loadLevel();
+</script>
 
-button{
-width:100%;
-max-width:500px;
-padding:14px;
-margin:8px auto;
-display:block;
-border:none;
-border-radius:14px;
-cursor:pointer;
-font-size:17px;
-background:rgba(255,255,255,0.15);
-color:white;
-transition:0.2s;
-}
-
-button:hover{
-background:rgba(255,255,255,0.3);
-transform:scale(1.03);
-}
-
-input{
-padding:10px;
-border-radius:10px;
-border:none;
-font-size:16px;
-width:80%;
-max-width:300px;
-text-align:center;
-}
-
-.progressBar{
-height:15px;
-background:#333;
-border-radius:20px;
-overflow:hidden;
-margin:15px 0;
-}
-
-.progress{
-height:100%;
-width:0%;
-background:linear-gradient(90deg,#00ffcc,#00bfff);
-transition:0.4s;
-}
-
-.timer{
-font-size:18px;
-margin-top:10px;
-color:#ffd369;
-}
-
-.good{background:rgba(0,255,120,0.15);}
-.
+</body>
+</html>
