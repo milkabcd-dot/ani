@@ -3,134 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מעבד צבעי אזהרה בטבע</title>
+    <title>מחולל צבעי אזהרה</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
+            font-family: sans-serif;
+            background-color: #222;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 { color: #333; margin-bottom: 10px; }
         .controls {
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
+            background: #333;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        select, input[type="file"] {
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            width: 80%;
+        select, input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
         }
-        .image-frame {
+        .img-container {
             position: relative;
             display: inline-block;
-            margin-top: 20px;
-            max-width: 100%;
-            border-radius: 10px;
+            max-width: 90vw;
+            border-radius: 8px;
             overflow: hidden;
-            border: 5px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        #userImage {
+        #mainImage {
             display: block;
             max-width: 100%;
             height: auto;
         }
-        #overlay {
+        #warningOverlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            opacity: 0.6; /* מידת השקיפות של צבעי האזהרה */
+            /* כאן קורה הקסם של השילוב הטבעי */
+            mix-blend-mode: overlay; 
+            opacity: 0.8;
         }
-        .footer { margin-top: 20px; font-size: 0.9em; color: #666; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>⚠️ צבעי אזהרה בטבע</h1>
-    <p>העלו תמונה ובחרו את דפוס האזהרה שלכם:</p>
-
+    <h2>⚠️ מעבד צבעי אזהרה (Aposematism)</h2>
+    
     <div class="controls">
-        <input type="file" id="imageUpload" accept="image/*">
+        <label>1. העלו תמונה: </label>
+        <input type="file" id="upload" accept="image/*"><br><br>
         
-        <label for="colorPattern">בחרו סוג אזהרה:</label>
-        <select id="colorPattern">
-            <option value="yellow">צהוב-שחור (צרעה/דבורה)</option>
-            <option value="red">אדום-שחור (חיפושית/פרפר רעיל)</option>
-            <option value="orange">כתום-שחור (פרפר המונרך)</option>
+        <label>2. בחרו שילוב צבעים: </label>
+        <select id="colorSelect">
+            <option value="yellow-black">צהוב ושחור (צרעה)</option>
+            <option value="red-black">אדום ושחור (פרת משה רבנו)</option>
+            <option value="orange-black">כתום ושחור (נמר/מונרך)</option>
         </select>
     </div>
 
-    <div class="image-frame" id="frame" style="display: none;">
-        <img id="userImage" src="" alt="תמונה שהועלתה">
-        <div id="overlay"></div>
+    <div class="img-container" id="container" style="display:none;">
+        <img id="mainImage">
+        <div id="warningOverlay"></div>
     </div>
 
-    <div class="footer">
-        פותח עבור שיעור מדעים | נושא: הסוואה ואזהרה
-    </div>
-</div>
+    <script>
+        const upload = document.getElementById('upload');
+        const mainImage = document.getElementById('mainImage');
+        const overlay = document.getElementById('warningOverlay');
+        const container = document.getElementById('container');
+        const colorSelect = document.getElementById('colorSelect');
 
-<script>
-    const imageUpload = document.getElementById('imageUpload');
-    const userImage = document.getElementById('userImage');
-    const overlay = document.getElementById('overlay');
-    const frame = document.getElementById('frame');
-    const colorPattern = document.getElementById('colorPattern');
+        function updateStyle() {
+            const mode = colorSelect.value;
+            let pattern;
 
-    // פונקציה לעדכון דפוס הפסים
-    function updatePattern() {
-        const pattern = colorPattern.value;
-        let colorCode;
-        
-        if (pattern === 'yellow') colorCode = '#ffcc00';
-        else if (pattern === 'red') colorCode = '#ff0000';
-        else if (pattern === 'orange') colorCode = '#ff8800';
-
-        overlay.style.background = `repeating-linear-gradient(
-            45deg,
-            ${colorCode},
-            ${colorCode} 25px,
-            #000000 25px,
-            #000000 50px
-        )`;
-    }
-
-    imageUpload.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                userImage.src = event.target.result;
-                frame.style.display = 'inline-block';
-                updatePattern();
+            if (mode === 'yellow-black') {
+                pattern = 'repeating-linear-gradient(45deg, #ffdd00, #ffdd00 20px, #000 20px, #000 40px)';
+            } else if (mode === 'red-black') {
+                pattern = 'radial-gradient(circle, #000 20%, #ff0000 21%)';
+                overlay.style.backgroundSize = "40px 40px";
+            } else if (mode === 'orange-black') {
+                pattern = 'repeating-linear-gradient(90deg, #ff6600, #ff6600 30px, #000 30px, #000 35px)';
             }
-            reader.readAsDataURL(file);
+
+            overlay.style.backgroundImage = pattern;
         }
-    });
 
-    colorPattern.addEventListener('change', updatePattern);
-</script>
+        upload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    mainImage.src = event.target.result;
+                    container.style.display = 'inline-block';
+                    updateStyle();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
+        colorSelect.addEventListener('change', updateStyle);
+    </script>
 </body>
 </html>
