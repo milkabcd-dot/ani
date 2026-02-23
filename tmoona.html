@@ -7,104 +7,98 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         * { box-sizing: border-box; }
-        body { 
-            font-family: sans-serif; 
-            background: #6200ea; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
+        body, html { 
             margin: 0; 
-            padding: 0;
-            color: #333; 
+            padding: 0; 
+            height: 100%; 
+            overflow: hidden; /* מונע גלילה של כל הדף */
+            font-family: sans-serif;
+            background: #6200ea;
         }
         .card { 
             background: white; 
             width: 100%; 
-            height: 100vh;
-            max-width: 600px; 
-            padding: 30px 20px; 
-            text-align: center; 
+            height: 100vh; /* גובה מסך מלא */
+            max-width: 500px; 
+            margin: 0 auto;
+            padding: 15px; 
             display: flex;
             flex-direction: column;
-            justify-content: space-around; /* זה מה שמפזר את התוכן על כל הגובה */
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            justify-content: space-between; /* מחלק את הרווח בין האלמנטים */
+            text-align: center;
         }
-        .header-area { margin-bottom: 10px; }
-        h1 { font-size: 2rem; margin: 0 0 15px 0; }
+        .header-area h1 { font-size: 1.5rem; margin: 5px 0; }
         .main-question { 
-            font-size: 1.4rem; 
+            font-size: 1.1rem; 
             font-weight: 900; 
             color: #6200ea; 
             background: #f0e6ff;
-            padding: 8px 20px;
+            padding: 5px 15px;
             border-radius: 50px;
-            display: inline-block;
             border: 2px solid #6200ea;
+            display: inline-block;
         }
+        /* תיבת התמונה גמישה - היא תתפוס את כל השטח הפנוי */
         .img-box { 
-            width: 100%; 
-            height: 50vh; /* הגדלתי את התמונה שתתפוס יותר מקום */
-            background: #eee; 
-            border-radius: 20px; 
+            flex: 1; 
+            min-height: 0; /* קריטי כדי שהתמונה תדע להתכווץ */
+            margin: 10px 0;
+            border-radius: 15px; 
             overflow: hidden; 
-            border: 5px solid #ffeb3b; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 4px solid #ffeb3b; 
         }
         .img-box img { 
             width: 100%; 
             height: 100%; 
             object-fit: cover; 
         }
+        #name { font-size: 1.4rem; margin: 5px 0; }
         .btns { 
             display: flex; 
             flex-direction: column;
-            gap: 15px; 
-            width: 100%;
+            gap: 10px; 
         }
         button { 
-            width: 100%;
-            padding: 20px; 
-            font-size: 1.3rem; 
+            padding: 15px; 
+            font-size: 1.1rem; 
             font-weight: bold; 
             border: none; 
-            border-radius: 18px; 
-            cursor: pointer; 
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            border-radius: 12px; 
+            cursor: pointer;
         }
         .btn-danger { background: #ff1744; color: white; }
         .btn-funny { background: #00e676; color: white; }
         #msg { 
-            padding: 20px; 
-            border-radius: 15px; 
+            padding: 10px; 
+            border-radius: 10px; 
             font-weight: bold; 
-            font-size: 1.2rem;
-            line-height: 1.4;
+            font-size: 1rem;
+            line-height: 1.3;
         }
-        .next { background: #6200ea; color: white; }
+        .next { background: #6200ea; color: white; width: 100%; }
         .credit { 
-            font-size: 1.1rem; 
+            font-size: 0.9rem; 
             color: #222; 
             font-weight: bold;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 8px;
             background: #f8f9fa;
             border: 2px solid #ffeb3b;
-            margin-top: 10px;
+            border-radius: 8px;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="card" id="gameCard">
+<div class="card">
     <div class="header-area">
         <h1>🎭 פורים בטבע!</h1>
         <div class="main-question">רעיל באמת או רק מחופש?</div>
     </div>
 
-    <div id="contentArea" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-evenly;">
-        <div class="img-box"><img id="pic" src="" alt="טוען..."></div>
-        <h2 id="name" style="font-size: 1.8rem; margin: 10px 0;"></h2>
+    <div id="contentArea" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+        <div class="img-box"><img id="pic" src="" alt=""></div>
+        <h2 id="name"></h2>
         
         <div class="btns" id="btnArea">
             <button class="btn-danger" onclick="ans(false)">⚠️ יש כיסוי (רעיל!)</button>
@@ -120,57 +114,19 @@
 
 <script>
     const data = [
-        { 
-            n: "זבוב הרחף", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%91%D7%95%D7%91%20%D7%94%D7%A8%D7%97%D7%A3.jpg?raw=true", 
-            m: true, 
-            t: "אין כיסוי! הוא רק מתחפש לצרעה כדי להפחיד טורפים." 
-        },
-        { 
-            n: "זחל זנב סנונית", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%97%D7%9C%20%D7%96%D7%A0%D7%91%20%D7%A1%D7%A0%D7%95%D7%A0%D7%99%D7%AA.jpg?raw=true", 
-            m: true, 
-            t: "אין כיסוי! ה'עיניים' על הגב הן רק תחפושת כדי להיראות כמו נחש." 
-        },
-        { 
-            n: "מושית השבע", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%9E%D7%95%D7%A9%D7%99%D7%AA.jpg?raw=true", 
-            m: false, 
-            t: "יש כיסוי! הצבע האדום מזהיר ציפורים שהיא מרה ורעילה עבורן." 
-        },
-        { 
-            n: "נחש המלך", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%9E%D7%9C%D7%9A.jpg?raw=true", 
-            m: true, 
-            t: "אין כיסוי! הוא נחש לא ארסי שמתחפש לנחש אלמוגן מסוכן." 
-        },
-        { 
-            n: "פרפר המונרך", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A4%D7%A8%D7%A4%D7%A8%20%D7%94%D7%9E%D7%95%D7%A0%D7%A8%D7%9A.jpg?raw=true", 
-            m: false, 
-            t: "יש כיסוי! הוא אוגר רעל מהצמחים שהוא אוכל וצבעו מזהיר על כך." 
-        },
-        { 
-            n: "צפרדע חץ כחולה", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A6%D7%A4%D7%A8%D7%93%D7%A2%20%D7%97%D7%A5%20%D7%9B%D7%97%D7%95%D7%9C%D7%94.jpg?raw=true", 
-            m: false, 
-            t: "יש כיסוי! הצבע הזוהר שלה הוא אזהרה אמיתית שהיא רעילה מאוד." 
-        },
-        { 
-            n: "נחש אלמוגן", 
-            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%90%D7%9C%D7%9E%D7%95%D7%92%D7%9F.jpg?raw=true", 
-            m: false, 
-            t: "יש כיסוי! זהו נחש ארסי מאוד, והוא המודל לחיקוי של נחש המלך." 
-        }
+        { n: "זבוב הרחף", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%91%D7%95%D7%91%20%D7%94%D7%A8%D7%97%D7%A3.jpg?raw=true", m: true, t: "אין כיסוי! הוא רק מתחפש לצרעה." },
+        { n: "זחל זנב סנונית", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%97%D7%9C%20%D7%96%D7%A0%D7%91%20%D7%A1%D7%A0%D7%95%D7%A0%D7%99%D7%AA.jpg?raw=true", m: true, t: "אין כיסוי! ה'עיניים' הן רק תחפושת." },
+        { n: "מושית השבע", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%9E%D7%95%D7%A9%D7%99%D7%AA.jpg?raw=true", m: false, t: "יש כיסוי! היא באמת מרה ורעילה." },
+        { n: "נחש המלך", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%9E%D7%9C%D7%9A.jpg?raw=true", m: true, t: "אין כיסוי! הוא רק נראה כמו נחש ארסי." },
+        { n: "פרפר המונרך", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A4%D7%A8%D7%A4%D7%A8%20%D7%94%D7%9E%D7%95%D7%A0%D7%A8%D7%9A.jpg?raw=true", m: false, t: "יש כיסוי! הוא רעיל מאוד לציפורים." },
+        { n: "צפרדע חץ כחולה", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A6%D7%A4%D7%A8%D7%93%D7%A2%20%D7%97%D7%A5%20%D7%9B%D7%97%D7%95%D7%9C%D7%94.jpg?raw=true", m: false, t: "יש כיסוי! היא רעילה ביותר." },
+        { n: "נחש אלמוגן", i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%90%D7%9C%D7%9E%D7%95%D7%92%D7%9F.jpg?raw=true", m: false, t: "יש כיסוי! זהו המקור הארסי והמסוכן." }
     ];
 
     let step = 0;
 
     function start() {
-        if(step >= data.length) {
-            showEnd();
-            return;
-        }
+        if(step >= data.length) { showEnd(); return; }
         const item = data[step];
         document.getElementById('pic').src = item.i;
         document.getElementById('name').innerText = item.n;
@@ -184,16 +140,9 @@
         const item = data[step - 1];
         const m = document.getElementById('msg');
         m.style.display = 'block';
-        
-        if (user === item.m) {
-            m.innerHTML = "🎯 צדקתם! " + item.t;
-            m.style.background = "#c8e6c9";
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } else {
-            m.innerHTML = "😅 טעות... " + item.t;
-            m.style.background = "#ffcdd2";
-        }
-        
+        m.innerHTML = (user === item.m ? "🎯 צדקתם! " : "😅 טעות... ") + item.t;
+        m.style.background = user === item.m ? "#c8e6c9" : "#ffcdd2";
+        if(user === item.m) confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 } });
         document.getElementById('nxt').style.display = 'block';
         document.getElementById('btnArea').style.display = 'none';
     }
@@ -204,11 +153,9 @@
         const m = document.getElementById('msg');
         m.style.display = 'block';
         m.style.background = "#f3e5f5";
-        m.innerHTML = `
-            <div style="font-size: 1.8rem; color: #6200ea; font-weight: bold; margin-bottom: 20px;">כל הכבוד! סיימתם.</div>
-            <p style="font-size: 1.3rem;"><strong>מה למדנו?</strong> צבעים בולטים בטבע הם תמרור אזהרה: לפעמים יש מאחוריהם סכנה אמיתית, ולפעמים רק שחקן מצוין בתחפושת.</p>
-            <button class="next" style="margin-top: 30px;" onclick="location.reload()">שחקו שוב ↻</button>
-        `;
+        m.innerHTML = `<div style="font-size:1.5rem; color:#6200ea; font-weight:bold;">כל הכבוד!</div>
+            <p><strong>מה למדנו?</strong> צבעים בולטים בטבע הם תמרור אזהרה: לפעמים יש מאחוריהם סכנה אמיתית, ולפעמים רק שחקן מצוין בתחפושת.</p>
+            <button class="next" onclick="location.reload()">שחקו שוב ↻</button>`;
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
     }
 
