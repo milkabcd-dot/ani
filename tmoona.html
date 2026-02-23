@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>נשף המסכות של הטבע</title>
+    
+    <link rel="preload" as="image" href="https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%91%D7%95%D7%91%20%D7%94%D7%A8%D7%97%D7%A3.jpg?raw=true">
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%;
             font-family: sans-serif; background: #6200ea;
-            overflow: hidden; /* מונע גלילה מיותרת */
+            overflow: hidden;
         }
         .card { 
             background: white; width: 100%; height: 100%;
@@ -25,12 +28,12 @@
             background: #f0e6ff; padding: 4px 12px; border-radius: 20px;
             border: 2px solid #6200ea; display: inline-block; margin: 5px 0;
         }
-        /* התמונה מקבלת את כל המקום הפנוי וממלאת אותו */
         .img-box { 
-            flex-grow: 1; /* לוקחת את כל השטח הלבן המיותר */
+            flex-grow: 1; 
             margin: 5px 0; border-radius: 15px; 
             overflow: hidden; border: 4px solid #ffeb3b;
             position: relative;
+            background: #f0f0f0; /* צבע רקע ניטרלי בזמן הטעינה */
         }
         .img-box img { 
             width: 100%; height: 100%; object-fit: cover;
