@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>נשף המסכות של הטבע</title>
-    
-    <link rel="preload" as="image" href="https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%91%D7%95%D7%91%20%D7%94%D7%A8%D7%97%D7%A3.jpg?raw=true">
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -33,11 +30,12 @@
             margin: 5px 0; border-radius: 15px; 
             overflow: hidden; border: 4px solid #ffeb3b;
             position: relative;
-            background: #f0f0f0; /* צבע רקע ניטרלי בזמן הטעינה */
+            background: #f0f0f0;
         }
         .img-box img { 
             width: 100%; height: 100%; object-fit: cover;
             position: absolute; left: 0; top: 0;
+            opacity: 0; transition: opacity 0.3s; /* אפקט כניסה חלק */
         }
         #name { font-size: 1.3rem; margin: 5px 0; flex-shrink: 0; }
         .btns-container { flex-shrink: 0; margin-bottom: 5px; }
@@ -66,10 +64,10 @@
     </div>
 
     <div class="img-box"><img id="pic" src="" alt=""></div>
-    <h2 id="name"></h2>
+    <h2 id="name">טוען נתונים...</h2>
     
     <div class="btns-container">
-        <div class="btns" id="btnArea">
+        <div class="btns" id="btnArea" style="display:none">
             <button class="btn-danger" onclick="ans(false)">⚠️ יש כיסוי (רעיל!)</button>
             <button class="btn-funny" onclick="ans(true)">🎭 אין כיסוי (תחפושת)</button>
         </div>
@@ -92,15 +90,38 @@
     ];
 
     let step = 0;
+    const images = [];
+
+    // פונקציה לטעינה מראש של כל התמונות
+    function preloadAllImages() {
+        let loadedCount = 0;
+        data.forEach((item, index) => {
+            const img = new Image();
+            img.src = item.i;
+            img.onload = () => {
+                loadedCount++;
+                // כשהתמונה הראשונה מוכנה, אפשר להתחיל להציג
+                if (index === 0) start();
+            };
+        });
+    }
 
     function start() {
         if(step >= data.length) { showEnd(); return; }
         const item = data[step];
-        document.getElementById('pic').src = item.i;
-        document.getElementById('name').innerText = item.n;
+        const picElement = document.getElementById('pic');
+        
+        picElement.style.opacity = '0'; // הסתרה זמנית למעבר חלק
+        picElement.src = item.i;
+        
+        picElement.onload = () => {
+            picElement.style.opacity = '1';
+            document.getElementById('name').innerText = item.n;
+            document.getElementById('btnArea').style.display = 'flex';
+        };
+
         document.getElementById('msg').style.display = 'none';
         document.getElementById('nxt').style.display = 'none';
-        document.getElementById('btnArea').style.display = 'flex';
         step++;
     }
 
@@ -128,7 +149,8 @@
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
     }
 
-    window.onload = start;
+    // מתחילים בטעינה מראש של הכל
+    window.onload = preloadAllImages;
 </script>
 </body>
 </html>
