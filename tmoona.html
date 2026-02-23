@@ -2,166 +2,116 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>נשף המסכות של הטבע - משחק פורים</title>
+    <title>נשף המסכות של הטבע</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #ff0055;
-            background: radial-gradient(circle, #ff0055, #6200ea);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            overflow: hidden;
-        }
-        .container {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            border-radius: 40px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            border: 8px solid #ffeb3b;
-        }
-        .img-container {
-            width: 100%;
-            height: 280px;
-            border-radius: 25px;
-            margin: 20px 0;
-            overflow: hidden;
-            border: 4px solid #333;
-        }
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        h1 { color: #d81b60; font-size: 32px; margin: 0; }
-        .buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        button {
-            padding: 15px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 5px 0 #bbb;
-        }
-        .btn-real { background: #ff4757; color: white; box-shadow: 0 5px 0 #b33939; }
-        .btn-mimic { background: #2ed573; color: white; box-shadow: 0 5px 0 #218c74; }
-        button:active { transform: translateY(3px); box-shadow: none; }
-        #feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 20px;
-            display: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .next-btn {
-            background: #6200ea;
-            color: white;
-            width: 100%;
-            margin-top: 20px;
-            display: none;
-        }
+        body { font-family: sans-serif; background: #6200ea; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: #333; }
+        .card { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .img-box { width: 100%; height: 250px; background: #eee; border-radius: 20px; margin: 20px 0; overflow: hidden; border: 4px solid #ffeb3b; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .btns { display: flex; gap: 10px; justify-content: center; }
+        button { padding: 12px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .btn-danger { background: #ff1744; color: white; }
+        .btn-funny { background: #00e676; color: white; }
+        #msg { margin-top: 15px; padding: 10px; border-radius: 10px; font-weight: bold; display: none; }
+        .next { background: #6200ea; color: white; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🎭 נשף המסכות בטבע</h1>
+<div class="card">
+    <h1>🎭 פורים בטבע!</h1>
     <p>רעיל באמת או רק מחופש?</p>
-
-    <div class="img-container">
-        <img id="mainPic" src="" alt="תמונה בטעינה...">
+    <div class="img-box"><img id="pic" src="" alt="טוען..."></div>
+    <h2 id="name"></h2>
+    <div class="btns" id="btnArea">
+        <button class="btn-danger" onclick="ans(false)">⚠️ יש כיסוי (רעיל!)</button>
+        <button class="btn-funny" onclick="ans(true)">🎭 אין כיסוי (תחפושת)</button>
     </div>
-
-    <h2 id="animalName">טוען...</h2>
-
-    <div class="buttons" id="controlPanel">
-        <button class="btn-real" onclick="handleGuess(false)">⚠️ זהירות, רעיל!</button>
-        <button class="btn-mimic" onclick="handleGuess(true)">🎭 סתם תחפושת!</button>
-    </div>
-
-    <div id="feedback"></div>
-    <button id="nextStep" class="next-btn" onclick="loadNewLevel()">הבא בתור ➔</button>
+    <div id="msg"></div>
+    <button id="nxt" class="next" style="display:none" onclick="start()">הבא בתור ➔</button>
 </div>
 
 <script>
-    const gameData = [
-        {
-            n: "זבוב הרחף",
-            i: "https://images.pexels.com/photos/56854/wasp-insect-nature-macro-56854.jpeg?auto=compress&cs=tinysrgb&w=600",
-            m: true,
-            t: "צדקתם! זהו זבוב רחף. הוא התחפש לצרעה אבל הוא לא עוקץ בכלל."
+    const data = [
+        { 
+            n: "זבוב הרחף", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%91%D7%95%D7%91%20%D7%94%D7%A8%D7%97%D7%A3.jpg?raw=true", 
+            m: true, 
+            t: "אין כיסוי! הוא רק מתחפש לצרעה כדי להפחיד טורפים." 
         },
-        {
-            n: "צפרדע חץ כחולה",
-            i: "https://images.pexels.com/photos/70083/frog-blue-arrow-frog-poison-70083.jpeg?auto=compress&cs=tinysrgb&w=600",
-            m: false,
-            t: "כל הכבוד! הצבע הכחול הזוהר הוא 'תחפושת אזהרה' אמיתית - היא רעילה!"
+        { 
+            n: "זחל זנב סנונית", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%96%D7%97%D7%9C%20%D7%96%D7%A0%D7%91%20%D7%A1%D7%A0%D7%95%D7%A0%D7%99%D7%AA.jpg?raw=true", 
+            m: true, 
+            t: "אין כיסוי! ה'עיניים' על הגב הן רק תחפושת כדי להיראות כמו נחש." 
         },
-        {
-            n: "פרפר המונרך",
-            i: "https://images.pexels.com/photos/208512/pexels-photo-208512.jpeg?auto=compress&cs=tinysrgb&w=600",
-            m: false,
-            t: "נכון! הכתום והשחור מודיעים לציפורים: 'אני רעיל, אל תאכלו אותי!'"
+        { 
+            n: "מושית השבע", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%9E%D7%95%D7%A9%D7%99%D7%AA.jpg?raw=true", 
+            m: false, 
+            t: "יש כיסוי! הצבע האדום מזהיר ציפורים שהיא מרה ורעילה עבורן." 
         },
-        {
-            n: "נחש המלך",
-            i: "https://images.pexels.com/photos/10505183/pexels-photo-10505183.jpeg?auto=compress&cs=tinysrgb&w=600",
-            m: true,
-            t: "פורים שמח! הנחש הזה לא ארסי, הוא פשוט מתחפש לנחש אלמוגן מסוכן."
+        { 
+            n: "נחש המלך", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%9E%D7%9C%D7%9A.jpg?raw=true", 
+            m: true, 
+            t: "אין כיסוי! הוא נחש לא ארסי שמתחפש לנחש אלמוגן מסוכן." 
+        },
+        { 
+            n: "פרפר המונרך", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A4%D7%A8%D7%A4%D7%A8%20%D7%94%D7%9E%D7%95%D7%A0%D7%A8%D7%9A.jpg?raw=true", 
+            m: false, 
+            t: "יש כיסוי! הוא אוגר רעל מהצמחים שהוא אוכל וצבעו מזהיר על כך." 
+        },
+        { 
+            n: "צפרדע חץ כחולה", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A6%D7%A4%D7%A8%D7%93%D7%A2%20%D7%97%D7%A5%20%D7%9B%D7%97%D7%95%D7%9C%D7%94.jpg?raw=true", 
+            m: false, 
+            t: "יש כיסוי! הצבע הזוהר שלה הוא אזהרה אמיתית שהיא רעילה מאוד." 
+        },
+        { 
+            n: "נחש אלמוגן", 
+            i: "https://github.com/milkabcd-dot/ani/blob/main/%D7%A0%D7%97%D7%A9%20%D7%94%D7%90%D7%9C%D7%9E%D7%95%D7%92%D7%9F.jpg?raw=true", 
+            m: false, 
+            t: "יש כיסוי! זהו נחש ארסי מאוד, והוא המודל לחיקוי של נחש המלך." 
         }
     ];
 
-    let currentIdx = 0;
+    let step = 0;
 
-    function loadNewLevel() {
-        const item = gameData[currentIdx % gameData.length];
-        document.getElementById('mainPic').src = item.i;
-        document.getElementById('animalName').innerText = item.n;
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('nextStep').style.display = 'none';
-        document.getElementById('controlPanel').style.pointerEvents = 'auto';
-        document.getElementById('controlPanel').style.opacity = '1';
-        currentIdx++;
+    function start() {
+        if(step >= data.length) step = 0;
+        const item = data[step];
+        document.getElementById('pic').src = item.i;
+        document.getElementById('name').innerText = item.n;
+        document.getElementById('msg').style.display = 'none';
+        document.getElementById('nxt').style.display = 'none';
+        document.getElementById('btnArea').style.opacity = '1';
+        document.getElementById('btnArea').style.pointerEvents = 'auto';
+        step++;
     }
 
-    function handleGuess(userGuess) {
-        const item = gameData[(currentIdx - 1) % gameData.length];
-        const fb = document.getElementById('feedback');
-        fb.style.display = 'block';
-
-        if (userGuess === item.m) {
-            fb.innerHTML = "🎉 צדקתם! " + item.t;
-            fb.style.background = "#d4edda";
-            fb.style.color = "#155724";
-            // הפעלת קונפטי
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+    function ans(user) {
+        const item = data[step - 1];
+        const m = document.getElementById('msg');
+        m.style.display = 'block';
+        
+        if (user === item.m) {
+            m.innerHTML = "🎯 צדקתם! " + item.t;
+            m.style.background = "#c8e6c9";
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         } else {
-            fb.innerHTML = "😅 כמעט... " + item.t;
-            fb.style.background = "#f8d7da";
-            fb.style.color = "#721c24";
+            m.innerHTML = "😅 טעות... " + item.t;
+            m.style.background = "#ffcdd2";
         }
-
-        document.getElementById('nextStep').style.display = 'block';
-        document.getElementById('controlPanel').style.pointerEvents = 'none';
-        document.getElementById('controlPanel').style.opacity = '0.5';
+        
+        document.getElementById('nxt').style.display = 'block';
+        document.getElementById('btnArea').style.opacity = '0.5';
+        document.getElementById('btnArea').style.pointerEvents = 'none';
     }
 
-    // הפעלה ראשונה
-    window.onload = loadNewLevel;
+    window.onload = start;
 </script>
-
 </body>
 </html>
