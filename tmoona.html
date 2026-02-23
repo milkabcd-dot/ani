@@ -2,147 +2,141 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>נשף המסכות של הטבע!</title>
+    <title>נשף המסכות של הטבע</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #6200ea;
+            background: linear-gradient(135deg, #6200ea, #ff0050);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
             color: #333;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 30px;
-            border-radius: 30px;
+        }
+        .card {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 25px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            text-align: center;
         }
-        h1 { color: #5e35b1; margin-top: 0; }
-        .image-container {
+        .img-box {
             width: 100%;
-            height: 300px;
+            height: 250px;
+            background: #eee;
             border-radius: 20px;
-            margin-bottom: 20px;
+            margin: 20px 0;
             overflow: hidden;
-            border: 5px solid #feb47b;
-            background: #f0f0f0;
+            border: 4px solid #ffde03;
         }
-        #gameImage {
+        .img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .buttons { display: flex; gap: 15px; justify-content: center; }
+        h1 { color: #6200ea; margin: 0; font-size: 28px; }
+        .btns { display: flex; gap: 10px; justify-content: center; }
         button {
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 12px 20px;
+            font-size: 16px;
             font-weight: bold;
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
         }
-        .btn-real { background: #ff5252; color: white; }
-        .btn-mimic { background: #4caf50; color: white; }
-        #feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 15px;
-            display: none;
-            font-size: 18px;
-        }
-        .next-btn {
-            background: #5e35b1;
-            color: white;
+        .btn-danger { background: #ff1744; color: white; }
+        .btn-funny { background: #00e676; color: white; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+        #msg {
             margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
             display: none;
         }
+        .next { background: #6200ea; color: white; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="card">
     <h1>🎭 פורים בטבע!</h1>
-    <p>מי באמת מסוכן ומי רק התחפש?</p>
+    <p>מי באמת רעיל ומי רק התחפש?</p>
 
-    <div class="image-container">
-        <img id="gameImage" src="" alt="חיה למשחק">
+    <div class="img-box">
+        <img id="pic" src="" alt="loading...">
     </div>
 
-    <h2 id="creatureName">טוען...</h2>
+    <h2 id="name">טוען...</h2>
 
-    <div class="buttons" id="actionButtons">
-        <button class="btn-real" onclick="checkAnswer(false)">זהירות! רעיל!</button>
-        <button class="btn-mimic" onclick="checkAnswer(true)">זו רק תחפושת!</button>
+    <div class="btns" id="btnArea">
+        <button class="btn-danger" onclick="ans(false)">⚠️ זהירות, רעיל!</button>
+        <button class="btn-funny" onclick="ans(true)">🎭 סתם תחפושת!</button>
     </div>
 
-    <div id="feedback"></div>
-    <button id="nextBtn" class="next-btn" onclick="loadLevel()">הבא בתור ➔</button>
+    <div id="msg"></div>
+    <button id="nxt" class="next" style="display:none" onclick="start()">הבא בתור ➔</button>
 </div>
 
 <script>
-    const levels = [
+    const data = [
         {
-            name: "זבוב הרחף",
-            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Hoverfly_September_2007-1.jpg/640px-Hoverfly_September_2007-1.jpg",
-            isMimic: true,
-            info: "מדהים! הוא נראה כמו צרעה אבל הוא זבוב חמוד שלא עושה כלום."
+            n: "דבורה או זבוב?",
+            i: "https://images.unsplash.com/photo-1534073132314-72643a69622d?w=500&q=80",
+            m: true,
+            t: "נכון! זה זבוב רחף. הוא לובש פסים של דבורה כדי שלא יציקו לו, אבל הוא לא עוקץ."
         },
         {
-            name: "צפרדע חץ כחולה",
-            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Dendrobates_azureus_%28Goblin%29.jpg/640px-Dendrobates_azureus_%28Goblin%29.jpg",
-            isMimic: false,
-            info: "נכון מאוד! הצבע הכחול הזוהר הוא אזהרה: 'אני רעילה מאוד!'"
+            n: "צפרדע חץ זוהרת",
+            i: "https://images.unsplash.com/photo-1551233047-975924908902?w=500&q=80",
+            m: false,
+            t: "צדקתם! הצבעים הזוהרים האלו הם אזהרה אמיתית - היא רעילה מאוד!"
         },
         {
-            name: "נחש מלך",
-            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Lampropeltis_triangulum_campbelli.jpg/640px-Lampropeltis_triangulum_campbelli.jpg",
-            isMimic: true,
-            info: "פורים שמח! הוא התחפש לנחש אלמוגן ארסי, אבל הוא לא מזיק."
-        },
-        {
-            name: "צרעה מזרחית",
-            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Vespa_orientalis_p1.JPG/640px-Vespa_orientalis_p1.JPG",
-            isMimic: false,
-            info: "בדיוק. הצהוב והשחור כאן הם אזהרה אמיתית מפני עקיצה כואבת."
+            n: "פרפר המונרך",
+            i: "https://images.unsplash.com/photo-1545191837-142f703e4822?w=500&q=80",
+            m: false,
+            t: "בדיוק! הוא אוגר רעל מהצמחים שהוא אוכל, והכתום מודיע לציפורים לא לגעת."
         }
     ];
 
-    let currentLevel = 0;
+    let step = 0;
 
-    function loadLevel() {
-        const level = levels[currentLevel % levels.length];
-        document.getElementById('gameImage').src = level.img;
-        document.getElementById('creatureName').innerText = level.name;
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('nextBtn').style.display = 'none';
-        document.getElementById('actionButtons').style.pointerEvents = 'auto';
+    function start() {
+        const item = data[step % data.length];
+        document.getElementById('pic').src = item.i;
+        document.getElementById('name').innerText = item.n;
+        document.getElementById('msg').style.display = 'none';
+        document.getElementById('nxt').style.display = 'none';
+        document.getElementById('btnArea').style.opacity = '1';
+        document.getElementById('btnArea').style.pointerEvents = 'auto';
+        step++;
     }
 
-    function checkAnswer(userChoice) {
-        const level = levels[currentLevel % levels.length];
-        const feedback = document.getElementById('feedback');
+    function ans(user) {
+        const item = data[(step - 1) % data.length];
+        const m = document.getElementById('msg');
+        m.style.display = 'block';
         
-        feedback.style.display = 'block';
-        if (userChoice === level.isMimic) {
-            feedback.innerHTML = "✅ <b>צדקתם!</b> " + level.info;
-            feedback.style.background = "#e8f5e9";
+        if (user === item.m) {
+            m.innerHTML = "🎯 כל הכבוד! " + item.t;
+            m.style.background = "#c8e6c9";
         } else {
-            feedback.innerHTML = "❌ <b>לא בדיוק...</b> " + level.info;
-            feedback.style.background = "#ffebee";
+            m.innerHTML = "😅 כמעט... " + item.t;
+            m.style.background = "#ffcdd2";
         }
-
-        document.getElementById('nextBtn').style.display = 'inline-block';
-        document.getElementById('actionButtons').style.pointerEvents = 'none';
-        currentLevel++;
+        
+        document.getElementById('nxt').style.display = 'block';
+        document.getElementById('btnArea').style.opacity = '0.5';
+        document.getElementById('btnArea').style.pointerEvents = 'none';
     }
 
-    // התחלת המשחק
-    loadLevel();
+    start();
 </script>
 
 </body>
