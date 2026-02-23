@@ -2,114 +2,84 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מחולל צבעי אזהרה</title>
+    <title>בלש המדע - שילוב צבעי אזהרה</title>
     <style>
-        body {
-            font-family: sans-serif;
-            background-color: #222;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .controls {
-            background: #333;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        select, input {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 5px;
-            border: none;
-        }
-        .img-container {
-            position: relative;
-            display: inline-block;
-            max-width: 90vw;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        #mainImage {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-        #warningOverlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            /* כאן קורה הקסם של השילוב הטבעי */
-            mix-blend-mode: overlay; 
-            opacity: 0.8;
-        }
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
+        .box { background: #333; padding: 20px; border-radius: 15px; display: inline-block; }
+        canvas { max-width: 90vw; border-radius: 10px; margin-top: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .controls { margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
+        select, input { padding: 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h2>⚠️ מעבד צבעי אזהרה (Aposematism)</h2>
-    
-    <div class="controls">
-        <label>1. העלו תמונה: </label>
-        <input type="file" id="upload" accept="image/*"><br><br>
-        
-        <label>2. בחרו שילוב צבעים: </label>
-        <select id="colorSelect">
-            <option value="yellow-black">צהוב ושחור (צרעה)</option>
-            <option value="red-black">אדום ושחור (פרת משה רבנו)</option>
-            <option value="orange-black">כתום ושחור (נמר/מונרך)</option>
-        </select>
-    </div>
-
-    <div class="img-container" id="container" style="display:none;">
-        <img id="mainImage">
-        <div id="warningOverlay"></div>
+    <h2>🧬 שילוב ביולוגי: צבעי אזהרה</h2>
+    <div class="box">
+        <div class="controls">
+            <input type="file" id="upload" accept="image/*">
+            <select id="colorMode">
+                <option value="yellow">שילוב צהוב-שחור (צרעה)</option>
+                <option value="red">שילוב אדום-שחור (חיפושית)</option>
+                <option value="orange">שילוב כתום-שחור (מונרך)</option>
+            </select>
+        </div>
+        <canvas id="canvas"></canvas>
     </div>
 
     <script>
         const upload = document.getElementById('upload');
-        const mainImage = document.getElementById('mainImage');
-        const overlay = document.getElementById('warningOverlay');
-        const container = document.getElementById('container');
-        const colorSelect = document.getElementById('colorSelect');
-
-        function updateStyle() {
-            const mode = colorSelect.value;
-            let pattern;
-
-            if (mode === 'yellow-black') {
-                pattern = 'repeating-linear-gradient(45deg, #ffdd00, #ffdd00 20px, #000 20px, #000 40px)';
-            } else if (mode === 'red-black') {
-                pattern = 'radial-gradient(circle, #000 20%, #ff0000 21%)';
-                overlay.style.backgroundSize = "40px 40px";
-            } else if (mode === 'orange-black') {
-                pattern = 'repeating-linear-gradient(90deg, #ff6600, #ff6600 30px, #000 30px, #000 35px)';
-            }
-
-            overlay.style.backgroundImage = pattern;
-        }
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorMode = document.getElementById('colorMode');
+        let originalImg = null;
 
         upload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    mainImage.src = event.target.result;
-                    container.style.display = 'inline-block';
-                    updateStyle();
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImg = img;
+                    draw();
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
         });
 
-        colorSelect.addEventListener('change', updateStyle);
+        colorMode.addEventListener('change', draw);
+
+        function draw() {
+            if (!originalImg) return;
+
+            // הגדרת גודל הקנבס לפי התמונה
+            canvas.width = originalImg.width;
+            canvas.height = originalImg.height;
+
+            // 1. ציור התמונה המקורית כבסיס
+            ctx.drawImage(originalImg, 0, 0);
+
+            // 2. יצירת אפקט ה-Blend (השילוב בתוך האזורים)
+            ctx.globalCompositeOperation = 'overlay'; // שומר על הבהירות והצללים המקוריים
+            
+            const mode = colorMode.value;
+            let patternColor = mode === 'yellow' ? '#ffcc00' : (mode === 'red' ? '#ff0000' : '#ff6600');
+
+            // 3. יצירת דפוס פסים ביולוגי שמתחשב במבנה
+            ctx.fillStyle = patternColor;
+            for (let i = 0; i < canvas.width + canvas.height; i += 60) {
+                ctx.beginPath();
+                ctx.rect(0, i, canvas.width, 30);
+                ctx.fill();
+            }
+
+            // 4. החזרת המצב לסינון כהה כדי להדגיש את ה"שחור" שבשילוב
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+
+            // חזרה למצב רגיל
+            ctx.globalCompositeOperation = 'source-over';
+        }
     </script>
 </body>
 </html>
