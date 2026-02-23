@@ -2,155 +2,147 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>מסכות מהטבע - צבעי אזהרה לפורים!</title>
+    <title>נשף המסכות של הטבע!</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
             margin: 0;
             padding: 20px;
-            text-align: center;
-            color: #444;
         }
-        .main-card {
-            background: white;
-            max-width: 700px;
-            margin: 0 auto;
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            max-width: 600px;
+            margin: 20px auto;
             padding: 30px;
             border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border: 5px solid #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         }
-        h1 { color: #d81b60; font-size: 2.5em; margin-bottom: 10px; }
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-            background: #fff5f8;
-            padding: 20px;
+        h1 { color: #5e35b1; margin-top: 0; }
+        .image-container {
+            width: 100%;
+            height: 300px;
             border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 5px solid #feb47b;
+            background: #f0f0f0;
         }
-        .btn-upload {
-            background: #ff4081;
-            color: white;
-            padding: 12px;
+        #gameImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .buttons { display: flex; gap: 15px; justify-content: center; }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
             border-radius: 50px;
             cursor: pointer;
-            display: block;
             transition: 0.3s;
         }
-        .btn-upload:hover { background: #f50057; }
-        select {
-            padding: 10px;
-            border-radius: 50px;
-            border: 2px solid #ff4081;
-            font-size: 16px;
-            outline: none;
-        }
-        canvas {
-            max-width: 100%;
-            height: auto;
-            border-radius: 20px;
+        .btn-real { background: #ff5252; color: white; }
+        .btn-mimic { background: #4caf50; color: white; }
+        #feedback {
             margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            display: none;
+            font-size: 18px;
+        }
+        .next-btn {
+            background: #5e35b1;
+            color: white;
+            margin-top: 15px;
             display: none;
         }
-        .footer { margin-top: 20px; font-weight: bold; color: #d81b60; }
     </style>
 </head>
 <body>
 
-<div class="main-card">
-    <h1>🎭 מסיכות של זהירות!</h1>
-    <p>בואו נראה איך אתם נראים בתור חיה רעילה ומסוכנת מהטבע!</p>
+<div class="container">
+    <h1>🎭 פורים בטבע!</h1>
+    <p>מי באמת מסוכן ומי רק התחפש?</p>
 
-    <div class="controls">
-        <label class="btn-upload">
-            📸 העלו תמונה כאן
-            <input type="file" id="imageInput" accept="image/*" style="display:none">
-        </label>
-        
-        <select id="warningType">
-            <option value="wasp">🟡 צהוב-שחור (צרעה)</option>
-            <option value="ladybug">🔴 אדום-שחור (פרת משה רבנו)</option>
-            <option value="monarch">🟠 כתום-שחור (פרפר המונרך)</option>
-        </select>
+    <div class="image-container">
+        <img id="gameImage" src="" alt="חיה למשחק">
     </div>
 
-    <canvas id="canvas"></canvas>
-    <div class="footer">שחקו שוב 🎭</div>
+    <h2 id="creatureName">טוען...</h2>
+
+    <div class="buttons" id="actionButtons">
+        <button class="btn-real" onclick="checkAnswer(false)">זהירות! רעיל!</button>
+        <button class="btn-mimic" onclick="checkAnswer(true)">זו רק תחפושת!</button>
+    </div>
+
+    <div id="feedback"></div>
+    <button id="nextBtn" class="next-btn" onclick="loadLevel()">הבא בתור ➔</button>
 </div>
 
 <script>
-    const imageInput = document.getElementById('imageInput');
-    const warningType = document.getElementById('warningType');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let currentImg = null;
+    const levels = [
+        {
+            name: "זבוב הרחף",
+            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Hoverfly_September_2007-1.jpg/640px-Hoverfly_September_2007-1.jpg",
+            isMimic: true,
+            info: "מדהים! הוא נראה כמו צרעה אבל הוא זבוב חמוד שלא עושה כלום."
+        },
+        {
+            name: "צפרדע חץ כחולה",
+            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Dendrobates_azureus_%28Goblin%29.jpg/640px-Dendrobates_azureus_%28Goblin%29.jpg",
+            isMimic: false,
+            info: "נכון מאוד! הצבע הכחול הזוהר הוא אזהרה: 'אני רעילה מאוד!'"
+        },
+        {
+            name: "נחש מלך",
+            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Lampropeltis_triangulum_campbelli.jpg/640px-Lampropeltis_triangulum_campbelli.jpg",
+            isMimic: true,
+            info: "פורים שמח! הוא התחפש לנחש אלמוגן ארסי, אבל הוא לא מזיק."
+        },
+        {
+            name: "צרעה מזרחית",
+            img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Vespa_orientalis_p1.JPG/640px-Vespa_orientalis_p1.JPG",
+            isMimic: false,
+            info: "בדיוק. הצהוב והשחור כאן הם אזהרה אמיתית מפני עקיצה כואבת."
+        }
+    ];
 
-    imageInput.addEventListener('change', (e) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                currentImg = img;
-                render();
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    });
+    let currentLevel = 0;
 
-    warningType.addEventListener('change', render);
+    function loadLevel() {
+        const level = levels[currentLevel % levels.length];
+        document.getElementById('gameImage').src = level.img;
+        document.getElementById('creatureName').innerText = level.name;
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('actionButtons').style.pointerEvents = 'auto';
+    }
 
-    function render() {
-        if (!currentImg) return;
-
-        canvas.width = currentImg.width;
-        canvas.height = currentImg.height;
-        canvas.style.display = 'inline-block';
-
-        // 1. צובעים את התמונה המקורית
-        ctx.drawImage(currentImg, 0, 0);
-
-        // 2. יוצרים את דפוס צבעי האזהרה (בדיוק כמו בקוד שנתת)
-        const type = warningType.value;
-        const tempCanvas = document.createElement('canvas');
-        const tCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = 60;
-        tempCanvas.height = 60;
-
-        if (type === 'wasp') {
-            tCtx.fillStyle = "#ffcc00";
-            tCtx.fillRect(0,0,60,60);
-            tCtx.fillStyle = "#000";
-            tCtx.fillRect(0,0,60,30);
-        } else if (type === 'ladybug') {
-            tCtx.fillStyle = "#ff0000";
-            tCtx.fillRect(0,0,60,60);
-            tCtx.fillStyle = "#000";
-            tCtx.beginPath();
-            tCtx.arc(30, 30, 15, 0, Math.PI * 2);
-            tCtx.fill();
+    function checkAnswer(userChoice) {
+        const level = levels[currentLevel % levels.length];
+        const feedback = document.getElementById('feedback');
+        
+        feedback.style.display = 'block';
+        if (userChoice === level.isMimic) {
+            feedback.innerHTML = "✅ <b>צדקתם!</b> " + level.info;
+            feedback.style.background = "#e8f5e9";
         } else {
-            tCtx.fillStyle = "#ff6600";
-            tCtx.fillRect(0,0,60,60);
-            tCtx.strokeStyle = "#000";
-            tCtx.lineWidth = 8;
-            tCtx.strokeRect(0,0,60,60);
+            feedback.innerHTML = "❌ <b>לא בדיוק...</b> " + level.info;
+            feedback.style.background = "#ffebee";
         }
 
-        const pattern = ctx.createPattern(tempCanvas, 'repeat');
-        
-        // 3. משלבים את הפטרן עם התמונה בצורה טבעית
-        ctx.save();
-        ctx.globalAlpha = 0.5; // שקיפות כדי לראות את הפנים/הגוף
-        ctx.globalCompositeOperation = 'overlay'; // שילוב בתוך הטקסטורה
-        ctx.fillStyle = pattern;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('actionButtons').style.pointerEvents = 'none';
+        currentLevel++;
     }
+
+    // התחלת המשחק
+    loadLevel();
 </script>
 
 </body>
