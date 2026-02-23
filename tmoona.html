@@ -2,37 +2,120 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>נשף המסכות של הטבע</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: sans-serif; background: #6200ea; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: #333; }
-        .card { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
-        .img-box { width: 100%; height: 250px; background: #eee; border-radius: 20px; margin: 20px 0; overflow: hidden; border: 4px solid #ffeb3b; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .btns { display: flex; gap: 10px; justify-content: center; }
-        button { padding: 12px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: sans-serif; 
+            background: #6200ea; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 0;
+            color: #333; 
+        }
+        .card { 
+            background: white; 
+            width: 100%; 
+            min-height: 100vh;
+            max-width: 600px; 
+            padding: 20px; 
+            text-align: center; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        h1 { font-size: 1.8rem; margin: 10px 0 5px 0; }
+        .main-question { 
+            font-size: 1.4rem; 
+            font-weight: 900; 
+            color: #6200ea; 
+            background: #f0e6ff;
+            padding: 5px 15px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 10px;
+            border: 2px solid #6200ea;
+        }
+        .img-box { 
+            width: 100%; 
+            flex-grow: 1;
+            max-height: 45vh;
+            background: #eee; 
+            border-radius: 15px; 
+            margin: 10px 0; 
+            overflow: hidden; 
+            border: 4px solid #ffeb3b; 
+        }
+        .img-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        .btns { 
+            display: flex; 
+            flex-direction: column;
+            gap: 12px; 
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button { 
+            width: 100%;
+            padding: 18px; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            border: none; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
         .btn-danger { background: #ff1744; color: white; }
         .btn-funny { background: #00e676; color: white; }
-        #msg { margin-top: 15px; padding: 15px; border-radius: 10px; font-weight: bold; display: none; line-height: 1.5; }
-        .next { background: #6200ea; color: white; margin-top: 15px; width: 100%; }
-        .credit { margin-top: 20px; font-size: 14px; color: #777; font-style: italic; border-top: 1px solid #eee; padding-top: 10px; }
-        .final-msg { font-size: 18px; color: #6200ea; font-weight: bold; margin-bottom: 10px; }
+        #msg { 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+        }
+        .next { background: #6200ea; color: white; margin-top: 5px; }
+        .credit { 
+            font-size: 1rem; 
+            color: #222; 
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-top: 3px solid #ffeb3b;
+            margin-top: 15px;
+        }
+        .final-msg { font-size: 1.5rem; color: #6200ea; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card" id="gameCard">
-    <h1>🎭 פורים בטבע!</h1>
-    <p>רעיל באמת או רק מחופש?</p>
-    <div id="contentArea">
+    <div>
+        <h1>🎭 פורים בטבע!</h1>
+        <div class="main-question">רעיל באמת או רק מחופש?</div>
+    </div>
+
+    <div id="contentArea" style="flex-grow: 1; display: flex; flex-direction: column;">
         <div class="img-box"><img id="pic" src="" alt="טוען..."></div>
-        <h2 id="name"></h2>
+        <h2 id="name" style="margin: 10px 0;"></h2>
         <div class="btns" id="btnArea">
             <button class="btn-danger" onclick="ans(false)">⚠️ יש כיסוי (רעיל!)</button>
             <button class="btn-funny" onclick="ans(true)">🎭 אין כיסוי (תחפושת)</button>
         </div>
     </div>
-    <div id="msg"></div>
+
+    <div id="msg" style="display:none"></div>
     <button id="nxt" class="next" style="display:none" onclick="start()">הבא בתור ➔</button>
     
     <div class="credit">עריכה: מילכה ברקו גרש</div>
@@ -96,8 +179,7 @@
         document.getElementById('name').innerText = item.n;
         document.getElementById('msg').style.display = 'none';
         document.getElementById('nxt').style.display = 'none';
-        document.getElementById('btnArea').style.opacity = '1';
-        document.getElementById('btnArea').style.pointerEvents = 'auto';
+        document.getElementById('btnArea').style.display = 'flex';
         step++;
     }
 
@@ -116,8 +198,7 @@
         }
         
         document.getElementById('nxt').style.display = 'block';
-        document.getElementById('btnArea').style.opacity = '0.5';
-        document.getElementById('btnArea').style.pointerEvents = 'none';
+        document.getElementById('btnArea').style.display = 'none';
     }
 
     function showEnd() {
@@ -127,7 +208,7 @@
         m.style.display = 'block';
         m.style.background = "#f3e5f5";
         m.innerHTML = `
-            <div class="final-msg">כל הכבוד! סיימתם את החידון.</div>
+            <div class="final-msg">כל הכבוד! סיימתם.</div>
             <p><strong>מה למדנו?</strong> צבעים בולטים בטבע הם תמרור אזהרה: לפעמים יש מאחוריהם סכנה אמיתית, ולפעמים רק שחקן מצוין בתחפושת.</p>
             <button class="next" onclick="location.reload()">שחקו שוב ↻</button>
         `;
