@@ -2,84 +2,123 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>בלש המדע - שילוב צבעי אזהרה</title>
+    <title>מעבד צבעי אזהרה ביולוגי</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
-        .box { background: #333; padding: 20px; border-radius: 15px; display: inline-block; }
-        canvas { max-width: 90vw; border-radius: 10px; margin-top: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .controls { margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        select, input { padding: 10px; border-radius: 5px; cursor: pointer; }
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; text-align: center; padding: 20px; }
+        .main-container { max-width: 800px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        canvas { max-width: 100%; height: auto; border-radius: 10px; margin-top: 20px; display: none; }
+        .controls { display: flex; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+        input, select, button { padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2d2d2d; color: white; cursor: pointer; }
+        button:hover { background: #404040; }
+        .upload-label { font-weight: bold; display: block; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>🧬 שילוב ביולוגי: צבעי אזהרה</h2>
-    <div class="box">
-        <div class="controls">
-            <input type="file" id="upload" accept="image/*">
-            <select id="colorMode">
-                <option value="yellow">שילוב צהוב-שחור (צרעה)</option>
-                <option value="red">שילוב אדום-שחור (חיפושית)</option>
-                <option value="orange">שילוב כתום-שחור (מונרך)</option>
+<div class="main-container">
+    <h2>🧬 סימולטור צבעי אזהרה טבעיים</h2>
+    <p>העלו תמונה. המערכת תנסה לשלב את הצבעים בתוך הטקסטורה של האובייקט.</p>
+
+    <div class="controls">
+        <div>
+            <span class="upload-label">1. בחירת תמונה</span>
+            <input type="file" id="imageLoader" accept="image/*">
+        </div>
+        <div>
+            <span class="upload-label">2. סגנון אזהרה</span>
+            <select id="patternType">
+                <option value="wasp">צהוב-שחור (פסים ביולוגיים)</option>
+                <option value="ladybug">אדום-שחור (נקודות אזהרה)</option>
+                <option value="monarch">כתום-שחור (ורידים/מרקם)</option>
             </select>
         </div>
-        <canvas id="canvas"></canvas>
     </div>
 
-    <script>
-        const upload = document.getElementById('upload');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const colorMode = document.getElementById('colorMode');
-        let originalImg = null;
+    <canvas id="imageCanvas"></canvas>
+</div>
 
-        upload.addEventListener('change', (e) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    originalImg = img;
-                    draw();
-                };
-                img.src = event.target.result;
+<script>
+    const imageLoader = document.getElementById('imageLoader');
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const patternType = document.getElementById('patternType');
+
+    let img = new Image();
+
+    imageLoader.addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.style.display = 'block';
+                processImage();
             };
-            reader.readAsDataURL(e.target.files[0]);
-        });
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    });
 
-        colorMode.addEventListener('change', draw);
+    patternType.addEventListener('change', processImage);
 
-        function draw() {
-            if (!originalImg) return;
+    function processImage() {
+        if (!img.src) return;
 
-            // הגדרת גודל הקנבס לפי התמונה
-            canvas.width = originalImg.width;
-            canvas.height = originalImg.height;
+        // ציור התמונה המקורית
+        ctx.drawImage(img, 0, 0);
 
-            // 1. ציור התמונה המקורית כבסיס
-            ctx.drawImage(originalImg, 0, 0);
+        // שליפת נתוני הפיקסלים לעיבוד עמוק
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
 
-            // 2. יצירת אפקט ה-Blend (השילוב בתוך האזורים)
-            ctx.globalCompositeOperation = 'overlay'; // שומר על הבהירות והצללים המקוריים
+        const pattern = patternType.value;
+
+        for (let i = 0; i < data.length; i += 4) {
+            // חישוב בהירות הפיקסל (Luminance)
+            const r = data[i], g = data[i+1], b = data[i+2];
+            const avg = (r + g + b) / 3;
             
-            const mode = colorMode.value;
-            let patternColor = mode === 'yellow' ? '#ffcc00' : (mode === 'red' ? '#ff0000' : '#ff6600');
+            const x = (i / 4) % canvas.width;
+            const y = Math.floor((i / 4) / canvas.width);
 
-            // 3. יצירת דפוס פסים ביולוגי שמתחשב במבנה
-            ctx.fillStyle = patternColor;
-            for (let i = 0; i < canvas.width + canvas.height; i += 60) {
-                ctx.beginPath();
-                ctx.rect(0, i, canvas.width, 30);
-                ctx.fill();
+            // יצירת לוגיקה שמשלבת את הצבע רק אם יש טקסטורה מתאימה
+            // כאן אנחנו מחליטים איפה "לצבוע" על בסיס מיקום ובהירות
+            let shouldColor = false;
+            
+            if (pattern === 'wasp') {
+                // פסים אלכסוניים שמתחשבים בבהירות המקורית
+                if ((x + y) % 100 < 50 && avg < 200) shouldColor = true;
+                if (shouldColor) {
+                    data[i] = 255;     // Red
+                    data[i+1] = 204;   // Green
+                    data[i+2] = 0;     // Blue
+                }
+            } else if (pattern === 'ladybug') {
+                // נקודות שחורות על רקע אדום
+                const dist = Math.sqrt(Math.pow(x % 100 - 50, 2) + Math.pow(y % 100 - 50, 2));
+                if (dist < 20) {
+                    data[i] *= 0.2; data[i+1] *= 0.2; data[i+2] *= 0.2; // הכהיה לנקודות
+                } else {
+                    data[i] = Math.max(data[i], 200); // חיזוק אדום
+                }
+            } else {
+                // כתום עם הדגשת קווי מתאר (ורידים)
+                if (avg < 100) {
+                    data[i] = 255; data[i+1] = 100; data[i+2] = 0;
+                }
             }
-
-            // 4. החזרת המצב לסינון כהה כדי להדגיש את ה"שחור" שבשילוב
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.fillRect(0,0,canvas.width, canvas.height);
-
-            // חזרה למצב רגיל
-            ctx.globalCompositeOperation = 'source-over';
         }
-    </script>
+
+        ctx.putImageData(imageData, 0, 0);
+
+        // שלב סופי - שילוב של התמונה המקורית מעל בשקיפות כדי לשמור על הפרווה
+        ctx.globalAlpha = 0.4;
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.drawImage(img, 0, 0);
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
+    }
+</script>
+
 </body>
 </html>
